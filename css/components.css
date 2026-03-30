@@ -114,10 +114,12 @@ footer { padding: 3rem 0; border-top: 1px solid var(--steel-border); transition:
     .footer-content { flex-direction: column; gap: 1rem; text-align: center; }
 
     nav:not(.toc-rail) { padding: 1rem 0; }
+    nav:not(.toc-rail) .container { flex-wrap: wrap; }
     .nav-right {
+        flex-grow: 1;
         flex-wrap: wrap;
-        gap: 0;
         justify-content: flex-end;
+        gap: 0;
     }
     .theme-toggle { order: -1; }
     .nav-links {
@@ -126,5 +128,6 @@ footer { padding: 3rem 0; border-top: 1px solid var(--steel-border); transition:
         padding-top: 0.75rem;
         margin-top: 0.75rem;
         border-top: 1px solid var(--steel-border);
+        justify-content: center;
     }
 }
