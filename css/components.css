@@ -118,8 +118,9 @@ footer { padding: 3rem 0; border-top: 1px solid var(--steel-border); transition:
         display: grid;
         grid-template-columns: 1fr auto;
         grid-template-rows: auto auto;
+        align-items: center;
     }
-    .nav-logo { grid-column: 1; grid-row: 1; height: 32px; line-height: 32px; }
+    .nav-logo { grid-column: 1; grid-row: 1; }
     .nav-right { display: contents; }
     .theme-toggle { grid-column: 2; grid-row: 1; }
     .nav-links {
