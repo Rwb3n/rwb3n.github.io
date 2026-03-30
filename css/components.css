@@ -112,6 +112,19 @@ footer { padding: 3rem 0; border-top: 1px solid var(--steel-border); transition:
 
 @media (max-width: 768px) {
     .footer-content { flex-direction: column; gap: 1rem; text-align: center; }
-    .nav-links { gap: 1rem; }
-    .nav-right { gap: 1rem; }
+
+    nav:not(.toc-rail) { padding: 1rem 0; }
+    .nav-right {
+        flex-wrap: wrap;
+        gap: 0;
+        justify-content: flex-end;
+    }
+    .theme-toggle { order: -1; }
+    .nav-links {
+        width: 100%;
+        gap: 1.5rem;
+        padding-top: 0.75rem;
+        margin-top: 0.75rem;
+        border-top: 1px solid var(--steel-border);
+    }
 }
