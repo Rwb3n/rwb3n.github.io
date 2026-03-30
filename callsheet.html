@@ -7,300 +7,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/callsheet.css">
     <script>
         (function() {
-            const saved = localStorage.getItem('rwb3n-theme');
+            var saved = localStorage.getItem('rwb3n-theme');
             if (saved) document.documentElement.setAttribute('data-theme', saved);
         })();
     </script>
-    <style>
-        :root, [data-theme="dark"] {
-            --bg-primary: #0a0a12; --bg-secondary: #0d0d1a;
-            --bg-card: #111122; --bg-card-hover: #161630;
-            --text-primary: #f5f0e8; --text-secondary: #b0b0be; --text-dim: #6a6a7a;
-            --accent-orange: #ff6b35; --accent-orange-dim: rgba(255, 107, 53, 0.15);
-            --steel: #2a2a3a; --steel-border: rgba(255, 240, 232, 0.06);
-            --steel-border-hover: rgba(255, 107, 53, 0.2);
-            --nav-bg: rgba(10, 10, 18, 0.85);
-            --noise-opacity: 0.03; --scrollbar-track: #0a0a12; --scrollbar-thumb: #2a2a3a;
-            --toggle-bg: #1a1a2e; --toggle-fill: #f5f0e8;
-            --code-bg: #0d0d1a; --code-border: rgba(255, 240, 232, 0.08);
-            --diagram-node: #1a1a2e; --diagram-node-border: rgba(255, 107, 53, 0.3);
-            --diagram-line: rgba(255, 240, 232, 0.1); --diagram-label: #8a8a9a;
-            --layer-1: rgba(255, 107, 53, 0.08); --layer-2: rgba(120, 100, 255, 0.08);
-            --layer-3: rgba(100, 180, 255, 0.08); --layer-4: rgba(100, 255, 180, 0.06);
-        }
-        [data-theme="light"] {
-            --bg-primary: #f5f0e8; --bg-secondary: #ede8df;
-            --bg-card: #e8e2d8; --bg-card-hover: #dfd8cc;
-            --text-primary: #0a0a12; --text-secondary: #3a3a48; --text-dim: #7a7a88;
-            --accent-orange: #e05a28; --accent-orange-dim: rgba(224, 90, 40, 0.12);
-            --steel: #d0c9be; --steel-border: rgba(10, 10, 18, 0.08);
-            --steel-border-hover: rgba(224, 90, 40, 0.25);
-            --nav-bg: rgba(245, 240, 232, 0.88);
-            --noise-opacity: 0.02; --scrollbar-track: #f5f0e8; --scrollbar-thumb: #d0c9be;
-            --toggle-bg: #e8e2d8; --toggle-fill: #0a0a12;
-            --code-bg: #e8e2d8; --code-border: rgba(10, 10, 18, 0.1);
-            --diagram-node: #dfd8cc; --diagram-node-border: rgba(224, 90, 40, 0.35);
-            --diagram-line: rgba(10, 10, 18, 0.12); --diagram-label: #5a5a68;
-            --layer-1: rgba(224, 90, 40, 0.08); --layer-2: rgba(100, 80, 200, 0.06);
-            --layer-3: rgba(60, 130, 200, 0.06); --layer-4: rgba(60, 180, 120, 0.05);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: var(--bg-primary); color: var(--text-primary);
-            font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
-            overflow-x: hidden; -webkit-font-smoothing: antialiased;
-            transition: background 0.5s ease, color 0.5s ease;
-        }
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-            opacity: var(--noise-opacity); pointer-events: none; z-index: 9999;
-        }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
-        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
-        .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
-
-        /* NAV */
-        nav:not(.toc-rail) {
-            position: fixed; top: 0; width: 100%; z-index: 100; padding: 1.5rem 0;
-            background: var(--nav-bg); backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--steel-border);
-            transition: background 0.5s ease, border-color 0.5s ease;
-        }
-        nav:not(.toc-rail) .container { display: flex; justify-content: space-between; align-items: center; max-width: 900px; }
-        .nav-logo { font-size: 0.85rem; font-weight: 500; letter-spacing: 0.15em; color: var(--text-primary); text-decoration: none; transition: color 0.5s ease; }
-        .nav-logo span { color: var(--accent-orange); }
-        .nav-right { display: flex; align-items: center; gap: 2rem; }
-        .nav-links { display: flex; gap: 2rem; list-style: none; }
-        .nav-links a { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; }
-        .nav-links a:hover { color: var(--text-primary); }
-        .theme-toggle { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 1px solid var(--steel-border); border-radius: 2px; background: var(--toggle-bg); cursor: pointer; transition: border-color 0.3s ease, background 0.5s ease; }
-        .theme-toggle:hover { border-color: var(--steel-border-hover); }
-        .toggle-half { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--toggle-fill); position: relative; overflow: hidden; transition: border-color 0.5s ease, transform 0.4s ease; }
-        .toggle-half::after { content: ''; position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: var(--toggle-fill); transition: background 0.5s ease, left 0.4s ease; }
-        [data-theme="dark"] .toggle-half::after { left: 0; }
-        [data-theme="light"] .toggle-half::after { left: 50%; }
-        [data-theme="light"] .toggle-half { transform: rotate(180deg); }
-
-        /* HEADER */
-        .project-header { padding-top: 8rem; padding-bottom: 4rem; border-bottom: 1px solid var(--steel-border); transition: border-color 0.5s ease; }
-        .back-link { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); text-decoration: none; transition: color 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; }
-        .back-link:hover { color: var(--accent-orange); }
-        .project-name { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; letter-spacing: 0.05em; margin-bottom: 1rem; }
-        .project-subtitle { font-size: 0.95rem; color: var(--text-secondary); font-weight: 300; line-height: 1.7; max-width: 640px; }
-        .project-meta-row { display: flex; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap; }
-        .project-meta-tag { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); padding: 0.4rem 0.8rem; border: 1px solid var(--steel-border); border-radius: 2px; }
-        .project-meta-tag.active { color: var(--accent-orange); border-color: var(--accent-orange-dim); }
-
-        /* SECTIONS */
-        .content-section { padding: 4rem 0; }
-        .content-section + .content-section { border-top: 1px solid var(--steel-border); }
-        .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
-        .section-label { font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-orange); font-weight: 500; white-space: nowrap; }
-        .section-line { flex: 1; height: 1px; background: var(--steel-border); }
-        .section-index { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.1em; }
-
-        .prose { font-size: 0.95rem; line-height: 1.8; color: var(--text-secondary); font-weight: 300; }
-        .prose p + p { margin-top: 1.5rem; }
-        .prose strong { color: var(--text-primary); font-weight: 500; }
-
-        /* STATS */
-        .stats-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
-            background: var(--steel-border); border: 1px solid var(--steel-border);
-            border-radius: 2px; overflow: hidden; margin: 2.5rem 0;
-        }
-        .stat-item { padding: 1.25rem; background: var(--bg-card); text-align: center; transition: background 0.5s ease; }
-        .stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem; font-weight: 600; color: var(--accent-orange); margin-bottom: 0.3rem; }
-        .stat-label { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
-
-        .stats-grid-wide {
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
-            background: var(--steel-border); border: 1px solid var(--steel-border);
-            border-radius: 2px; overflow: hidden; margin: 2rem 0;
-        }
-
-        /* DOMAIN GRID */
-        .domain-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
-            background: var(--steel-border); border: 1px solid var(--steel-border);
-            border-radius: 2px; overflow: hidden; margin: 2.5rem 0;
-        }
-        .domain-card { padding: 1.5rem; background: var(--bg-card); transition: background 0.5s ease; }
-        .domain-card:hover { background: var(--bg-card-hover); }
-        .domain-name { font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem; }
-        .domain-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; font-weight: 300; }
-        .domain-stats { font-size: 0.7rem; color: var(--text-dim); margin-top: 0.5rem; letter-spacing: 0.05em; }
-
-        /* ARCH DIAGRAM */
-        .arch-diagram {
-            margin: 2.5rem 0; padding: 2rem; border: 1px solid var(--steel-border);
-            border-radius: 2px; background: var(--bg-card); overflow-x: auto;
-            transition: background 0.5s ease, border-color 0.5s ease;
-        }
-        .arch-diagram svg { width: 100%; min-width: 700px; height: auto; display: block; }
-
-        /* FLOW STEPS */
-        .flow-container { margin: 2.5rem 0; }
-        .flow-step { display: grid; grid-template-columns: 40px 1fr; gap: 1.5rem; padding: 1rem 0; }
-        .flow-marker { display: flex; flex-direction: column; align-items: center; }
-        .flow-dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--accent-orange); background: var(--bg-primary); position: relative; z-index: 1; transition: background 0.5s ease; }
-        .flow-dot.filled { background: var(--accent-orange); }
-        .flow-line { width: 1px; flex: 1; background: var(--steel-border); margin-top: 4px; }
-        .flow-content-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 0.3rem; }
-        .flow-content-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; font-weight: 300; }
-
-        /* CODE BLOCK */
-        .code-block {
-            margin: 2rem 0; padding: 1.5rem; background: var(--code-bg);
-            border: 1px solid var(--code-border); border-radius: 2px;
-            font-size: 0.8rem; line-height: 1.8; color: var(--text-secondary);
-            overflow-x: auto; white-space: pre;
-        }
-        .code-block .kw { color: var(--accent-orange); }
-        .code-block .cm { color: var(--text-dim); }
-        .code-block .str { color: #7ec8a0; }
-        [data-theme="light"] .code-block .str { color: #2e7d52; }
-        .code-block .num { color: #d4a0ff; }
-        [data-theme="light"] .code-block .num { color: #7b3fbf; }
-
-        /* GRADUATION TABLE */
-        .grad-table {
-            width: 100%; margin: 2rem 0; border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-        .grad-table th {
-            text-align: left; padding: 0.75rem 1rem; font-size: 0.65rem;
-            letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim);
-            border-bottom: 1px solid var(--steel-border); font-weight: 500;
-        }
-        .grad-table td {
-            padding: 0.75rem 1rem; border-bottom: 1px solid var(--steel-border);
-            color: var(--text-secondary); font-weight: 300; line-height: 1.5;
-            vertical-align: top;
-        }
-        .grad-table td:first-child { color: var(--text-primary); font-weight: 400; }
-
-        /* TECH STACK */
-        .stack-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
-            background: var(--steel-border); border: 1px solid var(--steel-border);
-            border-radius: 2px; overflow: hidden; margin: 2rem 0;
-        }
-        .stack-item { padding: 1rem 1.25rem; background: var(--bg-card); display: flex; justify-content: space-between; align-items: center; transition: background 0.5s ease; }
-        .stack-layer { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
-        .stack-tech { font-size: 0.85rem; color: var(--text-primary); font-weight: 400; text-align: right; }
-
-        /* FLOATING TOC RAIL */
-        .toc-rail {
-            position: fixed;
-            left: max(1rem, calc((100vw - 900px) / 2 - 60px));
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            z-index: 90;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-        }
-        .toc-rail.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .toc-item {
-            display: flex;
-            align-items: center;
-            gap: 0;
-            text-decoration: none;
-            padding: 4px 6px;
-            border-radius: 2px;
-            transition: background 0.3s ease;
-            overflow: hidden;
-        }
-        .toc-item:hover {
-            background: var(--bg-card);
-        }
-        .toc-index {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.55rem;
-            letter-spacing: 0.1em;
-            color: var(--text-dim);
-            transition: color 0.3s ease;
-            white-space: nowrap;
-            min-width: 24px;
-        }
-        .toc-label {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.55rem;
-            letter-spacing: 0.05em;
-            color: var(--text-dim);
-            white-space: nowrap;
-            max-width: 0;
-            overflow: hidden;
-            opacity: 0;
-            transition: max-width 0.3s ease, opacity 0.3s ease, color 0.3s ease;
-            margin-left: 0;
-        }
-        .toc-item:hover .toc-label {
-            max-width: 100px;
-            opacity: 1;
-            margin-left: 6px;
-        }
-        .toc-item.active .toc-index {
-            color: var(--accent-orange);
-        }
-        .toc-item.active .toc-label {
-            color: var(--accent-orange);
-        }
-        /* Active bar */
-        .toc-item::before {
-            content: '';
-            width: 2px;
-            height: 100%;
-            min-height: 16px;
-            background: transparent;
-            margin-right: 6px;
-            border-radius: 1px;
-            transition: background 0.3s ease;
-            flex-shrink: 0;
-        }
-        .toc-item.active::before {
-            background: var(--accent-orange);
-        }
-
-        @media (max-width: 1100px) {
-            .toc-rail { display: none; }
-        }
-
-        /* FOOTER */
-        footer { padding: 3rem 0; border-top: 1px solid var(--steel-border); }
-        .footer-content { display: flex; justify-content: space-between; align-items: center; }
-        .footer-left { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 0.08em; }
-        .footer-links { display: flex; gap: 1.5rem; }
-        .footer-links a { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); text-decoration: none; transition: color 0.3s ease; }
-        .footer-links a:hover { color: var(--accent-orange); }
-
-        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-in { opacity: 0; animation: fadeSlideUp 0.6s ease forwards; }
-        .delay-1 { animation-delay: 0.1s; } .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; } .delay-4 { animation-delay: 0.4s; }
-
-        @media (max-width: 768px) {
-            .domain-grid, .stack-grid { grid-template-columns: 1fr; }
-            .stats-grid, .stats-grid-wide { grid-template-columns: 1fr 1fr; }
-            .project-meta-row { gap: 0.5rem; }
-            .footer-content { flex-direction: column; gap: 1rem; text-align: center; }
-            .nav-links { gap: 1rem; }
-            .grad-table { font-size: 0.75rem; }
-            .grad-table th, .grad-table td { padding: 0.5rem; }
-        }
-    </style>
 </head>
 <body>
 
@@ -355,25 +70,22 @@
         </div>
     </nav>
 
-    <!-- HEADER -->
-    <header class="project-header">
+    <section class="project-header">
         <div class="container">
-            <a href="index.html" class="back-link animate-in delay-1">← Back to projects</a>
-            <h1 class="project-name animate-in delay-2">CALLSHEET</h1>
-            <p class="project-subtitle animate-in delay-3">
-                Not a human-operated product — an autonomous commercial entity with a metabolism. 18 self-perpetuating processes, a cognitive substrate that scores and learns, and a graduation mechanism that earns the system progressively more authority over time. Built for UK broadcast, film, and TV production services.
-            </p>
-            <div class="project-meta-row animate-in delay-4">
-                <span class="project-meta-tag active">Build Complete</span>
-                <span class="project-meta-tag">Event-Driven</span>
-                <span class="project-meta-tag">Zero-Human Ops</span>
-                <span class="project-meta-tag">Autonomy Ladder</span>
+            <a href="index.html" class="back-link">← All Projects</a>
+            <h1 class="project-name animate-in">CALLSHEET</h1>
+            <p class="project-subtitle animate-in delay-1">Zero-human agency. An autonomous directory and intelligence layer for UK film, broadcasting, and media.</p>
+            <div class="project-meta-row animate-in delay-2">
+                <span class="project-meta-tag active">Active Development</span>
+                <span class="project-meta-tag">TypeScript</span>
                 <span class="project-meta-tag">Next.js 16</span>
+                <span class="project-meta-tag">Supabase</span>
+                <span class="project-meta-tag">54 Tables</span>
             </div>
         </div>
-    </header>
+    </section>
 
-    <!-- OVERVIEW -->
+    <!-- BY THE NUMBERS -->
     <section class="content-section" id="sec-001">
         <div class="container">
             <div class="section-header">
@@ -382,49 +94,20 @@
                 <span class="section-index">001</span>
             </div>
             <div class="prose">
-                <p>A B2B discovery and matching platform where every provider is also a buyer. The architecture isn't a CRUD app with events bolted on — the 18 self-perpetuating scheduled actions form a <strong>metabolism</strong>. The 35 decision types create an <strong>institutional memory</strong>. The 3 graduation capabilities are the mechanism by which the system <strong>earns autonomy from its principal</strong>.</p>
-                <p>The system is architecturally complete. 1,863 tests verify the code works. The experiment that hasn't started yet: whether the entity-architecture thesis — autonomous behaviour built incrementally through typed event contracts, decision logging, and self-perpetuating actions — produces better outcomes than a conventional manually-operated platform. The infrastructure is a loaded spring. It needs production data to release.</p>
+                <p>CALLSHEET is a one-person build. No team. No investors. No external dependencies beyond infrastructure providers. The system is designed to run with <strong>zero human intervention</strong> for routine operations — the principal (me) handles only edge cases, governance decisions, and the cases the system isn't yet trusted to handle alone.</p>
             </div>
-
             <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-value">54</div>
-                    <div class="stat-label">DB Tables</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">497</div>
-                    <div class="stat-label">Columns</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">118</div>
-                    <div class="stat-label">API Procedures</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">1,863</div>
-                    <div class="stat-label">Tests</div>
-                </div>
+                <div class="stat-item"><div class="stat-value">54</div><div class="stat-label">Tables</div></div>
+                <div class="stat-item"><div class="stat-value">118</div><div class="stat-label">tRPC Procedures</div></div>
+                <div class="stat-item"><div class="stat-value">37</div><div class="stat-label">Scheduled Actions</div></div>
+                <div class="stat-item"><div class="stat-value">25</div><div class="stat-label">Event Types</div></div>
             </div>
             <div class="stats-grid-wide">
-                <div class="stat-item">
-                    <div class="stat-value">25</div>
-                    <div class="stat-label">Event Types</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">48</div>
-                    <div class="stat-label">Consumers</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">37</div>
-                    <div class="stat-label">Scheduled Actions</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">35</div>
-                    <div class="stat-label">Decision Types</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">31</div>
-                    <div class="stat-label">Email Templates</div>
-                </div>
+                <div class="stat-item"><div class="stat-value">12</div><div class="stat-label">Flow Steps</div></div>
+                <div class="stat-item"><div class="stat-value">35</div><div class="stat-label">Decision Types</div></div>
+                <div class="stat-item"><div class="stat-value">31</div><div class="stat-label">Email Templates</div></div>
+                <div class="stat-item"><div class="stat-value">20</div><div class="stat-label">Pages</div></div>
+                <div class="stat-item"><div class="stat-value">6</div><div class="stat-label">API Routes</div></div>
             </div>
         </div>
     </section>
@@ -433,7 +116,7 @@
     <section class="content-section" id="sec-002">
         <div class="container">
             <div class="section-header">
-                <span class="section-label">Architecture</span>
+                <span class="section-label">Architecture — 5 Layers</span>
                 <div class="section-line"></div>
                 <span class="section-index">002</span>
             </div>
@@ -726,64 +409,8 @@
         </div>
     </footer>
 
-    <script>
-        // Theme toggle
-        const toggle = document.getElementById('themeToggle');
-        const root = document.documentElement;
-        toggle.addEventListener('click', () => {
-            const current = root.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            root.setAttribute('data-theme', next);
-            localStorage.setItem('rwb3n-theme', next);
-        });
-
-        // TOC smooth scroll
-        document.querySelectorAll('.toc-item').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const target = document.querySelector(link.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
-
-        // TOC visibility — show after scrolling past header
-        const tocRail = document.getElementById('tocRail');
-        const projectHeader = document.querySelector('.project-header');
-
-        const headerObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    tocRail.classList.remove('visible');
-                } else {
-                    tocRail.classList.add('visible');
-                }
-            });
-        }, { threshold: 0 });
-
-        if (projectHeader) headerObserver.observe(projectHeader);
-
-        // TOC active state — IntersectionObserver on sections
-        const tocItems = document.querySelectorAll('.toc-item');
-        const sections = document.querySelectorAll('.content-section[id]');
-
-        const sectionObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const id = entry.target.id;
-                    tocItems.forEach(item => {
-                        item.classList.toggle('active', item.dataset.section === id);
-                    });
-                }
-            });
-        }, {
-            rootMargin: '-20% 0px -60% 0px',
-            threshold: 0
-        });
-
-        sections.forEach(section => sectionObserver.observe(section));
-    </script>
+    <script src="js/theme.js"></script>
+    <script src="js/callsheet.js"></script>
 
 </body>
 </html>
