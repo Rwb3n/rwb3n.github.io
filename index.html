@@ -1,166 +1,31 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>rwb3n.works</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/tokens.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/index.css">
-    <script>
-        (function() {
-            var saved = localStorage.getItem('rwb3n-theme');
-            if (saved) document.documentElement.setAttribute('data-theme', saved);
-        })();
-    </script>
-</head>
-<body>
-
-    <nav>
-        <div class="container">
-            <div class="nav-logo">rwb3n<span>.</span>works</div>
-            <div class="nav-right">
-                <ul class="nav-links">
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                    <li><a href="https://github.com/rwb3n" target="_blank" rel="noopener">GitHub</a></li>
-                </ul>
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <div class="toggle-half"></div>
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <section class="hero">
-        <div class="hero-grid-bg"></div>
-        <canvas id="heroCanvas"></canvas>
-        <div class="container">
-            <div class="hero-label">Independent Research & Development</div>
-            <h1 class="hero-title">
-                Systems that think.<br>
-                Infrastructure that <span class="highlight">works</span>.
-            </h1>
-            <p class="hero-sub">
-                A solo R&D lab building intelligence architectures, autonomous agents, and the invisible systems layer between human intent and machine execution.
-            </p>
-            <div class="hero-tagline">
-                <span>"From napkins to Excel to Salesforce. Doesn't matter. I make the complex into simple."</span> — Archimedes
-            </div>
-        </div>
-    </section>
-
-    <section id="about">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-label">About</span>
-                <div class="section-line"></div>
-                <span class="section-index">001</span>
-            </div>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>rwb3n.works is a one-person skunkworks operating at the intersection of systems design, intelligence architecture, and autonomous operations.</p>
-                    <p>The work here sits upstream of any single platform. Salesforce, AI agents, file-based orchestration — these are materials, not the mission. The mission is building systems that reduce the distance between intent and execution to zero.</p>
-                    <p>Everything ships. Everything has a codename. Not everything is visible yet.</p>
-                </div>
-                <div class="about-meta">
-                    <div class="meta-item">
-                        <div class="meta-label">Domain</div>
-                        <div class="meta-value">Intelligence Architecture · Autonomous Systems · R&D</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Operating Model</div>
-                        <div class="meta-value">Solo lab · Prototype-first · Output over optics</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Stack</div>
-                        <div class="meta-value">Platform-agnostic · File-based architectures · LLM orchestration</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-label">Status</div>
-                        <div class="meta-value">Active · London, UK</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="projects">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-label">Projects</span>
-                <div class="section-line"></div>
-                <span class="section-index">002</span>
-            </div>
-            <div class="projects-grid">
-
-                <a class="project-card" href="haios.html">
-                    <div class="thermo-gradient"></div>
-                    <div class="project-codename">HAIOS</div>
-                    <div class="project-desc">
-                        Hybrid AI Operating System. Unsupervised work management through multi-agent orchestration. File-based, stateless, platform-agnostic.
-                    </div>
-                    <div class="project-meta">
-                        <div class="project-status">
-                            <div class="status-dot"></div>
-                            Active
-                        </div>
-                        <div class="project-arrow">→</div>
-                    </div>
-                </a>
-
-                <a class="project-card" href="callsheet.html">
-                    <div class="thermo-gradient"></div>
-                    <div class="project-codename">CALLSHEET</div>
-                    <div class="project-desc">
-                        Zero-human agency. An autonomous directory and intelligence layer for UK film, broadcasting, and media.
-                    </div>
-                    <div class="project-meta">
-                        <div class="project-status">
-                            <div class="status-dot"></div>
-                            Active
-                        </div>
-                        <div class="project-arrow">→</div>
-                    </div>
-                </a>
-
-                <a class="project-card" href="behold.html">
-                    <div class="thermo-gradient"></div>
-                    <div class="project-codename">BEHOLD</div>
-                    <div class="project-desc">
-                        Workspace agent framework. Session-based AI management evolved from HAIOS. Simple file-based structure for daily human-AI operations.
-                    </div>
-                    <div class="project-meta">
-                        <div class="project-status">
-                            <div class="status-dot"></div>
-                            Active
-                        </div>
-                        <div class="project-arrow">→</div>
-                    </div>
-                </a>
-
-            </div>
-        </div>
-    </section>
-
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-left">© rwb3n.works 2026 · London, UK</div>
-                <div class="footer-links">
-                    <a href="https://github.com/rwb3n" target="_blank" rel="noopener">GitHub</a>
-                    <a href="#" class="sf-link">Salesforce Practice ↗</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script src="js/theme.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/hero-canvas.js"></script>
-
-</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mindunder.dev</title>
+    <meta name="description" content="Systems that think. Infrastructure that works." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body, #root { height: 100%; }
+      body { background: #050505; color: #c0c0c0; font-family: 'IBM Plex Mono', monospace; }
+      ::-webkit-scrollbar { width: 0; }
+      * { scrollbar-width: none; }
+    </style>
+    <script type="module" crossorigin src="/assets/index-BR_DYj_x.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C18RNI8p.css">
+  </head>
+  <body>
+    <noscript>
+      <div style="padding: 2rem; font-family: 'IBM Plex Mono', monospace; color: #c0c0c0; background: #050505; min-height: 100vh;">
+        <h1 style="font-weight: 300; font-size: 1.25rem; margin-bottom: 1rem;">mindunder.dev</h1>
+        <p>Systems that think. Infrastructure that works.</p>
+        <p style="margin-top: 1rem; color: #888;">This site requires JavaScript to run.</p>
+      </div>
+    </noscript>
+    <div id="root"></div>
+  </body>
 </html>
