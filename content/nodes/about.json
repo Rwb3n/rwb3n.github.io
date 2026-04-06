@@ -1,0 +1,93 @@
+[
+  {
+    "id": "about",
+    "label": "About",
+    "parent": null,
+    "intents": ["what is this", "what's this", "about this", "what do you do"],
+    "tags": ["overview", "identity"],
+    "blocks": [
+      { "type": "text", "content": "A one-person skunkworks. Systems design meets autonomous operations." },
+      { "type": "split", "left": [
+        { "type": "metricRow", "items": [{ "value": "3", "label": "Active Projects" }, { "value": "1", "label": "Operator" }] }
+      ], "right": [
+        { "type": "pills", "label": "Domain", "items": ["Intelligence Architecture", "Autonomous Systems", "Process Design"] }
+      ]},
+      { "type": "text", "content": "The mission: reduce the distance between intent and execution to zero." }
+    ],
+    "chips": [
+      { "label": "Show me what\u2019s shipped", "target": "projects" },
+      { "label": "What does \u2018upstream\u2019 mean?", "target": "philosophy" },
+      { "label": "Who\u2019s behind this?", "target": "ruben" }
+    ]
+  },
+  {
+    "id": "philosophy",
+    "label": "Philosophy",
+    "parent": null,
+    "intents": ["philosophy", "upstream", "approach", "thinking", "why", "thesis"],
+    "tags": ["deep", "identity"],
+    "blocks": [
+      { "type": "hero", "title": "Upstream of platforms.", "accentWord": "Upstream" },
+      { "type": "text", "content": "Every platform is an expression of a deeper pattern: observe, decide, act, remember. The tooling is incidental." },
+      { "type": "flow", "layout": "horizontal", "nodes": [
+        { "id": "o", "label": "Observe" },
+        { "id": "d", "label": "Decide" },
+        { "id": "a", "label": "Act" },
+        { "id": "r", "label": "Remember" }
+      ], "edges": [
+        { "from": "o", "to": "d" },
+        { "from": "d", "to": "a" },
+        { "from": "a", "to": "r" }
+      ], "loop": { "from": "r", "to": "o", "label": "loop" } },
+      { "type": "text", "content": "Design the system of systems. Platform choice becomes a deployment detail." }
+    ],
+    "chips": [
+      { "label": "How does that show up?", "target": "projects" },
+      { "label": "The agent systems", "target": "haios" },
+      { "label": "Salesforce connection", "target": "salesforce" }
+    ]
+  },
+  {
+    "id": "salesforce",
+    "label": "Salesforce",
+    "parent": null,
+    "intents": ["salesforce", "sf", "crm", "admin", "london & partners"],
+    "tags": ["capability", "background"],
+    "blocks": [
+      { "type": "text", "content": "Salesforce is the day job. And a Trojan horse." },
+      { "type": "split", "left": [
+        { "type": "pills", "label": "Certifications", "items": ["Administrator", "Platform App Builder", "Agentforce Specialist"] }
+      ], "right": [
+        { "type": "stats", "items": [{ "label": "Last Role", "value": "London & Partners" }, { "label": "KB Articles", "value": "37+" }] }
+      ]},
+      { "type": "text", "content": "The same thinking that designs a Salesforce automation designs an autonomous agent. Different runtime, same logic." }
+    ],
+    "chips": [
+      { "label": "The agent work", "target": "haios" },
+      { "label": "Autonomous directory", "target": "callsheet" },
+      { "label": "Back to projects", "target": "projects" }
+    ]
+  },
+  {
+    "id": "ruben",
+    "label": "Ruben",
+    "parent": null,
+    "intents": ["who", "ruben", "behind", "founder", "builder", "about you"],
+    "tags": ["identity", "overview"],
+    "blocks": [
+      { "type": "hero", "title": "Systems thinker passing through platforms.", "accentWord": "through" },
+      { "type": "split", "left": [
+        { "type": "pills", "label": "Credentials", "items": ["SF Admin", "App Builder", "Agentforce"] }
+      ], "right": [
+        { "type": "badge", "status": "Active \u00b7 London, UK", "variant": "active" },
+        { "type": "text", "content": "Autonomous operations. Decreasing human intervention." }
+      ]},
+      { "type": "callout", "text": "Most operational complexity is artificial. Fix the design, and the complexity collapses." }
+    ],
+    "chips": [
+      { "label": "What are you building?", "target": "projects" },
+      { "label": "Salesforce angle", "target": "salesforce" },
+      { "label": "Philosophy", "target": "philosophy" }
+    ]
+  }
+]

@@ -1,0 +1,212 @@
+[
+  {
+    "id": "callsheet",
+    "label": "CALLSHEET",
+    "parent": null,
+    "intents": ["callsheet", "film", "media", "broadcasting", "directory"],
+    "tags": ["project", "deep"],
+    "blocks": [
+      { "type": "text", "content": "Autonomous directory for UK film, broadcasting, and media." },
+      { "type": "metricRow", "items": [{ "value": "54", "label": "Tables" }, { "value": "118", "label": "Procedures" }, { "value": "37", "label": "Scheduled" }, { "value": "~\u00a336", "label": "/month" }] },
+      { "type": "badge", "status": "Solo build \u00b7 Zero human ops", "variant": "active" }
+    ],
+    "chips": [
+      { "label": "What does zero ops mean?", "target": "callsheet_zero_ops", "expand": true },
+      { "label": "Architecture", "target": "callsheet_arch" },
+      { "label": "Autonomy model", "target": "callsheet_graduation" },
+      { "label": "Scheduler", "target": "callsheet_scheduler" },
+      { "label": "Projects", "target": "projects" }
+    ]
+  },
+  {
+    "id": "callsheet_zero_ops",
+    "label": "Zero Ops",
+    "parent": null,
+    "intents": [],
+    "tags": ["project", "technical"],
+    "blocks": [
+      { "type": "text", "content": "No human reviews listings. No human runs compliance checks. No human schedules enrichment." },
+      { "type": "stats", "items": [{ "label": "Manual interventions", "value": "0 / week" }, { "label": "Auto-resolved", "value": "~95%" }, { "label": "Escalation rate", "value": "<5%" }] },
+      { "type": "text", "content": "The system handles everything from data ingestion to compliance to outreach. Ruben reviews the weekly briefing. That\u2019s it." }
+    ],
+    "chips": [
+      { "label": "How does it earn that trust?", "target": "callsheet_graduation" },
+      { "label": "What\u2019s the scheduler doing?", "target": "callsheet_scheduler" }
+    ]
+  },
+  {
+    "id": "callsheet_arch",
+    "label": "CALLSHEET / Arch",
+    "parent": "callsheet",
+    "intents": ["architecture", "layers", "five layer", "event bus"],
+    "tags": ["project", "technical", "deep"],
+    "blocks": [
+      { "type": "text", "content": "Five layers. Closed-loop autonomy ladder." },
+      { "type": "flow", "layout": "horizontal", "nodes": [
+        { "id": "ob", "label": "Observe" },
+        { "id": "lo", "label": "Log" },
+        { "id": "ev", "label": "Evaluate" },
+        { "id": "gr", "label": "Graduate" },
+        { "id": "go", "label": "Govern" }
+      ], "edges": [
+        { "from": "ob", "to": "lo", "label": "events" },
+        { "from": "lo", "to": "ev", "label": "decisions" },
+        { "from": "ev", "to": "gr", "label": "thresholds" },
+        { "from": "gr", "to": "go", "label": "authority" }
+      ], "loop": { "from": "go", "to": "ob", "label": "feedback" } },
+      { "type": "layers", "items": [
+        { "label": "L4", "title": "Meatspace Interface", "detail": "Next.js 16 \u00b7 20 pages \u00b7 118 tRPC" },
+        { "label": "L3", "title": "Domain Instances", "detail": "Data \u00b7 Ops \u00b7 Platform \u00b7 Commercial" },
+        { "label": "L2", "title": "Cognitive Substrate", "detail": "Scoring \u00b7 Decay \u00b7 Ceremonies \u00b7 Graduation" },
+        { "label": "L1", "title": "Core Invariants", "detail": "Event Bus \u00b7 Scheduler \u00b7 Flow Engine \u00b7 Log" },
+        { "label": "L0", "title": "External", "detail": "Paddle \u00b7 Supabase \u00b7 R2 \u00b7 Resend" }
+      ]}
+    ],
+    "chips": [
+      { "label": "Domains", "target": "callsheet_domains" },
+      { "label": "Graduation", "target": "callsheet_graduation" },
+      { "label": "Scheduler", "target": "callsheet_scheduler" }
+    ]
+  },
+  {
+    "id": "callsheet_domains",
+    "label": "CALLSHEET / Domains",
+    "parent": "callsheet",
+    "intents": ["domain", "listings", "commercial"],
+    "tags": ["project", "technical"],
+    "blocks": [
+      { "type": "text", "content": "Four bounded domains." },
+      { "type": "flow", "layout": "fanout", "title": "Event Bus \u2192 Domain Consumers", "nodes": [
+        { "id": "bus", "label": "Event Bus", "sublabel": "25 types", "variant": "accent" },
+        { "id": "d", "label": "Data", "sublabel": "9 consumers" },
+        { "id": "o", "label": "Operations", "sublabel": "12 consumers" },
+        { "id": "p", "label": "Platform", "sublabel": "4 consumers" },
+        { "id": "c", "label": "Commercial", "sublabel": "8 consumers" }
+      ], "edges": [
+        { "from": "bus", "to": "d", "label": "listings" },
+        { "from": "bus", "to": "o", "label": "compliance" },
+        { "from": "bus", "to": "p", "label": "lifecycle" },
+        { "from": "bus", "to": "c", "label": "revenue" }
+      ]}
+    ],
+    "chips": [
+      { "label": "Trust verification", "target": "callsheet_trust" },
+      { "label": "Orchestrated flows", "target": "callsheet_flows" },
+      { "label": "Architecture", "target": "callsheet_arch" }
+    ]
+  },
+  {
+    "id": "callsheet_graduation",
+    "label": "CALLSHEET / Graduation",
+    "parent": "callsheet",
+    "intents": ["graduation", "autonomy", "earns authority", "threshold"],
+    "tags": ["project", "technical", "deep"],
+    "blocks": [
+      { "type": "text", "content": "The system earns authority. Nothing starts autonomous." },
+      { "type": "progress", "label": "Capabilities Graduated", "current": 2, "total": 3, "sublabel": "Two graduated. Third earning trust." },
+      { "type": "table", "headers": ["Capability", "Threshold", "Cap"], "rows": [
+        ["Enrichment cadence", "FP < 2%, ROI > 50%", "10/mo"],
+        ["Ceremony auto-apply", "Non-financial, precedent \u2265 50", "5/mo"],
+        ["Algorithm rollout", "4wk @ 100%, declass < 5%", "1/mo"]
+      ]},
+      { "type": "text", "content": "Rollout: 10% \u2192 25% \u2192 50% \u2192 100%. Auto-rollback if declassification exceeds 10% in 7 days." }
+    ],
+    "chips": [
+      { "label": "Scheduler", "target": "callsheet_scheduler" },
+      { "label": "Trust", "target": "callsheet_trust" },
+      { "label": "CALLSHEET", "target": "callsheet" }
+    ]
+  },
+  {
+    "id": "callsheet_scheduler",
+    "label": "CALLSHEET / Scheduler",
+    "parent": "callsheet",
+    "intents": ["scheduler", "metabolism", "heartbeat", "cadence"],
+    "tags": ["project", "technical", "deep"],
+    "blocks": [
+      { "type": "split", "left": [
+        { "type": "metric", "value": "37", "label": "Deferred Actions", "sublabel": "18 self-rescheduling" }
+      ], "right": [
+        { "type": "text", "content": "The system\u2019s metabolism. Most platforms have CRUD and cron jobs. This one breathes." }
+      ]},
+      { "type": "code", "language": "cadences", "content": "daily    [4]  compliance, audit, cleanup, abandonment\nweekly   [1]  churn detection\nmonthly  [8]  health, briefings, learning, outreach\nquarterly[4]  taxonomy, calibration, pricing, perf" }
+    ],
+    "chips": [
+      { "label": "Graduation", "target": "callsheet_graduation" },
+      { "label": "Flows", "target": "callsheet_flows" },
+      { "label": "CALLSHEET", "target": "callsheet" }
+    ]
+  },
+  {
+    "id": "callsheet_trust",
+    "label": "CALLSHEET / Trust",
+    "parent": "callsheet",
+    "intents": ["trust", "verification", "badge", "companies house"],
+    "tags": ["project", "technical"],
+    "blocks": [
+      { "type": "text", "content": "Every listing starts unclaimed. 75% auto-approve." },
+      { "type": "flow", "layout": "horizontal", "nodes": [
+        { "id": "u", "label": "Unclaimed", "variant": "muted" },
+        { "id": "c", "label": "Claimed" },
+        { "id": "v", "label": "Verified" },
+        { "id": "p", "label": "Premium", "variant": "accent" }
+      ], "edges": [
+        { "from": "u", "to": "c", "label": "email/CH" },
+        { "from": "c", "to": "v", "label": "checks" },
+        { "from": "v", "to": "p", "label": "human" }
+      ]}
+    ],
+    "chips": [
+      { "label": "Domains", "target": "callsheet_domains" },
+      { "label": "Flows", "target": "callsheet_flows" },
+      { "label": "CALLSHEET", "target": "callsheet" }
+    ]
+  },
+  {
+    "id": "callsheet_flows",
+    "label": "CALLSHEET / Flows",
+    "parent": "callsheet",
+    "intents": ["flow", "gdpr", "erasure", "closure", "compliance"],
+    "tags": ["project", "technical"],
+    "blocks": [
+      { "type": "text", "content": "Two multi-step workflows. Can run concurrently." },
+      { "type": "flow", "layout": "horizontal", "nodes": [
+        { "id": "v", "label": "Verify" },
+        { "id": "e", "label": "Extract" },
+        { "id": "c", "label": "Close" },
+        { "id": "er", "label": "Erase", "variant": "accent" },
+        { "id": "d", "label": "DSAR" },
+        { "id": "dn", "label": "Complete", "variant": "muted" }
+      ], "edges": [
+        { "from": "v", "to": "e" },
+        { "from": "e", "to": "c" },
+        { "from": "c", "to": "er" },
+        { "from": "er", "to": "d" },
+        { "from": "d", "to": "dn" }
+      ]},
+      { "type": "text", "content": "GDPR erasure: 30-day deadline. Auto-escalation at 7d, 3d, past-deadline." }
+    ],
+    "chips": [
+      { "label": "Stack", "target": "callsheet_stack" },
+      { "label": "Architecture", "target": "callsheet_arch" },
+      { "label": "CALLSHEET", "target": "callsheet" }
+    ]
+  },
+  {
+    "id": "callsheet_stack",
+    "label": "CALLSHEET / Stack",
+    "parent": "callsheet",
+    "intents": ["stack", "tech stack", "next.js", "typescript", "supabase"],
+    "tags": ["project", "technical"],
+    "blocks": [
+      { "type": "text", "content": "Boring where boring works." },
+      { "type": "pills", "label": "Stack", "items": ["Next.js 16", "TypeScript strict", "tRPC", "Supabase", "Drizzle", "Paddle", "Cloudflare R2", "Resend", "Vitest", "Playwright"] },
+      { "type": "metricRow", "items": [{ "value": "20", "label": "Pages" }, { "value": "6", "label": "API Routes" }, { "value": "~\u00a336", "label": "/month" }] }
+    ],
+    "chips": [
+      { "label": "Architecture", "target": "callsheet_arch" },
+      { "label": "Projects", "target": "projects" },
+      { "label": "Who built this?", "target": "ruben" }
+    ]
+  }
+]

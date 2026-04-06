@@ -1,0 +1,20 @@
+{
+  "id": "projects",
+  "label": "Projects",
+  "parent": null,
+  "intents": ["project", "builds", "built", "show me", "portfolio", "work"],
+  "tags": ["overview", "work"],
+  "blocks": [
+    { "type": "text", "content": "Three active builds. Same thesis: autonomous systems that earn trust incrementally." },
+    { "type": "grid", "items": [
+      { "title": "HAIOS", "status": "Active", "description": "Multi-agent orchestration. File-based memory.", "target": "haios" },
+      { "title": "CALLSHEET", "status": "Active", "description": "Autonomous directory. UK film & media.", "target": "callsheet" },
+      { "title": "BEHOLD", "status": "Active", "description": "Workspace agent framework. Daily driver.", "target": "behold" }
+    ]}
+  ],
+  "chips": [
+    { "label": "HAIOS", "target": "haios" },
+    { "label": "CALLSHEET", "target": "callsheet" },
+    { "label": "BEHOLD", "target": "behold" }
+  ]
+}

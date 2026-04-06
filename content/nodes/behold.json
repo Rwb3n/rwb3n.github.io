@@ -1,0 +1,21 @@
+{
+  "id": "behold",
+  "label": "BEHOLD",
+  "parent": null,
+  "intents": ["behold", "workspace agent", "daily driver"],
+  "tags": ["project"],
+  "blocks": [
+    { "type": "text", "content": "BEHOLD \u2014 the pragmatic descendant of HAIOS." },
+    { "type": "split", "left": [
+      { "type": "text", "content": "Where HAIOS is the research thesis, BEHOLD is the daily driver." }
+    ], "right": [
+      { "type": "pills", "items": ["Session-Based", "Simple File Structure", "Human-AI Ops"] }
+    ]},
+    { "type": "text", "content": "HAIOS collapsed into something you can use on a Tuesday morning." }
+  ],
+  "chips": [
+    { "label": "HAIOS", "target": "haios" },
+    { "label": "Projects", "target": "projects" },
+    { "label": "Who\u2019s behind this?", "target": "ruben" }
+  ]
+}

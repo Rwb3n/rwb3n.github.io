@@ -1,0 +1,16 @@
+{
+  "id": "root",
+  "label": "Home",
+  "parent": null,
+  "intents": ["home", "start", "beginning", "reset"],
+  "tags": ["entry"],
+  "blocks": [
+    { "type": "hero", "title": "Systems that think.", "accentWord": "think", "subtitle": "Intelligence architecture \u00b7 Autonomous operations \u00b7 London, UK" },
+    { "type": "callout", "text": "From napkins to Excel to Salesforce. Doesn\u2019t matter. I make the complex into simple.", "attribution": "Archimedes" }
+  ],
+  "chips": [
+    { "label": "What is this?", "target": "about" },
+    { "label": "Projects", "target": "projects" },
+    { "label": "Who\u2019s behind this?", "target": "ruben" }
+  ]
+}

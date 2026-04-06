@@ -1,0 +1,86 @@
+[
+  {
+    "id": "haios",
+    "label": "HAIOS",
+    "parent": null,
+    "intents": ["haios", "hybrid", "multi-agent", "orchestration", "agent os"],
+    "tags": ["project", "deep"],
+    "blocks": [
+      { "type": "text", "content": "HAIOS \u2014 Hybrid AI Operating System." },
+      { "type": "flow", "layout": "vertical", "nodes": [
+        { "id": "ep", "label": "Epochs", "sublabel": "Long arcs" },
+        { "id": "ar", "label": "Arcs", "sublabel": "Themes" },
+        { "id": "ch", "label": "Chapters", "sublabel": "Sessions" },
+        { "id": "wi", "label": "Work Items", "sublabel": "Tasks" }
+      ], "edges": [
+        { "from": "ep", "to": "ar", "label": "contains" },
+        { "from": "ar", "to": "ch", "label": "contains" },
+        { "from": "ch", "to": "wi", "label": "produces" }
+      ]},
+      { "type": "pills", "label": "Properties", "items": ["File-Based", "Stateless Agents", "Platform-Agnostic", "3-Layer Memory"] }
+    ],
+    "chips": [
+      { "label": "Why file-based?", "target": "haios_why_files", "expand": true },
+      { "label": "File-based orchestration", "target": "haios_architecture" },
+      { "label": "Memory model", "target": "haios_memory" },
+      { "label": "Other projects", "target": "projects" }
+    ]
+  },
+  {
+    "id": "haios_why_files",
+    "label": "Why Files",
+    "parent": null,
+    "intents": [],
+    "tags": ["project", "deep"],
+    "blocks": [
+      { "type": "text", "content": "Message buses, databases, APIs \u2014 all infrastructure that breaks, costs money, and locks you in." },
+      { "type": "text", "content": "Files are universal. Every LLM can read them. Every OS supports them. Git gives you versioning for free. The protocol IS the filesystem." },
+      { "type": "callout", "text": "If your agent can\u2019t operate by reading and writing files, it\u2019s the agent that\u2019s limited \u2014 not the medium." }
+    ],
+    "chips": [
+      { "label": "See the structure", "target": "haios_architecture" },
+      { "label": "How memory works", "target": "haios_memory" }
+    ]
+  },
+  {
+    "id": "haios_architecture",
+    "label": "HAIOS / Arch",
+    "parent": "haios",
+    "intents": ["file-based", "filesystem", "file structure"],
+    "tags": ["project", "technical", "deep"],
+    "blocks": [
+      { "type": "text", "content": "No message bus. Coordination emerges from the file structure." },
+      { "type": "code", "language": "structure", "content": "epochs/\n  arc-001/\n    chapter-001/\n      work-items/\n        WI-001.md\n      hindsight.md\n      reasoning-bank.md" },
+      { "type": "text", "content": "If the file structure is the protocol, you don\u2019t need infrastructure. Any LLM that reads files can participate." }
+    ],
+    "chips": [
+      { "label": "Memory model", "target": "haios_memory" },
+      { "label": "BEHOLD", "target": "behold" },
+      { "label": "Projects", "target": "projects" }
+    ]
+  },
+  {
+    "id": "haios_memory",
+    "label": "HAIOS / Memory",
+    "parent": "haios",
+    "intents": ["memory model", "hindsight", "foresight", "reasoning bank"],
+    "tags": ["project", "technical", "deep"],
+    "blocks": [
+      { "type": "text", "content": "Three paradigms. Modelled on human memory." },
+      { "type": "flow", "layout": "vertical", "nodes": [
+        { "id": "h", "label": "HINDSIGHT", "sublabel": "What happened" },
+        { "id": "r", "label": "ReasoningBank", "sublabel": "How to do it" },
+        { "id": "f", "label": "FORESIGHT", "sublabel": "What\u2019s next" }
+      ], "edges": [
+        { "from": "h", "to": "r", "label": "informs" },
+        { "from": "r", "to": "f", "label": "predicts" }
+      ], "loop": { "from": "f", "to": "h", "label": "validates" } },
+      { "type": "text", "content": "Each chapter generates all three. Compounding knowledge through structured markdown." }
+    ],
+    "chips": [
+      { "label": "File structure", "target": "haios_architecture" },
+      { "label": "CALLSHEET", "target": "callsheet" },
+      { "label": "Projects", "target": "projects" }
+    ]
+  }
+]
