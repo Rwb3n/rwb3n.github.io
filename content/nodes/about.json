@@ -3,7 +3,7 @@
     "id": "about",
     "label": "About",
     "parent": null,
-    "intents": ["what is this", "what's this", "about this", "what do you do"],
+    "intents": ["what is this", "what's this", "about this", "the lab"],
     "tags": ["overview", "identity"],
     "blocks": [
       { "type": "text", "content": "A one-person skunkworks. Systems design meets autonomous operations." },

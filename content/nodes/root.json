@@ -2,15 +2,17 @@
   "id": "root",
   "label": "Home",
   "parent": null,
-  "intents": ["home", "start", "beginning", "reset"],
+  "intents": ["home", "start over", "restart", "beginning", "reset"],
   "tags": ["entry"],
   "blocks": [
-    { "type": "hero", "title": "Systems that think.", "accentWord": "think", "subtitle": "Intelligence architecture \u00b7 Autonomous operations \u00b7 London, UK" },
-    { "type": "callout", "text": "From napkins to Excel to Salesforce. Doesn\u2019t matter. I make the complex into simple.", "attribution": "Archimedes" }
+    { "type": "hero", "title": "You know something’s wrong. You just can’t see where.", "accentWord": "see", "subtitle": "Intelligence architecture · Autonomous operations · London, UK" },
+    { "type": "text", "content": "The business works. But it’s heavy. It takes too many people, too many hours, too many decisions that shouldn’t need a human. You can feel the drag but you can’t point at the part that’s broken." },
+    { "type": "callout", "text": "I find it. I show you. Then I fix it so it stays fixed — without you." }
   ],
   "chips": [
-    { "label": "What is this?", "target": "about" },
-    { "label": "Projects", "target": "projects" },
-    { "label": "Who\u2019s behind this?", "target": "ruben" }
+    { "label": "Sound familiar?", "target": "signals" },
+    { "label": "I want to be ahead", "target": "ahead", "expand": true },
+    { "label": "What do you actually do?", "target": "method" },
+    { "label": "Who’s behind this?", "target": "ruben" }
   ]
 }
