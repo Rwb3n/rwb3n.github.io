@@ -7,7 +7,7 @@
     "tags": ["overview"],
     "blocks": [
       { "type": "text", "content": "You want to be ahead. Not reacting — anticipating. Seeing the thing before everyone else sees it. Knowing while others are still guessing." },
-      { "type": "text", "content": "That’s what the right system does. It watches while you sleep. It catches what you’d miss. It gives you the answer before you knew to ask the question." }
+      { "type": "text", "content": "That’s a system, not a talent. Mine reads UK company filings, insolvency notices, and contract awards every night — it tells you the morning it happens, not the week after. Yours would read whatever moves your market." }
     ],
     "chips": [
       { "label": "Sound familiar?", "target": "signals" },
@@ -25,8 +25,8 @@
       { "type": "grid", "items": [
         { "title": "THE BLINDSIDE", "description": "“Our biggest supplier went under. I found out from a LinkedIn post.”", "target": "signal_blindside" },
         { "title": "THE MONDAY RITUAL", "description": "“Someone spends the whole day pulling the same data into the same spreadsheet.”", "target": "signal_monday" },
-        { "title": "ALWAYS SECOND", "description": "“We keep hearing about opportunities after they’re gone.”", "target": "signal_late" },
-        { "title": "THE BUS FACTOR", "description": "“Twenty years of instinct runs this place. None of it is written down.”", "target": "signal_instinct" }
+        { "title": "THE COFFEE MEETING", "description": "“By the time we heard about the tender, the winner had already had coffee with the buyer.”", "target": "signal_late" },
+        { "title": "THE HOLIDAY TEST", "description": "“I haven’t taken two weeks off in six years. The answers live in my head.”", "target": "signal_instinct" }
       ]}
     ],
     "chips": [
@@ -68,14 +68,13 @@
   },
   {
     "id": "signal_late",
-    "label": "Always Second",
+    "label": "The Coffee Meeting",
     "parent": "signals",
     "intents": [],
     "tags": ["overview"],
     "blocks": [
-      { "type": "callout", "text": "We keep hearing about opportunities after they’re gone. The people who get there first seem to just… know." },
-      { "type": "text", "content": "They don’t know. They have a system that watches and tells them. Now you have one too. First look. Every time." },
-      { "type": "badge", "status": "First look · Every time", "variant": "active" }
+      { "type": "callout", "text": "By the time we heard about the tender, the winner had already had coffee with the buyer. Twice. The people who get there first seem to just… know." },
+      { "type": "text", "content": "They don’t know. They have a system that watches and tells them. Mine watches five public registers every night. Yours would watch whatever moves your market." }
     ],
     "chips": [
       { "label": "Next: the bus factor", "target": "signal_instinct" },
@@ -85,12 +84,12 @@
   },
   {
     "id": "signal_instinct",
-    "label": "The Bus Factor",
+    "label": "The Holiday Test",
     "parent": "signals",
     "intents": [],
     "tags": ["overview"],
     "blocks": [
-      { "type": "callout", "text": "I’ve got twenty years of instinct that runs this place. None of it is written down. If I get hit by a bus, it’s gone." },
+      { "type": "callout", "text": "I haven’t taken two weeks off in six years. Not because of money — because the answers live in my head. If I’m not in the room, things stop." },
       { "type": "text", "content": "Your instinct becomes a machine. It captures what you’d notice, flags what you’d flag, runs the checks you run. Except it never takes a day off and it never forgets." }
     ],
     "chips": [
@@ -119,7 +118,7 @@
         { "from": "dc", "to": "p2" },
         { "from": "p2", "to": "ac" }
       ]},
-      { "type": "text", "content": "Every link is a person. Every person is a delay. Every delay is a risk." },
+      { "type": "text", "content": "Every link is a handoff. Every handoff is a delay. Every delay is a risk." },
       { "type": "flow", "layout": "horizontal", "title": "After", "nodes": [
         { "id": "d2", "label": "Data" },
         { "id": "sy", "label": "System", "variant": "accent" },
@@ -154,10 +153,10 @@
         { "from": "ck", "to": "rn" }
       ]},
       { "type": "text", "content": "Nothing skips a step. If it gets worse, it goes back a step. Automatically." },
-      { "type": "callout", "text": "You go from dragging a cart to driving something that accelerates on its own." }
+      { "type": "callout", "text": "One of my systems has earned two of its three autonomy levels this way. The third is still on probation." }
     ],
     "chips": [
-      { "label": "See it in a live system", "target": "callsheet_graduation" },
+      { "label": "See it in a live system", "target": "callsheet_zero_ops" },
       { "label": "Proof it works", "target": "proof" },
       { "label": "How do we start?", "target": "process" }
     ]
@@ -182,12 +181,12 @@
         { "from": "ps", "to": "co" },
         { "from": "co", "to": "op" }
       ]},
-      { "type": "text", "content": "Automatically. Every night. Nobody touches it. Same method. Your data. Your operation. Your advantage." }
+      { "type": "text", "content": "One of these runs a live public directory: 37 scheduled jobs, roughly 95% of issues resolved without me, about £36 a month, zero staff. I read one briefing a week. Same method. Your data. Your operation." }
     ],
     "chips": [
+      { "label": "What would this look like for my business?", "target": "process" },
       { "label": "The systems behind this", "target": "projects" },
-      { "label": "The lab", "target": "about" },
-      { "label": "How do we work together?", "target": "process" }
+      { "label": "Who runs all this?", "target": "ruben" }
     ]
   },
   {
@@ -205,7 +204,7 @@
         { "label": "4", "title": "I build it. You watch it prove itself", "detail": "Supervised first. Measured. When it earns your trust, it graduates. Not before." },
         { "label": "5", "title": "It runs. You decide", "detail": "The system handles the work. You handle the judgment. The split is clean." }
       ]},
-      { "type": "text", "content": "Nothing skips a step. Nothing graduates before it’s earned it." }
+      { "type": "text", "content": "Nothing skips a step. Nothing graduates before it’s earned it. The first step costs 30 minutes." }
     ],
     "chips": [
       { "label": "Let’s talk", "target": "contact" },
@@ -219,16 +218,17 @@
     "intents": ["contact", "email", "talk", "call", "reach", "get in touch"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "Tell me what’s dragging. I’ll tell you what I see." },
+      { "type": "text", "content": "Tell me what’s dragging. Thirty minutes — you talk, I map. You leave with a one-page read on where the drag actually is, yours to keep either way." },
       { "type": "stats", "items": [
         { "label": "Base", "value": "London" },
         { "label": "Response", "value": "Same-day" },
+        { "label": "First call", "value": "30 min · no charge" },
         { "label": "Email", "value": "lab@mindunder.dev" }
-      ]}
+      ]},
+      { "type": "text", "content": "No pitch, no deck. If I can’t see anything worth fixing, I’ll say so." }
     ],
     "chips": [
-      { "label": "Book a call", "target": "_book" },
-      { "label": "Who’s behind this?", "target": "ruben" }
+      { "label": "Book the 30 minutes", "target": "_book" }
     ]
   }
 ]

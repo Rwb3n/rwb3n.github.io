@@ -12,11 +12,11 @@
       ], "right": [
         { "type": "pills", "label": "Domain", "items": ["Intelligence Architecture", "Autonomous Systems", "Process Design"] }
       ]},
-      { "type": "text", "content": "The mission: reduce the distance between intent and execution to zero." }
+      { "type": "text", "content": "The mission: you decide it in the morning. It’s done by lunch. Nobody chased anyone." }
     ],
     "chips": [
       { "label": "Show me what\u2019s shipped", "target": "projects" },
-      { "label": "What does \u2018upstream\u2019 mean?", "target": "philosophy" },
+      { "label": "How do you think about this?", "target": "philosophy" },
       { "label": "Who\u2019s behind this?", "target": "ruben" }
     ]
   },
@@ -54,11 +54,11 @@
     "intents": ["salesforce", "sf", "crm", "admin", "london & partners"],
     "tags": ["capability", "background"],
     "blocks": [
-      { "type": "text", "content": "Salesforce is the day job. And a Trojan horse." },
+      { "type": "text", "content": "Salesforce is the day job. It’s also where I learned that automation fails for organisational reasons, not technical ones." },
       { "type": "split", "left": [
         { "type": "pills", "label": "Certifications", "items": ["Administrator", "Platform App Builder", "Agentforce Specialist"] }
       ], "right": [
-        { "type": "stats", "items": [{ "label": "Last Role", "value": "London & Partners" }, { "label": "KB Articles", "value": "37+" }] }
+        { "type": "stats", "items": [{ "label": "Background", "value": "London & Partners" }, { "label": "KB Articles", "value": "37+" }] }
       ]},
       { "type": "text", "content": "The same thinking that designs a Salesforce automation designs an autonomous agent. Different runtime, same logic." }
     ],
@@ -75,19 +75,20 @@
     "intents": ["who", "ruben", "behind", "founder", "builder", "about you"],
     "tags": ["identity", "overview"],
     "blocks": [
-      { "type": "hero", "title": "Systems thinker passing through platforms.", "accentWord": "through" },
+      { "type": "hero", "title": "The systems are the headcount.", "accentWord": "headcount" },
+      { "type": "text", "content": "Ruben. London. Years spent automating other people’s operations — now building systems that run without anyone. One operator, on purpose." },
       { "type": "split", "left": [
         { "type": "pills", "label": "Credentials", "items": ["SF Admin", "App Builder", "Agentforce"] }
       ], "right": [
         { "type": "badge", "status": "Active \u00b7 London, UK", "variant": "active" },
-        { "type": "text", "content": "Autonomous operations. Decreasing human intervention." }
+        { "type": "text", "content": "Fewer hands on the wheel every month. By design." }
       ]},
       { "type": "callout", "text": "Most operational complexity is artificial. Fix the design, and the complexity collapses." }
     ],
     "chips": [
       { "label": "What are you building?", "target": "projects" },
-      { "label": "Salesforce angle", "target": "salesforce" },
-      { "label": "Philosophy", "target": "philosophy" }
+      { "label": "What’s your background?", "target": "salesforce" },
+      { "label": "The lab", "target": "about" }
     ]
   }
 ]

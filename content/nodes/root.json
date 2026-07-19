@@ -5,13 +5,13 @@
   "intents": ["home", "start over", "restart", "beginning", "reset"],
   "tags": ["entry"],
   "blocks": [
-    { "type": "hero", "title": "You know something’s wrong. You just can’t see where.", "accentWord": "see", "subtitle": "Intelligence architecture · Autonomous operations · London, UK" },
+    { "type": "hero", "title": "You know something’s wrong. You just can’t see where.", "accentWord": "see", "subtitle": "Systems that run the business while you sleep · London, UK" },
     { "type": "text", "content": "The business works. But it’s heavy. It takes too many people, too many hours, too many decisions that shouldn’t need a human. You can feel the drag but you can’t point at the part that’s broken." },
-    { "type": "callout", "text": "I find it. I show you. Then I fix it so it stays fixed — without you." }
+    { "type": "callout", "text": "I find it. I show you. Then I fix it so it runs without you." }
   ],
   "chips": [
     { "label": "Sound familiar?", "target": "signals" },
-    { "label": "I want to be ahead", "target": "ahead", "expand": true },
+    { "label": "What would I get out of it?", "target": "ahead", "expand": true },
     { "label": "What do you actually do?", "target": "method" },
     { "label": "Who’s behind this?", "target": "ruben" }
   ]
