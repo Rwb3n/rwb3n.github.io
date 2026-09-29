@@ -38,15 +38,26 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
   let generation = 0; // bumps on reset, so in-flight answers stop writing
 
   // Map ------------------------------------------------------------------------
-  const map = createMap(content, { onPick: (id) => navigate(id, null, { focus: true }) });
+  const map = createMap(content, { onPick: (id) => { setMapOpen(false); navigate(id, null, { focus: true }); } });
   const mapCount = h('p', { class: 'map-count' });
   const total = Object.keys(content.nodes).length;
   el.depth.closest('.rail-block').before(
-    h('div', { class: 'rail-block rail-map' }, h('h2', { class: 'rail-heading' }, 'Map'), map.el, mapCount),
+    h('div', { class: 'rail-block rail-map', id: 'rail-map' }, h('h2', { class: 'rail-heading' }, 'Map'), map.el, mapCount),
   );
+  // On narrow screens the rail is a strip; the map opens from a button at its end.
+  const railEl = el.trail.closest('.rail');
+  const mapToggle = h('button', { class: 'rail-map-toggle', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'rail-map' });
+  const setMapOpen = (open) => {
+    railEl.classList.toggle('is-map-open', open);
+    mapToggle.setAttribute('aria-expanded', String(open));
+  };
+  mapToggle.addEventListener('click', (e) => { e.stopPropagation(); setMapOpen(!railEl.classList.contains('is-map-open')); });
+  document.addEventListener('click', (e) => { if (!e.target.closest?.('.rail-map, .rail-map-toggle')) setMapOpen(false); });
+  el.trail.after(mapToggle);
   const countMap = () => {
     const seen = new Set(map.route).size;
     mapCount.textContent = `${seen} of ${total} explored`;
+    mapToggle.textContent = `Map ${seen}/${total}`;
   };
   countMap();
 
@@ -438,7 +449,7 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     links.forEach((b, i) => (i === current ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current')));
     // On narrow screens the trail is a horizontal strip: keep the marker in view
     // by scrolling the strip itself, never the page.
-    const strip = el.trail.closest('.rail');
+    const strip = el.trail;
     const cur = links[current];
     if (strip && cur && strip.scrollWidth > strip.clientWidth) {
       const left = cur.offsetLeft - strip.clientWidth / 2 + cur.offsetWidth / 2;

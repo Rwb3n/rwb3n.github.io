@@ -1044,15 +1044,32 @@ html:not(.js) .landing { padding-bottom: var(--space-8); }
     max-height: none;
     margin: 0 calc(var(--gutter) * -1) var(--space-6);
     padding: var(--space-2) var(--gutter);
-    overflow-x: auto;
+    overflow: visible;
     background: color-mix(in srgb, var(--bg) 88%, transparent);
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--line);
   }
   .rail-block:not(:first-child) { display: none; }
+  .rail-block:first-child { display: flex; align-items: center; gap: var(--space-4); flex: 1; min-width: 0; }
   .rail-heading { display: none; }
-  .trail { display: flex; gap: var(--space-4); white-space: nowrap; }
+  .trail { position: relative; display: flex; flex: 1; min-width: 0; gap: var(--space-4); white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .trail::-webkit-scrollbar { display: none; }
+  .rail .rail-map-toggle { display: inline-flex; }
+  /* The map opens as a panel under the strip. */
+  .rail.is-map-open .rail-map {
+    display: block;
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    right: var(--gutter);
+    width: min(19rem, calc(100% - var(--gutter) * 2));
+    padding: var(--space-4);
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-2);
+    box-shadow: var(--shadow);
+    animation: rise-in 400ms var(--ease-out);
+  }
   .trail-link { display: inline-flex; gap: var(--space-2); width: auto; }
   .trail-link[aria-current='step']::after { display: none; }
 }
@@ -1206,6 +1223,21 @@ html:not(.js) .landing { padding-bottom: var(--space-8); }
 .map-label { fill: var(--accent); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
 .map-tip { fill: var(--fg); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
 .map.is-hover .map-label { opacity: 0; }
+.rail-map-toggle {
+  display: none;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.3rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.04em;
+  color: var(--fg-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-round);
+  font-variant-numeric: tabular-nums;
+}
+.rail-map-toggle[aria-expanded='true'] { color: var(--accent); border-color: var(--accent-line); }
 .map-count { margin-top: var(--space-2); font-family: var(--font-mono); font-size: var(--step--2); color: var(--fg-3); font-variant-numeric: tabular-nums; }
 
 /* In the brief: the route, printed. */
