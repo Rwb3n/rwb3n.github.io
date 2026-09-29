@@ -3,19 +3,28 @@
 // The landing is a calm field of dots — the business as it looks from the
 // surface. Under the pointer, a lens shows what's underneath: a tangle of
 // tools, handoffs and re-keyed spreadsheets, and one node where it all snags.
-// Find it and the lens locks on. That's the pitch, as an interaction.
+// Find it and the lens locks on. Choose a question and the lens opens to fill
+// the screen while the tangle straightens onto a grid: "then I fix it".
+//
+// Phases:  boot → live → fix
+//   boot  the dot field ripples out from the word "see"; the lens irises open
+//   live  search (pointer or autopilot), sonar pings, magnetic lock on the fault
+//   fix   the lens covers the screen and the graph untangles; resolves a promise
 //
 // Two canvases. The surface is drawn once per size/theme onto the base canvas.
-// A transparent overlay repaints only what moves: the lens (where dots bend
-// around the rim and the hidden graph shows through) and the small patch where
-// the surface trembles over the fault. Cost scales with the lens, not the screen.
+// A transparent overlay repaints only what moves (dirty rects), so in the live
+// phase the cost scales with the lens, not the screen.
 
 import { copy } from './copy.js';
 
 const VOCAB = ['inbox', 'CRM', 'invoice', 'approval', 'spreadsheet', 'Monday report', 'PO', 'supplier', 'ERP', 'Slack', 'sign-off', 'reconcile', 'forecast', 'tender', 'CSV export', 'ticket', 'renewal', 're-key', 'shared drive', 'quote', 'chaser', 'dashboard', 'timesheet', 'contract'];
 const FAULT_NOTES = ['3 handoffs', '1 spreadsheet', '0 owners'];
 
-export function createLens(canvas, caption) {
+const BOOT_MS = 1500;
+const FIX_MS = 950;
+const PING_SPEED = 1500; // px/s
+
+export function createLens(canvas, caption, { onFrame } = {}) {
   const base = canvas.getContext('2d');
   const overlay = document.createElement('canvas');
   overlay.className = canvas.className;
@@ -34,10 +43,21 @@ export function createLens(canvas, caption) {
   let scene = null;
   let under = null;          // offscreen canvas: the hidden graph
   let raf = 0, running = false, visible = true, paused = false;
-  let found = false;
+
+  let phase = reduce.matches ? 'live' : 'boot';
+  let bootT0 = performance.now();
+  let r = reduce.matches ? 1 : 0, rv = 0;   // drawn radius as a fraction of R, and its velocity
+  let rTarget = 1;                          // < 1 while the pointer is over something clickable
+  let last = performance.now();
+
+  let found = false, foundT = -1e9, foundAmt = 0, lastFoundPing = -1e9;
+  let tick = 0;              // tick-mark angle
+  const pings = [];
+  const fix = { t0: 0, from: 0, done: null };
 
   // Lens position: current, target, and who's driving.
   const lens = { x: 0, y: 0, tx: 0, ty: 0 };
+  const pointer = { x: 0, y: 0 };
   let driver = 'auto';       // 'auto' | 'pointer'
   let lastPointer = 0;
   const auto = { legs: [], i: 0, t0: 0, from: null };
@@ -51,10 +71,10 @@ export function createLens(canvas, caption) {
   }
 
   function resize() {
-    const r = canvas.getBoundingClientRect();
-    if (r.width < 2 || r.height < 2) return false; // hidden (session view)
-    W = Math.max(1, Math.round(r.width));
-    H = Math.max(1, Math.round(r.height));
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return false; // hidden (session view)
+    W = Math.max(1, Math.round(rect.width));
+    H = Math.max(1, Math.round(rect.height));
     // Cap the backing store at ~6 MP: two full-screen canvases at 2× on a 1440p
     // display would otherwise be 30 MP of texture for a field of 1.6px dots.
     dpr = Math.min(2, window.devicePixelRatio || 1, Math.sqrt(6e6 / (W * H)));
@@ -67,17 +87,28 @@ export function createLens(canvas, caption) {
     R = spot.r;
     scene = buildScene(W, H, spot.x, spot.y);
     scene.free = freeSpots(obs);
+    scene.origin = bootOrigin();
     under = renderUnder(scene);
-    drawSurface();
+    if (phase !== 'boot') drawSurface();
+    else base.clearRect(0, 0, canvas.width, canvas.height);
     const first = !lens.x;
     planAuto();
     if (first) {
-      lens.x = lens.tx = auto.legs[0].x;
-      lens.y = lens.ty = auto.legs[0].y;
+      lens.x = lens.tx = pointer.x = auto.legs[0].x;
+      lens.y = lens.ty = pointer.y = auto.legs[0].y;
       auto.from = { x: lens.x, y: lens.y };
       auto.i = 1;
     }
     return true;
+  }
+
+  // The boot ripple starts from the italic "see".
+  function bootOrigin() {
+    const see = document.querySelector('.landing .display .is-accent');
+    const cr = canvas.getBoundingClientRect();
+    if (!see) return { x: W * 0.3, y: H * 0.6 };
+    const s = see.getBoundingClientRect();
+    return { x: s.left + s.width / 2 - cr.left, y: s.top + s.height / 2 - cr.top };
   }
 
   // Free space -------------------------------------------------------------
@@ -89,9 +120,14 @@ export function createLens(canvas, caption) {
     const range = document.createRange();
     const out = [];
     for (const el of document.querySelectorAll(OBSTACLES)) {
-      let r = el.getBoundingClientRect();
-      if (el.matches(TEXTY)) { range.selectNodeContents(el); r = range.getBoundingClientRect(); }
-      if (r.width && r.height) out.push({ x: r.left - cr.left - 10, y: r.top - cr.top - 10, w: r.width + 20, h: r.height + 20 });
+      if (el.closest('.xray')) continue;
+      let b = el.getBoundingClientRect();
+      // Split headline words are mid-animation (transformed); their untransformed
+      // wrappers give the real layout.
+      const words = el.querySelectorAll('.sw');
+      if (words.length) b = union([...words].map((w) => w.getBoundingClientRect()));
+      else if (el.matches(TEXTY)) { range.selectNodeContents(el); b = range.getBoundingClientRect(); }
+      if (b.width && b.height) out.push({ x: b.left - cr.left - 10, y: b.top - cr.top - 10, w: b.width + 20, h: b.height + 20 });
     }
     return out;
   }
@@ -105,18 +141,18 @@ export function createLens(canvas, caption) {
     }
     return s;
   };
-  const lensBox = (x, y, r) => ({ x: x - r * 0.86, y: y - r * 0.86, w: r * 1.72, h: r * 1.72 });
+  const lensBox = (x, y, rr) => ({ x: x - rr * 0.86, y: y - rr * 0.86, w: rr * 1.72, h: rr * 1.72 });
   const noteBox = (x, y) => ({ x: x + 8, y: y - 72, w: 180, h: 108 });
 
   function placeFault(rMax, obs) {
     const px = W * 0.72, py = H * 0.3;
     let best = null;
-    for (const r of [rMax, rMax * 0.86, rMax * 0.74]) {
-      for (let y = r + 12; y <= H - r - 12; y += 16) {
-        for (let x = r + 12; x <= W - Math.max(r, 196) - 12; x += 16) {
-          const score = hit(lensBox(x, y, r), obs) + hit(noteBox(x, y), obs);
+    for (const rr of [rMax, rMax * 0.86, rMax * 0.74]) {
+      for (let y = rr + 12; y <= H - rr - 12; y += 16) {
+        for (let x = rr + 12; x <= W - Math.max(rr, 196) - 12; x += 16) {
+          const score = hit(lensBox(x, y, rr), obs) + hit(noteBox(x, y), obs);
           const pull = Math.hypot(x - px, y - py) * 0.5;
-          const cand = { x, y, r, score, rank: score + pull };
+          const cand = { x, y, r: rr, score, rank: score + pull };
           if (!best || cand.score < best.score || (cand.score === best.score && cand.r === best.r && cand.rank < best.rank)) best = cand;
         }
       }
@@ -144,17 +180,18 @@ export function createLens(canvas, caption) {
     const ox = (w % spacing) / 2, oy = (h % spacing) / 2;
     for (let y = oy; y < h; y += spacing) for (let x = ox; x < w; x += spacing) dots.push(x, y);
 
-    // Hidden nodes on a jittered grid.
+    // Hidden nodes on a jittered grid; each remembers its cell centre (sx, sy),
+    // which is where it snaps to when the system gets fixed.
     const cell = narrow ? 86 : 112;
     const nodes = [];
     for (let gy = cell * 0.5; gy < h; gy += cell) {
       for (let gx = cell * 0.5; gx < w; gx += cell) {
         if (rand() < 0.28) continue;
-        nodes.push({ x: gx + (rand() - 0.5) * cell * 0.7, y: gy + (rand() - 0.5) * cell * 0.7, r: 2 + rand() * 1.5, label: null });
+        nodes.push({ x: gx + (rand() - 0.5) * cell * 0.7, y: gy + (rand() - 0.5) * cell * 0.7, sx: gx, sy: gy, r: 2 + rand() * 1.5, label: null });
       }
     }
 
-    if (!nodes.length) nodes.push({ x: fx, y: fy, r: 2, label: null });
+    if (!nodes.length) nodes.push({ x: fx, y: fy, sx: fx, sy: fy, r: 2, label: null });
     let fault = nodes[0];
     let best = Infinity;
     for (const n of nodes) {
@@ -163,7 +200,6 @@ export function createLens(canvas, caption) {
     }
     fault.x = fx; fault.y = fy; fault.fault = true;
 
-    // Labels on a subset, never too close together.
     const words = shuffle([...VOCAB], rand);
     for (const n of nodes) {
       if (n.fault || rand() > 0.42 || !words.length) continue;
@@ -192,7 +228,7 @@ export function createLens(canvas, caption) {
         });
     });
 
-    return { dots, nodes, edges, fault };
+    return { dots, nodes, edges, fault, cell };
   }
 
   function renderUnder({ nodes, edges }) {
@@ -201,33 +237,41 @@ export function createLens(canvas, caption) {
     c.height = canvas.height;
     const g = c.getContext('2d');
     g.scale(dpr, dpr);
+    paintGraph(g, nodes, edges, 0, false);
+    return c;
+  }
 
+  // Paints the graph. u = 0 is the tangle; u = 1 is the fixed grid.
+  function paintGraph(g, nodes, edges, u, withHot) {
+    const P = (n) => (u ? [n.x + (n.sx - n.x) * u, n.y + (n.sy - n.y) * u] : [n.x, n.y]);
     g.lineWidth = 1;
+    g.strokeStyle = colors.line;
+    g.beginPath();
     for (const e of edges) {
-      if (e.hot) continue;
-      g.strokeStyle = colors.line;
-      g.beginPath();
-      g.moveTo(e.a.x, e.a.y);
-      g.quadraticCurveTo(e.mx, e.my, e.b.x, e.b.y);
-      g.stroke();
+      if (e.hot && !withHot) continue;
+      const [ax, ay] = P(e.a), [bx, by] = P(e.b);
+      const mx = e.mx + ((ax + bx) / 2 - e.mx) * Math.max(u, 0) , my = e.my + ((ay + by) / 2 - e.my) * Math.max(u, 0);
+      g.moveTo(ax, ay);
+      g.quadraticCurveTo(u ? mx : e.mx, u ? my : e.my, bx, by);
     }
+    g.stroke();
 
     g.font = `10px ${colors.mono}`;
     g.textBaseline = 'middle';
     for (const n of nodes) {
-      if (n.fault) continue;
+      if (n.fault && !withHot) continue;
+      const [x, y] = P(n);
       g.fillStyle = colors.bg;
       g.strokeStyle = colors.fg3;
       g.beginPath();
-      g.arc(n.x, n.y, n.r + 1.5, 0, Math.PI * 2);
+      g.arc(x, y, n.r + 1.5, 0, TAU);
       g.fill();
       g.stroke();
       if (n.label) {
         g.fillStyle = colors.fg2;
-        g.fillText(n.label, n.x + n.r + 6, n.y);
+        g.fillText(n.label, x + n.r + 6, y);
       }
     }
-    return c;
   }
 
   // Drawing -----------------------------------------------------------------
@@ -240,23 +284,77 @@ export function createLens(canvas, caption) {
     for (let i = 0; i < dots.length; i += 2) base.fillRect(dots[i] - 0.8, dots[i + 1] - 0.8, 1.6, 1.6);
   }
 
-  function frame(now) {
-    if (!scene) return;
+  function clearDirty() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     for (const [x, y, w, h] of dirty) ctx.clearRect(x, y, w, h);
     dirty = [];
+  }
+
+  // Boot: dots arrive on a wavefront from the origin, popping as it passes.
+  function drawBoot(now) {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    const { dots, origin: o } = scene;
+    const far = Math.hypot(Math.max(o.x, W - o.x), Math.max(o.y, H - o.y));
+    const e = Math.max(0, (now - bootT0) / BOOT_MS);
+    const front = easeOut(Math.min(1, e)) * (far + 40);
+
+    ctx.fillStyle = colors.dot;
+    const hot = [];
+    for (let i = 0; i < dots.length; i += 2) {
+      const x = dots[i], y = dots[i + 1];
+      const d = Math.hypot(x - o.x, y - o.y);
+      if (d > front) continue;
+      const age = front - d;
+      if (age < 36) { hot.push(x, y, 1 - age / 36); continue; }
+      ctx.fillRect(x - 0.8, y - 0.8, 1.6, 1.6);
+    }
+    ctx.fillStyle = colors.accent;
+    for (let i = 0; i < hot.length; i += 3) {
+      const s = 1.6 + hot[i + 2] * 2;
+      ctx.globalAlpha = 0.35 + hot[i + 2] * 0.65;
+      ctx.fillRect(hot[i] - s / 2, hot[i + 1] - s / 2, s, s);
+    }
+    ctx.globalAlpha = 0.18 * (1 - Math.min(1, e));
+    ctx.strokeStyle = colors.accent;
+    ctx.beginPath();
+    ctx.arc(o.x, o.y, front, 0, TAU);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    if (e >= 1) {
+      phase = 'live';
+      drawSurface();
+      ctx.clearRect(0, 0, W, H);
+      r = 0; rv = 0;
+      // One ping once the lens is open, so the visitor knows there's something under here.
+      setTimeout(() => ping(lens.x, lens.y, false), 520);
+    }
+  }
+
+  function frame(now, dt) {
+    if (!scene) return;
+    if (phase === 'boot') return drawBoot(now);
+    clearDirty();
+    if (phase === 'fix') return drawFix(now);
 
     const t = now / 1000;
     const { dots, fault } = scene;
-    const rim = R * 1.35;
+    const RR = R * Math.max(0, r);
+    const rim = RR * 1.35;
     const FR = 72;
     const tremble = !reduce.matches;
+
+    // Sonar pings: a band that sweeps the screen, briefly revealing the graph.
+    drawPings(now);
 
     // Patch out the static dots wherever the surface moves…
     ctx.fillStyle = colors.bg;
     ctx.beginPath();
-    ctx.arc(lens.x, lens.y, rim + 1, 0, TAU);
-    mark(lens.x - rim - 3, lens.y - rim - 3, rim * 2 + 6, rim * 2 + 6);
+    if (RR > 1) {
+      ctx.arc(lens.x, lens.y, rim + 1, 0, TAU);
+      mark(lens.x - rim - 3, lens.y - rim - 3, rim * 2 + 6, rim * 2 + 6);
+    }
     if (tremble) {
       ctx.moveTo(fault.x + FR, fault.y);
       ctx.arc(fault.x, fault.y, FR, 0, TAU);
@@ -274,15 +372,15 @@ export function createLens(canvas, caption) {
       const nearFault = tremble && (x0 - fault.x) ** 2 + (y0 - fault.y) ** 2 < fr2;
       if (d2 >= rim2 && !nearFault) continue;
       const d = Math.sqrt(d2);
-      if (d < R + 1) continue;
+      if (d < RR + 1) continue;
       let x = x0, y = y0;
-      if (d < rim) {
-        const push = (1 - (d - R) / (rim - R)) ** 2 * 10;
+      if (d < rim && RR > 1) {
+        const push = (1 - (d - RR) / (rim - RR)) ** 2 * 10;
         x += (dx / d) * push;
         y += (dy / d) * push;
       }
       if (nearFault) {
-        const k = (1 - Math.hypot(x - fault.x, y - fault.y) / FR) * 1.6;
+        const k = (1 - Math.hypot(x - fault.x, y - fault.y) / FR) * (1.6 + foundAmt * 0.8);
         if (k > 0) {
           x += Math.sin(t * 7 + y * 0.3) * k;
           y += Math.cos(t * 6 + x * 0.3) * k;
@@ -291,20 +389,69 @@ export function createLens(canvas, caption) {
       ctx.fillRect(x - 0.8, y - 0.8, 1.6, 1.6);
     }
 
+    if (RR < 1) return;
+
     // Under the lens.
     ctx.save();
     ctx.beginPath();
-    ctx.arc(lens.x, lens.y, R, 0, TAU);
+    ctx.arc(lens.x, lens.y, RR, 0, TAU);
     ctx.clip();
-    const sx = Math.max(0, lens.x - R), sy = Math.max(0, lens.y - R);
-    const sw = Math.min(W, lens.x + R) - sx, sh = Math.min(H, lens.y + R) - sy;
-    if (sw > 0 && sh > 0) ctx.drawImage(under, sx * dpr, sy * dpr, sw * dpr, sh * dpr, sx, sy, sw, sh);
+    blitUnder(lens.x - RR, lens.y - RR, RR * 2, RR * 2);
     drawHot(t);
     drawFault(t);
+    const since = (now - foundT) / 1000;
+    if (found && since < 0.7 && !reduce.matches) {
+      ctx.fillStyle = colors.accent;
+      ctx.globalAlpha = 0.16 * Math.exp(-since * 6);
+      ctx.fillRect(lens.x - RR, lens.y - RR, RR * 2, RR * 2);
+      ctx.globalAlpha = 1;
+    }
     ctx.restore();
 
-    drawRing(t);
-    if (found) drawNote();
+    drawRing(t, dt, RR);
+    if (found) drawNote(since);
+  }
+
+  function blitUnder(x, y, w, h) {
+    const sx = Math.max(0, x), sy = Math.max(0, y);
+    const sw = Math.min(W, x + w) - sx, sh = Math.min(H, y + h) - sy;
+    if (sw > 0 && sh > 0) ctx.drawImage(under, sx * dpr, sy * dpr, sw * dpr, sh * dpr, sx, sy, sw, sh);
+  }
+
+  function ping(x, y, accent) {
+    if (reduce.matches || phase !== 'live') return;
+    pings.push({ x, y, t0: performance.now(), accent, max: Math.hypot(Math.max(x, W - x), Math.max(y, H - y)) + 40 });
+    if (pings.length > 4) pings.shift();
+  }
+
+  function drawPings(now) {
+    const BAND = 56;
+    for (let i = pings.length - 1; i >= 0; i--) {
+      const p = pings[i];
+      const rad = Math.max(0, ((now - p.t0) / 1000) * PING_SPEED);
+      if (rad > p.max) { pings.splice(i, 1); continue; }
+      const a = 1 - rad / p.max;
+      const inner = Math.max(0, rad - BAND);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, rad, 0, TAU);
+      if (inner > 0) ctx.arc(p.x, p.y, inner, 0, TAU, true);
+      ctx.clip();
+      ctx.globalAlpha = 0.9 * a;
+      ctx.fillStyle = colors.bg;
+      ctx.fillRect(p.x - rad, p.y - rad, rad * 2, rad * 2);
+      blitUnder(p.x - rad, p.y - rad, rad * 2, rad * 2);
+      ctx.restore();
+      ctx.globalAlpha = (p.accent ? 0.7 : 0.4) * a;
+      ctx.strokeStyle = p.accent ? colors.accent : colors.fg3;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, rad, 0, TAU);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      const bx = Math.max(0, p.x - rad - 2), by = Math.max(0, p.y - rad - 2);
+      mark(bx, by, Math.min(W, p.x + rad + 2) - bx, Math.min(H, p.y + rad + 2) - by);
+    }
   }
 
   function drawHot(t) {
@@ -315,7 +462,7 @@ export function createLens(canvas, caption) {
     for (const e of scene.edges) {
       if (!e.hot) continue;
       if (Math.hypot(e.mx - lens.x, e.my - lens.y) > near) continue;
-      ctx.lineDashOffset = reduce.matches ? 0 : -(t * 18 + e.phase * 8);
+      ctx.lineDashOffset = reduce.matches ? 0 : -(t * (18 + foundAmt * 30) + e.phase * 8);
       ctx.beginPath();
       ctx.moveTo(e.a.x, e.a.y);
       ctx.quadraticCurveTo(e.mx, e.my, e.b.x, e.b.y);
@@ -326,31 +473,38 @@ export function createLens(canvas, caption) {
 
   function drawFault(t) {
     const f = scene.fault;
-    const pulse = reduce.matches ? 0.5 : (t * 0.7) % 1;
+    const rate = 0.7 + foundAmt * 0.8;
+    const pulse = reduce.matches ? 0.5 : (t * rate) % 1;
     ctx.strokeStyle = colors.accent;
     ctx.globalAlpha = 1 - pulse;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.arc(f.x, f.y, 6 + pulse * 22, 0, Math.PI * 2);
+    ctx.arc(f.x, f.y, 6 + pulse * (22 + foundAmt * 14), 0, TAU);
     ctx.stroke();
     ctx.globalAlpha = 1;
     ctx.fillStyle = colors.accent;
     ctx.beginPath();
-    ctx.arc(f.x, f.y, 4.5, 0, Math.PI * 2);
+    ctx.arc(f.x, f.y, 4.5 + foundAmt * 1.5, 0, TAU);
     ctx.fill();
-
   }
 
-  function drawNote() {
+  // The annotation draws itself: leader line, then the words type in.
+  function drawNote(since) {
     const f = scene.fault;
+    const s = reduce.matches ? 9 : since;
     mark(f.x, f.y - 70, 190, 110);
     const x0 = f.x + 10, y0 = f.y - 10, x1 = f.x + 34, y1 = f.y - 34;
+    const p = clamp01(s / 0.28);
     ctx.strokeStyle = colors.accent;
+    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(x0, y0);
-    ctx.lineTo(x1, y1);
-    ctx.lineTo(x1 + 12, y1);
+    const seg1 = Math.min(1, p * 1.6), seg2 = clamp01(p * 1.6 - 1);
+    ctx.lineTo(x0 + (x1 - x0) * seg1, y0 + (y1 - y0) * seg1);
+    if (seg2 > 0) ctx.lineTo(x1 + 12 * seg2, y1);
     ctx.stroke();
+    if (s < 0.28) return;
+
     ctx.textBaseline = 'alphabetic';
     const halo = (text, x, y) => {
       ctx.lineWidth = 5;
@@ -359,33 +513,52 @@ export function createLens(canvas, caption) {
       ctx.strokeText(text, x, y);
       ctx.fillText(text, x, y);
     };
+    const typed = (str, t0) => str.slice(0, Math.max(0, Math.floor((s - t0) / 0.028)));
     ctx.font = `italic 22px ${colors.display}`;
     ctx.fillStyle = colors.accent;
-    halo('the drag', x1 + 18, y1 + 6);
+    halo(typed('the drag', 0.28), x1 + 18, y1 + 6);
     ctx.font = `10px ${colors.mono}`;
     ctx.fillStyle = colors.fg2;
-    FAULT_NOTES.forEach((n, i) => halo(n.toUpperCase(), x1 + 18, y1 + 24 + i * 14));
+    FAULT_NOTES.forEach((n, i) => halo(typed(n.toUpperCase(), 0.5 + i * 0.16), x1 + 18, y1 + 24 + i * 14));
     ctx.lineWidth = 1;
   }
 
-  function drawRing(t) {
+  function drawRing(t, dt, RR) {
     const c = found ? colors.accent : colors.fg3;
     ctx.strokeStyle = c;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1 + foundAmt * 0.5;
     ctx.beginPath();
-    ctx.arc(lens.x, lens.y, R, 0, Math.PI * 2);
+    ctx.arc(lens.x, lens.y, RR, 0, TAU);
     ctx.stroke();
 
-    // Ticks at the cardinal points; they rotate slowly while searching.
-    const spin = found || reduce.matches ? 0 : t * 0.25;
+    // Ticks: spin while searching, settle onto the diagonals when locked.
+    if (reduce.matches) tick = found ? Math.PI / 4 : 0;
+    else if (found) {
+      const target = Math.round((tick - Math.PI / 4) / (Math.PI / 2)) * (Math.PI / 2) + Math.PI / 4;
+      tick += (target - tick) * Math.min(1, dt * 10);
+    } else tick += dt * 0.25;
+    const len = 7 + foundAmt * 7;
     for (let k = 0; k < 4; k++) {
-      const a = spin + (k * Math.PI) / 2;
+      const a = tick + (k * Math.PI) / 2;
       const cx = Math.cos(a), cy = Math.sin(a);
       ctx.beginPath();
-      ctx.moveTo(lens.x + cx * (R - 7), lens.y + cy * (R - 7));
-      ctx.lineTo(lens.x + cx * (R + 7), lens.y + cy * (R + 7));
+      ctx.moveTo(lens.x + cx * (RR - len), lens.y + cy * (RR - len));
+      ctx.lineTo(lens.x + cx * (RR + len), lens.y + cy * (RR + len));
       ctx.stroke();
     }
+    // Crosshair when locked.
+    if (foundAmt > 0.01) {
+      ctx.globalAlpha = foundAmt;
+      const f = scene.fault, g = 12 + (1 - foundAmt) * 20;
+      ctx.beginPath();
+      ctx.moveTo(f.x - g - 8, f.y); ctx.lineTo(f.x - g, f.y);
+      ctx.moveTo(f.x + g, f.y); ctx.lineTo(f.x + g + 8, f.y);
+      ctx.moveTo(f.x, f.y - g - 8); ctx.lineTo(f.x, f.y - g);
+      ctx.moveTo(f.x, f.y + g); ctx.lineTo(f.x, f.y + g + 8);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+    ctx.lineWidth = 1;
 
     // Readout.
     ctx.font = `10px ${colors.mono}`;
@@ -394,9 +567,42 @@ export function createLens(canvas, caption) {
     if (!found && W < 720) return;
     const label = found ? 'FOUND' : `X ${(lens.x / W).toFixed(2)}  Y ${(lens.y / H).toFixed(2)}`;
     const a = -Math.PI / 4;
-    const rx = lens.x + Math.cos(a) * (R + 12), ry = lens.y + Math.sin(a) * (R + 12);
+    const rx = lens.x + Math.cos(a) * (RR + 14), ry = lens.y + Math.sin(a) * (RR + 14);
     ctx.fillText(label, rx, ry);
     mark(rx - 2, ry - 12, 150, 17);
+  }
+
+  // Fix: the lens opens over everything and the tangle snaps onto its grid.
+  function drawFix(now) {
+    const p = clamp01((now - fix.t0) / FIX_MS);  // clamped: rAF time can precede t0
+    const e = easeInOut(p);
+    const u = easeOut(clamp01((p - 0.12) / 0.88));
+    const cover = Math.hypot(Math.max(lens.x, W - lens.x), Math.max(lens.y, H - lens.y)) + 20;
+    const RR = fix.from + (cover - fix.from) * e;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(lens.x, lens.y, RR, 0, TAU);
+    ctx.clip();
+    ctx.fillStyle = colors.bg;
+    ctx.fillRect(0, 0, W, H);
+    paintGraph(ctx, scene.nodes, scene.edges, u, true);
+    // The fault stops pulsing and becomes an ordinary, healthy node.
+    const f = scene.fault;
+    ctx.globalAlpha = 1 - u;
+    ctx.fillStyle = colors.accent;
+    ctx.beginPath();
+    ctx.arc(f.x, f.y, 5, 0, TAU);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.restore();
+    ctx.strokeStyle = colors.accent;
+    ctx.globalAlpha = 1 - e;
+    ctx.beginPath();
+    ctx.arc(lens.x, lens.y, RR, 0, TAU);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    mark(0, 0, W, H);
+    if (p >= 1 && fix.done) { const d = fix.done; fix.done = null; d(); }
   }
 
   // Motion ------------------------------------------------------------------
@@ -421,10 +627,10 @@ export function createLens(canvas, caption) {
 
   function stepAuto(now) {
     const leg = auto.legs[auto.i];
-    const move = 2600, dwell = leg.fault ? 3200 : 900;
+    const move = 2600, dwell = leg.fault ? 3600 : 900;
     const e = now - auto.t0;
     if (e < move) {
-      const p = ease(e / move);
+      const p = easeInOut(e / move);
       lens.tx = auto.from.x + (leg.x - auto.from.x) * p;
       lens.ty = auto.from.y + (leg.y - auto.from.y) * p;
     } else if (e > move + dwell) {
@@ -437,26 +643,64 @@ export function createLens(canvas, caption) {
   function loop(now) {
     raf = 0;
     if (!running) return;
-    if (driver === 'pointer' && now - lastPointer > 6000) {
-      driver = 'auto';
-      auto.from = { x: lens.x, y: lens.y };
-      auto.t0 = now;
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+
+    if (phase === 'live') {
+      if (driver === 'pointer' && now - lastPointer > 6000) {
+        driver = 'auto';
+        auto.from = { x: lens.x, y: lens.y };
+        auto.t0 = now;
+      }
+      if (driver === 'auto') stepAuto(now);
+      else {
+        // Magnetic: near the fault, the lens is pulled onto it.
+        const f = scene.fault;
+        const d = Math.hypot(pointer.x - f.x, pointer.y - f.y);
+        const reach = R * 0.85;
+        const pull = d < reach ? (1 - d / reach) ** 0.6 * 0.75 : 0;
+        lens.tx = pointer.x + (f.x - pointer.x) * pull;
+        lens.ty = pointer.y + (f.y - pointer.y) * pull;
+      }
+      const k = 1 - Math.exp(-dt * (driver === 'pointer' ? 14 : 9));
+      lens.x += (lens.tx - lens.x) * k;
+      lens.y += (lens.ty - lens.y) * k;
+
+      // Radius spring (iris open, and the kick when it locks on).
+      const acc = 180 * (rTarget - r) - 16 * rv;
+      rv += acc * dt;
+      r += rv * dt;
+      foundAmt += ((found ? 1 : 0) - foundAmt) * Math.min(1, dt * 8);
+      updateFound(now);
     }
-    if (driver === 'auto') stepAuto(now);
-    const k = driver === 'pointer' ? 0.18 : 0.12;
-    lens.x += (lens.tx - lens.x) * k;
-    lens.y += (lens.ty - lens.y) * k;
-    updateFound();
-    frame(now);
+    // A bad frame must not kill the loop (and with it the whole landing).
+    const t0 = PERF ? performance.now() : 0;
+    try { frame(now, dt); emit(); } catch (err) { console.error('[lens]', err); }
+    if (PERF) (window.__lensFrames ||= []).push([phase, performance.now() - t0]);
     raf = requestAnimationFrame(loop);
   }
 
-  function updateFound() {
+  // Tell listeners (the x-ray type layer) where the lens is.
+  function emit() {
+    if (!onFrame) return;
+    let xr = 0;
+    if (phase === 'live') xr = R * Math.max(0, r);
+    else if (phase === 'fix') xr = fix.from * (1 - easeOut(clamp01((performance.now() - fix.t0) / (FIX_MS * 0.5))));
+    onFrame({ x: lens.x, y: lens.y, r: xr, found });
+  }
+
+  function updateFound(now) {
     const d = Math.hypot(lens.x - scene.fault.x, lens.y - scene.fault.y);
     const was = found;
     if (!found && d < R * 0.42) found = true;
     else if (found && d > R * 0.62) found = false;
-    if (found !== was && caption) {
+    if (found === was) return;
+    if (found) {
+      foundT = now;
+      if (!reduce.matches) rv += 2.2;   // the lens flexes as it locks
+      if (now - lastFoundPing > 5000) { lastFoundPing = now; ping(scene.fault.x, scene.fault.y, true); }
+    }
+    if (caption) {
       caption.classList.toggle('is-found', found);
       if (captionText) captionText.textContent = found ? copy.lens.found : finePointer ? copy.lens.idle : copy.lens.idleTouch;
     }
@@ -467,6 +711,7 @@ export function createLens(canvas, caption) {
     if (!scene && !resize()) return;
     if (reduce.matches) return still();
     running = true;
+    last = performance.now();
     raf = requestAnimationFrame(loop);
   }
   function stop() {
@@ -478,25 +723,31 @@ export function createLens(canvas, caption) {
   // Reduced motion: one frame, lens parked on the fault.
   function still() {
     if (!scene) return;
+    phase = 'live';
+    r = 1;
+    drawSurface();
     lens.x = lens.tx = scene.fault.x - R * 0.15;
     lens.y = lens.ty = scene.fault.y + R * 0.1;
-    updateFound();
-    frame(0);
+    updateFound(performance.now());
+    foundAmt = found ? 1 : 0;
+    frame(performance.now(), 0);
+    emit();
   }
 
   // Input -------------------------------------------------------------------
 
   function onPointer(e) {
-    if (paused) return;
-    const r = canvas.getBoundingClientRect();
-    const x = e.clientX - r.left, y = e.clientY - r.top;
-    if (x < 0 || y < 0 || x > r.width || y > r.height) return;
+    if (paused || phase === 'fix') return;
+    const b = canvas.getBoundingClientRect();
+    const x = e.clientX - b.left, y = e.clientY - b.top;
+    if (x < 0 || y < 0 || x > b.width || y > b.height) return;
     if (e.pointerType === 'touch' && e.type === 'pointermove' && e.buttons === 0) return;
     driver = 'pointer';
     lastPointer = performance.now();
-    lens.tx = x;
-    lens.ty = y;
-    if (reduce.matches) { lens.x = x; lens.y = y; updateFound(); frame(0); }
+    pointer.x = x;
+    pointer.y = y;
+    if (e.type === 'pointerdown' && !e.target.closest?.('a, button, input, label, kbd')) ping(x, y, false);
+    if (reduce.matches) { lens.x = lens.tx = x; lens.y = lens.ty = y; updateFound(performance.now()); foundAmt = found ? 1 : 0; clearDirty(); frame(performance.now(), 0); emit(); }
   }
   addEventListener('pointermove', onPointer, { passive: true });
   addEventListener('pointerdown', onPointer, { passive: true });
@@ -507,8 +758,8 @@ export function createLens(canvas, caption) {
   new ResizeObserver(() => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      if (!resize()) return;
-      if (!running) reduce.matches ? still() : frame(performance.now());
+      if (phase === 'fix' || !resize()) return;
+      if (!running) reduce.matches ? still() : frame(performance.now(), 0);
     }, 60);
   }).observe(canvas);
   reduce.addEventListener?.('change', () => { stop(); start(); });
@@ -516,22 +767,54 @@ export function createLens(canvas, caption) {
   readColors();
   resize();
   // Webfonts change the headline's measure, so re-plan once they land.
-  document.fonts?.ready.then(() => { if (resize() && !running) reduce.matches ? still() : frame(performance.now()); });
+  document.fonts?.ready.then(() => { if (phase !== 'fix' && resize() && !running) reduce.matches ? still() : frame(performance.now(), 0); });
   start();
 
   return {
     pause() { paused = true; stop(); },
-    resume() { paused = false; start(); },
-    refresh() { readColors(); if (!scene) return; under = renderUnder(scene); drawSurface(); dirty = [[0, 0, W, H]]; if (!running) reduce.matches ? still() : frame(performance.now()); },
+    resume() {
+      paused = false;
+      if (phase === 'fix') { phase = 'live'; r = 0; rv = 0; found = false; foundAmt = 0; dirty = [[0, 0, W, H]]; caption?.classList.remove('is-found'); }
+      start();
+    },
+    refresh() {
+      readColors();
+      if (!scene) return;
+      under = renderUnder(scene);
+      if (phase !== 'boot') drawSurface();
+      dirty = [[0, 0, W, H]];
+      if (!running) reduce.matches ? still() : frame(performance.now(), 0);
+    },
+    setYield(on) { rTarget = on ? 0.55 : 1; },
+    get state() { return { phase, found, fault: scene && { x: scene.fault.x, y: scene.fault.y }, R, lens: { x: lens.x, y: lens.y } }; },
+    // Resolves when the lens has covered the screen and the graph is straight.
+    fix() {
+      if (!running || reduce.matches || phase !== 'live') return Promise.resolve();
+      return new Promise((resolve) => {
+        phase = 'fix';
+        fix.t0 = performance.now();
+        fix.from = R * Math.max(0.2, r);
+        fix.done = resolve;
+        pings.length = 0;
+      });
+    },
   };
 }
 
 // Utils ---------------------------------------------------------------------
 
 const TAU = Math.PI * 2;
+const PERF = /[?&]perf\b/.test(location.search); // ?perf records frame times in window.__lensFrames
 const OBSTACLES = '.landing .eyebrow, .landing .display-line, .landing .lede, .landing .entry-item, .lens-caption, .ask';
 const TEXTY = '.eyebrow, .display-line, .lede';
-const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2);
+const union = (rs) => {
+  const l = Math.min(...rs.map((r) => r.left)), tp = Math.min(...rs.map((r) => r.top));
+  const rt = Math.max(...rs.map((r) => r.right)), bt = Math.max(...rs.map((r) => r.bottom));
+  return { left: l, top: tp, width: rt - l, height: bt - tp };
+};
+const clamp01 = (v) => Math.max(0, Math.min(1, v));
+const easeInOut = (p) => (p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2);
+const easeOut = (p) => 1 - (1 - p) ** 4;
 
 function mulberry32(a) {
   return function () {

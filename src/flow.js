@@ -40,7 +40,30 @@ export function renderFlow(block) {
   };
 
   let wanted = false;
-  const settle = () => requestAnimationFrame(() => requestAnimationFrame(() => wrap.classList.add('is-drawn')));
+  const settle = () => requestAnimationFrame(() => requestAnimationFrame(() => {
+    wrap.classList.add('is-drawn');
+    setTimeout(() => wrap.classList.add('is-settled'), 2400);
+  }));
+
+  // Hover a node: it and its direct connections light up; the rest recede.
+  canvas.addEventListener('pointerover', (e) => {
+    const node = e.target.closest?.('.fl-node');
+    if (!node) return;
+    const id = node.dataset.id;
+    const svg = canvas.querySelector('svg');
+    const near = new Set([id]);
+    for (const el of svg.querySelectorAll('[data-a]')) {
+      const hit = el.dataset.a === id || el.dataset.b === id;
+      el.classList.toggle('is-lit', hit);
+      if (hit) { near.add(el.dataset.a); near.add(el.dataset.b); }
+    }
+    for (const n of svg.querySelectorAll('.fl-node')) n.classList.toggle('is-lit', near.has(n.dataset.id));
+    wrap.classList.add('is-focus');
+  });
+  canvas.addEventListener('pointerleave', () => {
+    wrap.classList.remove('is-focus');
+    for (const el of canvas.querySelectorAll('.is-lit')) el.classList.remove('is-lit');
+  });
 
   const ro = new ResizeObserver(([entry]) => {
     if (!canvas.isConnected) return ro.disconnect();
@@ -90,14 +113,14 @@ function horizontal(block) {
   const edges = block.edges.map((e) => {
     const a = pos[e.from], b = pos[e.to];
     const x1 = a.x + a.w, x2 = b.x - 2;
-    return { d: `M${x1},${cy}H${x2}`, head: [x2, cy, 'right'], label: e.label, lx: (x1 + x2) / 2, ly: cy - 9 };
+    return { d: `M${x1},${cy}H${x2}`, head: [x2, cy, 'right'], a: e.from, b: e.to, label: e.label, lx: (x1 + x2) / 2, ly: cy - 9 };
   });
   let height = topPad + rowH + 2;
   let loop = null;
   if (block.loop) {
     const a = pos[block.loop.from], b = pos[block.loop.to];
     const yb = cy + rowH / 2 + 22;
-    loop = { d: `M${a.cx},${a.y + a.h}V${yb}H${b.cx}V${b.y + b.h + 2}`, head: [b.cx, b.y + b.h + 2, 'up'], label: block.loop.label, lx: (a.cx + b.cx) / 2, ly: yb + 3 };
+    loop = { d: `M${a.cx},${a.y + a.h}V${yb}H${b.cx}V${b.y + b.h + 2}`, head: [b.cx, b.y + b.h + 2, 'up'], a: block.loop.from, b: block.loop.to, label: block.loop.label, lx: (a.cx + b.cx) / 2, ly: yb + 3 };
     height = yb + 12;
   }
   const spark = block.nodes.length > 1 ? `M${pos[block.nodes[0].id].cx},${cy}H${pos[block.nodes.at(-1).id].cx}` : null;
@@ -120,7 +143,7 @@ function vertical(block) {
   const edges = block.edges.map((e) => {
     const a = pos[e.from], b = pos[e.to];
     const y1 = a.y + a.h, y2 = b.y - 2;
-    return { d: `M${cx},${y1}V${y2}`, head: [cx, y2, 'down'], label: e.label, lx: cx + 10, ly: (y1 + y2) / 2 + 3, anchor: 'start', bare: true };
+    return { d: `M${cx},${y1}V${y2}`, head: [cx, y2, 'down'], a: e.from, b: e.to, label: e.label, lx: cx + 10, ly: (y1 + y2) / 2 + 3, anchor: 'start', bare: true };
   });
   let width = colW + 2;
   const maxEdgeLabel = Math.max(0, ...block.edges.map((e) => labelW(e.label)));
@@ -129,7 +152,7 @@ function vertical(block) {
   if (block.loop) {
     const a = pos[block.loop.from], b = pos[block.loop.to];
     const xr = 1 + colW + 24;
-    loop = { d: `M${a.x + a.w},${a.cy}H${xr}V${b.cy}H${b.x + b.w + 2}`, head: [b.x + b.w + 2, b.cy, 'left'], label: block.loop.label, lx: xr + 8, ly: (a.cy + b.cy) / 2 + 3, anchor: 'start', bare: true };
+    loop = { d: `M${a.x + a.w},${a.cy}H${xr}V${b.cy}H${b.x + b.w + 2}`, head: [b.x + b.w + 2, b.cy, 'left'], a: block.loop.from, b: block.loop.to, label: block.loop.label, lx: xr + 8, ly: (a.cy + b.cy) / 2 + 3, anchor: 'start', bare: true };
     width = Math.max(width, xr + 8 + labelW(block.loop.label));
   }
   const spark = block.nodes.length > 1 ? `M${cx},${pos[block.nodes[0].id].cy}V${pos[block.nodes.at(-1).id].cy}` : null;
@@ -161,7 +184,7 @@ function fanout(block) {
     const b = pos[e.to];
     const y1 = r.y + r.h, y2 = b.y - 2;
     const my = (y1 + y2) / 2;
-    return { d: `M${r.cx},${y1}C${r.cx},${my} ${b.cx},${my} ${b.cx},${y2}`, head: [b.cx, y2, 'down'], label: e.label, lx: b.cx, ly: y2 - 10 };
+    return { d: `M${r.cx},${y1}C${r.cx},${my} ${b.cx},${my} ${b.cx},${y2}`, head: [b.cx, y2, 'down'], a: e.from, b: e.to, label: e.label, lx: b.cx, ly: y2 - 10 };
   });
   const height = rowY + Math.max(...kids.map((k) => sizes[k.id].h)) + 2;
   return { kind: 'f', width, height, pos, edges, loop: null, sparks: edges.map((e) => e.d) };
@@ -187,7 +210,7 @@ function trunk(block) {
   const edges = block.edges.map((e, i) => {
     const b = pos[e.to];
     const start = i === 0 ? `M${tx},${rs.h + 1}V${b.cy}` : `M${tx},${b.cy}`;
-    return { d: `${start}H${b.x - 2}`, head: [b.x - 2, b.cy, 'right'], label: e.label, lx: tx + 8, ly: b.cy - 6, anchor: 'start', bare: true };
+    return { d: `${start}H${b.x - 2}`, head: [b.x - 2, b.cy, 'right'], a: e.from, b: e.to, label: e.label, lx: tx + 8, ly: b.cy - 6, anchor: 'start', bare: true };
   });
   // the trunk itself
   edges.unshift({ d: `M${tx},${rs.h + 1}V${last.cy}` });
@@ -210,15 +233,17 @@ function paint(block, plan, aria) {
   const edges = s('g', { class: 'fl-edges' });
   const labels = s('g', { class: 'fl-labels' });
   plan.edges.forEach((e, i) => {
-    edges.append(s('path', { class: 'fl-edge', d: e.d, style: { transitionDelay: `${250 + i * 110}ms` } }));
-    if (e.head) edges.append(head(e.head, 'fl-head', 350 + i * 110));
-    if (e.label) labels.append(edgeLabel(e, 'fl-edge-label', 450 + i * 110));
+    const ids = { 'data-a': e.a, 'data-b': e.b };
+    edges.append(s('path', { class: 'fl-edge', d: e.d, ...ids, style: { transitionDelay: `${250 + i * 110}ms` } }));
+    if (e.head) edges.append(tag(head(e.head, 'fl-head', 350 + i * 110), ids));
+    if (e.label) labels.append(tag(edgeLabel(e, 'fl-edge-label', 450 + i * 110), ids));
   });
   if (plan.loop) {
     const l = plan.loop;
-    edges.append(s('path', { class: 'fl-edge is-loop', d: l.d, style: { transitionDelay: '900ms' } }));
-    edges.append(head(l.head, 'fl-head is-loop', 1000));
-    if (l.label) labels.append(edgeLabel(l, 'fl-edge-label fl-loop-label', 1000));
+    const ids = { 'data-a': l.a, 'data-b': l.b };
+    edges.append(s('path', { class: 'fl-edge is-loop', d: l.d, ...ids, style: { transitionDelay: '900ms' } }));
+    edges.append(tag(head(l.head, 'fl-head is-loop', 1000), ids));
+    if (l.label) labels.append(tag(edgeLabel(l, 'fl-edge-label fl-loop-label', 1000), ids));
   }
   svg.append(edges);
 
@@ -237,7 +262,7 @@ function paint(block, plan, aria) {
   const nodes = s('g', { class: 'fl-nodes' });
   block.nodes.forEach((n, i) => {
     const p = plan.pos[n.id];
-    const g = s('g', { class: `fl-node${n.variant ? ` is-${n.variant}` : ''}`, style: { transitionDelay: `${i * 90}ms` } });
+    const g = s('g', { class: `fl-node${n.variant ? ` is-${n.variant}` : ''}`, 'data-id': n.id, style: { transitionDelay: `${i * 90}ms` } });
     g.append(s('rect', { x: p.x + 0.5, y: p.y + 0.5, width: p.w - 1, height: p.h - 1, rx: 2 }));
     const tx = p.x + p.w / 2;
     if (n.sublabel) {
@@ -250,6 +275,11 @@ function paint(block, plan, aria) {
   });
   svg.append(nodes, labels);
   return svg;
+}
+
+function tag(el, ids) {
+  for (const [k, v] of Object.entries(ids)) if (v != null) el.setAttribute(k, v);
+  return el;
 }
 
 function head([x, y, dir], cls, delay) {

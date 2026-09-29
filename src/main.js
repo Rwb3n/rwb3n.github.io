@@ -1,23 +1,39 @@
-// Boot: chrome first (theme, clock), then content, then the lens.
+// Boot: chrome first (theme, clock), then type and the lens, then content.
 
 import { site } from './copy.js';
 import { loadContent } from './content.js';
 import { createApp } from './app.js';
 import { createLens } from './lens.js';
+import { splitWords, createXray } from './type.js';
+import { reducedMotion } from './dom.js';
 
 const THEME_KEY = 'mu-theme';
 const html = document.documentElement;
 
 // Theme -----------------------------------------------------------------------
+// Switching theme spreads the new one out from the toggle as a circle.
 function setTheme(t) {
   html.dataset.theme = t;
   for (const m of document.querySelectorAll('meta[name="theme-color"]')) m.content = t === 'dark' ? '#0c0d0d' : '#f3f0e9';
   document.dispatchEvent(new CustomEvent('mu:theme', { detail: t }));
 }
-document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
+const toggle = document.querySelector('[data-theme-toggle]');
+toggle?.addEventListener('click', () => {
   const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
   try { localStorage.setItem(THEME_KEY, next); } catch { /* private mode */ }
-  setTheme(next);
+  if (!document.startViewTransition || reducedMotion()) return setTheme(next);
+  const b = toggle.getBoundingClientRect();
+  const x = b.left + b.width / 2, y = b.top + b.height / 2;
+  const rad = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+  html.classList.add('is-theming');
+  const vt = document.startViewTransition(() => setTheme(next));
+  vt.ready.then(() => {
+    html.animate(
+      { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${rad}px at ${x}px ${y}px)`] },
+      { duration: 760, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', pseudoElement: '::view-transition-new(root)' },
+    );
+  });
+  vt.finished.finally(() => html.classList.remove('is-theming'));
 });
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
   let stored = null;
@@ -46,22 +62,45 @@ const onScroll = () => html.classList.toggle('is-scrolled', window.scrollY > 4);
 addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
-// Lens (landing hero) -----------------------------------------------------------
+// Landing type ------------------------------------------------------------------
+const display = document.querySelector('.landing .display');
+if (display && !reducedMotion()) splitWords(display);
+
+// Lens + x-ray -------------------------------------------------------------------
+let lens = null;
 const lensCanvas = document.querySelector('[data-lens]');
+const copyEl = document.querySelector('[data-copy]');
 if (lensCanvas) {
   try {
-    const lens = createLens(lensCanvas, document.querySelector('[data-lens-caption]'));
+    const xray = copyEl ? createXray(copyEl, lensCanvas) : null;
+    lens = createLens(lensCanvas, document.querySelector('[data-lens-caption]'), { onFrame: (s) => xray?.update(s) });
+    window.mindunderLens = lens; // read-only state for debugging
     document.addEventListener('mu:session', () => lens.pause());
     document.addEventListener('mu:landing', () => lens.resume());
     document.addEventListener('mu:theme', () => lens.refresh());
+    // Over the things you click, the lens steps aside.
+    for (const el of document.querySelectorAll('.landing .entry, .ask')) {
+      el.addEventListener('pointerenter', () => lens.setYield(true));
+      el.addEventListener('pointerleave', () => lens.setYield(false));
+    }
   } catch (err) {
     console.warn('[lens]', err);
   }
 }
 
+// Entry rows: the spotlight follows the pointer.
+document.querySelector('[data-entry]')?.addEventListener('pointermove', (e) => {
+  const row = e.target.closest('.entry-item');
+  if (!row) return;
+  const b = row.getBoundingClientRect();
+  row.style.setProperty('--mx', `${e.clientX - b.left}px`);
+});
+
 // App ---------------------------------------------------------------------------
 loadContent()
-  .then((content) => { window.mindunder = createApp(content); })
+  .then((content) => {
+    window.mindunder = createApp(content, document, { beforeLeave: () => lens?.fix() });
+  })
   .catch((err) => {
     console.error('[content]', err);
     const input = document.querySelector('[data-ask-input]');

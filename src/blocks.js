@@ -40,7 +40,7 @@ const renderers = {
         h('span', { class: 'b-metric-label micro' }, m.label),
       )),
     );
-    el.onReveal = () => el.querySelectorAll('[data-count]').forEach(countUp);
+    el.onReveal = () => el.querySelectorAll('[data-count]').forEach(odometer);
     return el;
   },
 
@@ -50,7 +50,7 @@ const renderers = {
       h('span', { class: 'b-metric-label micro' }, label),
       sublabel && h('span', { class: 'b-metric-sub' }, sublabel),
     );
-    el.onReveal = () => el.querySelectorAll('[data-count]').forEach(countUp);
+    el.onReveal = () => el.querySelectorAll('[data-count]').forEach(odometer);
     return el;
   },
 
@@ -62,7 +62,7 @@ const renderers = {
   pills: ({ label, items }) =>
     h('div', { class: 'b-pills' },
       label && h('span', { class: 'micro' }, label),
-      h('ul', { class: 'b-pills-list', role: 'list' }, items.map((i) => h('li', { class: 'b-pill' }, i))),
+      h('ul', { class: 'b-pills-list', role: 'list' }, items.map((i, n) => h('li', { class: 'b-pill', style: { '--i': n } }, i))),
     ),
 
   badge: ({ status, variant = 'default' }) =>
@@ -76,7 +76,10 @@ const renderers = {
         return h(Tag, {
           class: 'b-card',
           type: item.target ? 'button' : null,
+          style: { '--i': items.indexOf(item) },
           onclick: item.target ? () => ctx.navigate(item.target) : null,
+          onpointermove: tilt,
+          onpointerleave: untilt,
         },
           h('span', { class: 'b-card-head' },
             h('span', { class: 'b-card-title' }, item.title),
@@ -91,7 +94,7 @@ const renderers = {
   layers: ({ items }) => {
     const steps = items.every((i) => /^\d+$/.test(i.label));
     return h(steps ? 'ol' : 'ul', { class: `b-layers${steps ? ' is-steps' : ''}`, role: 'list' },
-      items.map((i) => h('li', { class: 'b-layer' },
+      items.map((i, n) => h('li', { class: 'b-layer', style: { '--i': n } },
         h('span', { class: 'b-layer-label' }, i.label),
         h('span', { class: 'b-layer-title' }, i.title),
         i.detail && h('span', { class: 'b-layer-detail' }, i.detail),
@@ -120,7 +123,7 @@ const renderers = {
         h('span', { class: 'b-progress-count' }, `${current}/${total}`),
       ),
       h('div', { class: 'b-progress-track', 'aria-hidden': 'true' },
-        Array.from({ length: total }, (_, i) => h('i', { class: i < current ? 'is-on' : i === current ? 'is-next' : null })),
+        Array.from({ length: total }, (_, i) => h('i', { class: i < current ? 'is-on' : i === current ? 'is-next' : null, style: { '--i': i } })),
       ),
       sublabel && h('p', { class: 'b-progress-sub' }, sublabel),
     ),
@@ -141,7 +144,7 @@ const renderers = {
       ),
       h('dl', null,
         [[l.journey, data.journey], [l.interest, data.interest], [l.depth, data.depth], [l.context, data.context], [l.questions, data.questions], [l.interactions, data.interactions]]
-          .map(([k, v]) => h('div', null, h('dt', { class: 'micro' }, k), h('dd', null, v))),
+          .map(([k, v], n) => h('div', { style: { '--i': n } }, h('dt', { class: 'micro' }, k), h('dd', null, v))),
       ),
     );
   },
@@ -207,23 +210,45 @@ function linkify(value) {
   return m ? h('a', { class: 'rail-mail', href: `mailto:${value}` }, value) : value;
 }
 
-// Count numeric metrics up from zero. Keeps prefix/suffix ("~£", "/week").
-function countUp(el) {
+// Odometer: each digit is a strip of 0–9 that rolls to its value, the
+// columns settling left to right. Prefix/suffix ("~£", "/week") stay put.
+function odometer(el) {
   const raw = el.dataset.count;
-  const m = raw.match(/^(\D*?)(\d+(?:\.\d+)?)(.*)$/);
-  if (!m || reducedMotion()) return;
+  const m = raw.match(/^(\D*?)(\d[\d,.]*)(.*)$/);
+  if (!m || reducedMotion() || el.dataset.rolled) return;
+  el.dataset.rolled = '1';
   const [, pre, num, post] = m;
-  const target = parseFloat(num);
-  const decimals = (num.split('.')[1] || '').length;
-  const start = performance.now();
-  const dur = 900 + Math.min(target, 200) * 3;
-  el.style.minWidth = `${el.offsetWidth}px`;
-  const tick = (t) => {
-    const p = Math.min(1, (t - start) / dur);
-    const e = 1 - (1 - p) ** 4;
-    el.textContent = pre + (target * e).toFixed(decimals) + post;
-    if (p < 1) requestAnimationFrame(tick);
-    else { el.textContent = raw; el.style.minWidth = ''; }
-  };
-  requestAnimationFrame(tick);
+  el.setAttribute('aria-label', raw);
+  const digits = [...num];
+  const cols = digits.map((ch, i) => {
+    if (!/\d/.test(ch)) return h('span', { class: 'odo-lit' }, ch);
+    const d = +ch;
+    const strip = h('span', { class: 'odo-strip' }, Array.from({ length: 20 }, (_, k) => h('span', null, String(k % 10))));
+    const col = h('span', { class: 'odo-col' }, h('span', { class: 'odo-size' }, ch), strip);
+    const spins = 10 + d; // one full turn, then the digit
+    strip.animate([{ transform: 'translateY(0)' }, { transform: `translateY(${-spins}em)` }], {
+      duration: 1100 + i * 180,
+      delay: 60,
+      easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+      fill: 'forwards',
+    });
+    return col;
+  });
+  el.replaceChildren(h('span', { 'aria-hidden': 'true', class: 'odo' }, pre, cols, post));
+}
+
+// Cards lean toward the pointer, with a light that follows it.
+function tilt(e) {
+  if (e.pointerType !== 'mouse' || reducedMotion()) return;
+  const c = e.currentTarget, b = c.getBoundingClientRect();
+  const x = (e.clientX - b.left) / b.width, y = (e.clientY - b.top) / b.height;
+  c.style.setProperty('--rx', `${(0.5 - y) * 6}deg`);
+  c.style.setProperty('--ry', `${(x - 0.5) * 8}deg`);
+  c.style.setProperty('--gx', `${x * 100}%`);
+  c.style.setProperty('--gy', `${y * 100}%`);
+}
+function untilt(e) {
+  const c = e.currentTarget;
+  c.style.setProperty('--rx', '0deg');
+  c.style.setProperty('--ry', '0deg');
 }

@@ -3,12 +3,16 @@
 import { h, wait, reducedMotion } from './dom.js';
 import { copy, site } from './copy.js';
 import { renderBlock } from './blocks.js';
+import { splitWords } from './type.js';
 import * as E from './engine.js';
 
 // Delays that make the system feel like it's thinking — short enough not to annoy.
 const THINK = { navigate: 320, revisit: 220, expand: 260, l2: 900, l3: 800, engage: 700, brief: 650, book: 450, addToBrief: 600 };
+const FLY_MS = 820;
+const EASE = 'cubic-bezier(0.65, 0, 0.35, 1)';
+const easeIO = (p) => (p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2);
 
-export function createApp(content, root = document) {
+export function createApp(content, root = document, { beforeLeave } = {}) {
   const $ = (sel) => root.querySelector(sel);
   const el = {
     body: document.body,
@@ -49,36 +53,45 @@ export function createApp(content, root = document) {
   // Leave the landing and open the first turn. Where View Transitions exist,
   // the entry the visitor chose morphs into the turn's heading.
   async function openTurn(question, meta, from) {
-    if (mode === 'session') return addTurn(question, meta);
+    if (mode === 'session') return addTurn(question, meta, from);
+    const fromEl = from instanceof Element ? from : null;
     mode = 'session';
     busy = true;
     el.input.placeholder = copy.ui.placeholderSession;
-    const swap = () => {
+    const swap = (split = true) => {
       el.landing.hidden = true;
       el.session.hidden = false;
       el.body.classList.remove('is-landing');
       el.body.classList.add('is-session');
       window.scrollTo(0, 0);
       document.dispatchEvent(new CustomEvent('mu:session'));
-      return addTurn(question, meta);
+      return addTurn(question, { ...meta, split });
     };
+
+    // "Then I fix it": the lens opens over the landing and the tangle straightens,
+    // while everything but the chosen question recedes.
+    if (!reducedMotion()) {
+      el.landing.classList.add('is-fixing');
+      fromEl?.closest('.entry-item')?.classList.add('is-chosen');
+      await beforeLeave?.();
+    }
 
     if (!document.startViewTransition || reducedMotion()) {
       el.landing.classList.add('is-leaving');
       await wait(360);
-      return swap();
+      return swap(true);
     }
 
     let t;
-    if (from) from.style.viewTransitionName = 'mu-question';
+    if (fromEl) fromEl.style.viewTransitionName = 'mu-question';
     const vt = document.startViewTransition(() => {
-      t = swap();
-      if (from) t.heading.style.viewTransitionName = 'mu-question';
+      t = swap(!fromEl);
+      if (fromEl) t.heading.style.viewTransitionName = 'mu-question';
     });
     await vt.updateCallbackDone;
     vt.finished.finally(() => {
       t.heading.style.viewTransitionName = '';
-      if (from) from.style.viewTransitionName = '';
+      if (fromEl) fromEl.style.viewTransitionName = '';
     });
     return t;
   }
@@ -94,7 +107,8 @@ export function createApp(content, root = document) {
     el.trail.replaceChildren();
     el.session.hidden = true;
     el.landing.hidden = false;
-    el.landing.classList.remove('is-leaving');
+    el.landing.classList.remove('is-leaving', 'is-fixing');
+    for (const c of el.landing.querySelectorAll('.is-chosen')) c.classList.remove('is-chosen');
     el.body.classList.add('is-landing');
     el.body.classList.remove('is-session');
     el.input.placeholder = copy.ui.placeholder;
@@ -110,7 +124,18 @@ export function createApp(content, root = document) {
     for (const c of el.log.querySelectorAll('.chips')) c.remove();
   }
 
-  function addTurn(question, { label, aside = false, quoted = true } = {}) {
+  // A question's source, measured before the page changes: a chip, the ask bar…
+  function snapshot(from, text) {
+    if (!from || reducedMotion()) return null;
+    if (!(from instanceof Element)) return from;
+    if (!from.isConnected || from.closest('.landing')) return null;
+    const r = from.getBoundingClientRect();
+    const cs = getComputedStyle(from);
+    return { left: r.left, top: r.top, font: `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} / ${cs.lineHeight} ${cs.fontFamily}`, size: parseFloat(cs.fontSize), color: cs.color, text: text ?? from.textContent };
+  }
+
+  function addTurn(question, { label, aside = false, quoted = true, split = true } = {}, from) {
+    const src = snapshot(from);
     spendChips();
     const n = turns.length + 1;
     const q = h('div', { class: 'turn-q' },
@@ -124,17 +149,75 @@ export function createApp(content, root = document) {
     current = turns.length - 1;
     updateRail();
     turnObserver?.observe(turn);
-    requestAnimationFrame(() => scrollToTurn(turn));
-    return { turn, answer, heading: q.querySelector('.turn-question') };
+    const heading = q.querySelector('.turn-question');
+    const target = turnScroll(turn);
+    let landed;
+    if (src) landed = fly(src, heading, target);
+    else {
+      if (split && !reducedMotion()) splitWords(heading);
+      animateScroll(target);
+      landed = Promise.resolve();
+    }
+    return { turn, answer, heading, landed };
+  }
+
+  // The question lifts off wherever it was asked (chip, ask bar), travels up as
+  // the page scrolls in step, and lands as the new turn's heading — sans to serif
+  // mid-flight.
+  function fly(src, heading, toScroll) {
+    const hr = heading.getBoundingClientRect();
+    const end = { left: hr.left, top: hr.top - (toScroll - window.scrollY) };
+    const scale = src.size / parseFloat(getComputedStyle(heading).fontSize);
+    const toEl = h('span', { class: `fly-to ${heading.className}` }, heading.textContent);
+    const fromEl = h('span', { class: 'fly-from', style: { font: src.font, color: src.color } }, src.text);
+    const ghost = h('div', { class: 'fly', 'aria-hidden': 'true', style: { left: `${end.left}px`, top: `${end.top}px`, width: `${hr.width}px` } }, fromEl, toEl);
+    document.body.append(ghost);
+    heading.style.visibility = 'hidden';
+    const move = ghost.animate(
+      [{ transform: `translate(${src.left - end.left}px, ${src.top - end.top}px)` }, { transform: 'none' }],
+      { duration: FLY_MS, easing: EASE },
+    );
+    toEl.animate([{ opacity: 0, transform: `scale(${scale})` }, { opacity: 0, offset: 0.2 }, { opacity: 1, transform: 'none' }], { duration: FLY_MS, easing: EASE });
+    const grow = `scale(${Math.min(1.4, 1 / scale)})`;
+    fromEl.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: grow, offset: 0.5 }, { opacity: 0, transform: grow }], { duration: FLY_MS, easing: EASE });
+    animateScroll(toScroll, FLY_MS, () => move.finish());
+    return move.finished.catch(() => {}).then(() => {
+      heading.style.visibility = '';
+      ghost.remove();
+    });
+  }
+
+  // Scroll we control, so it can move in step with a flight. Any wheel or touch
+  // hands control straight back to the visitor.
+  let scrollRaf = 0;
+  function animateScroll(to, dur = 700, onCancel) {
+    cancelAnimationFrame(scrollRaf);
+    const from = window.scrollY, d = to - from;
+    if (Math.abs(d) < 2 || reducedMotion()) { window.scrollTo(0, to); return; }
+    const t0 = performance.now();
+    const off = () => { removeEventListener('wheel', stop); removeEventListener('touchstart', stop); removeEventListener('keydown', stop); };
+    const stop = () => { cancelAnimationFrame(scrollRaf); off(); onCancel?.(); };
+    addEventListener('wheel', stop, { passive: true });
+    addEventListener('touchstart', stop, { passive: true });
+    addEventListener('keydown', stop);
+    const step = (now) => {
+      const p = Math.min(1, Math.max(0, (now - t0) / dur));
+      window.scrollTo(0, from + d * easeIO(p));
+      if (p < 1) scrollRaf = requestAnimationFrame(step);
+      else off();
+    };
+    scrollRaf = requestAnimationFrame(step);
   }
 
   async function respond(t, blocks, chips, delay, { focus = false } = {}) {
     const gen = generation;
     busy = true;
     el.ask.classList.add('is-busy');
-    const thinking = h('p', { class: 'thinking' },
-      h('span', { class: 'thinking-dots', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')),
-      copy.ui.thinking,
+    await t.landed;
+    if (gen !== generation) return;
+    const thinking = h('div', { class: 'scan', role: 'status' },
+      h('span', { class: 'scan-label micro' }, copy.ui.thinking),
+      h('span', { class: 'scan-track', 'aria-hidden': 'true' }, h('i')),
     );
     t.answer.append(thinking);
     await wait(delay);
@@ -178,11 +261,12 @@ export function createApp(content, root = document) {
   function renderChips(chips) {
     return h('nav', { class: 'chips', 'aria-label': copy.ui.next },
       h('span', { class: 'chips-heading micro' }, copy.ui.next),
-      chips.map((chip) =>
+      chips.map((chip, i) =>
         h('button', {
           class: `chip${chip.isEngagement ? ' is-engage' : ''}${chip.primary || chip.target === '_book' ? ' is-primary' : ''}`,
           type: 'button',
-          onclick: () => choose(chip, { focus: true }),
+          style: { '--i': i },
+          onclick: (e) => choose(chip, { focus: true, from: e.currentTarget.querySelector('.chip-label') }),
         },
           h('span', { class: 'chip-label' }, chip.isEngagement && h('span', { class: 'pulse', 'aria-hidden': 'true' }), chip.label),
           h('span', { class: 'chip-arrow', 'aria-hidden': 'true' }, chip.expand ? '+' : '→'),
@@ -263,6 +347,9 @@ export function createApp(content, root = document) {
   async function ask(text) {
     const q = text.trim();
     if (!q || busy) return;
+    // Measure the typed text where it sits, so it can fly up as the question.
+    const ir = el.input.getBoundingClientRect(), ics = getComputedStyle(el.input);
+    const fromInput = { left: ir.left + parseFloat(ics.paddingLeft), top: ir.top + (ir.height - parseFloat(ics.fontSize) * 1.3) / 2, font: `${ics.fontWeight} ${ics.fontSize} / 1.3 ${ics.fontFamily}`, size: parseFloat(ics.fontSize), color: ics.color, text: q };
     el.input.value = '';
     el.ask.classList.remove('has-value');
 
@@ -270,11 +357,11 @@ export function createApp(content, root = document) {
     // Once the visitor is describing their own business, longer messages are
     // context for the brief even if they mention a keyword ("our CRM…").
     const describing = session.selfDisclosed && q.split(/\s+/).length > 3;
-    if (r.layer === 1 && !describing) return navigate(r.target, q);
+    if (r.layer === 1 && !describing) return navigate(r.target, q, { from: fromInput });
 
     if (session.selfDisclosed) {
       session = E.record(session, { nodeId: null, query: q, isFreeQuestion: true, isDisclosure: true });
-      const t = await openTurn(q, { label: truncate(q) });
+      const t = await openTurn(q, { label: truncate(q) }, fromInput);
       return respond(t, [{ type: 'text', content: copy.engagement.addedToBrief }],
         [{ label: copy.chips.showBrief, target: '_show_brief' }, { label: copy.chips.keepExploring, target: 'projects' }],
         THINK.addToBrief);
@@ -282,27 +369,28 @@ export function createApp(content, root = document) {
 
     if (r.layer === 3) {
       session = E.record(session, { nodeId: null, query: q, isFreeQuestion: true, isDisclosure: true });
-      const t = await openTurn(q, { label: truncate(q) });
+      const t = await openTurn(q, { label: truncate(q) }, fromInput);
       const res = E.resolveL3(content, session);
       return respond(t, res.blocks, res.chips, THINK.l3);
     }
 
     session = E.record(session, { nodeId: null, query: q, isFreeQuestion: true });
-    const t = await openTurn(q, { label: truncate(q) });
+    const t = await openTurn(q, { label: truncate(q) }, fromInput);
     const res = E.resolveL2(q);
     return respond(t, res.blocks, E.applyGravity(res.chips, session, content), THINK.l2);
   }
 
   // Put a turn's question just under the sticky chrome (bar, and on narrow
   // screens the trail strip).
-  function scrollToTurn(turn) {
+  function turnScroll(turn) {
     const q = turn.querySelector('.turn-q') || turn;
     const bar = document.querySelector('.bar')?.offsetHeight || 0;
     const rail = el.trail.closest('.rail');
     const strip = rail && getComputedStyle(rail).display === 'flex' ? rail.offsetHeight : 0;
     const top = q.getBoundingClientRect().top + window.scrollY - bar - strip - 24;
-    window.scrollTo({ top: Math.max(0, top), behavior: reducedMotion() ? 'auto' : 'smooth' });
+    return Math.max(0, Math.min(top, document.documentElement.scrollHeight - innerHeight));
   }
+  const scrollToTurn = (turn) => animateScroll(turnScroll(turn));
 
   // Rail ------------------------------------------------------------------------
 
