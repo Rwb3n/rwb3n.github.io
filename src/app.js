@@ -99,7 +99,7 @@ export function createApp(content, root = document) {
     current = turns.length - 1;
     updateRail();
     turnObserver?.observe(turn);
-    requestAnimationFrame(() => turn.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' }));
+    requestAnimationFrame(() => scrollToTurn(turn));
     return { turn, answer, heading: q.querySelector('.turn-question') };
   }
 
@@ -269,6 +269,17 @@ export function createApp(content, root = document) {
     return respond(t, res.blocks, E.applyGravity(res.chips, session, content), THINK.l2);
   }
 
+  // Put a turn's question just under the sticky chrome (bar, and on narrow
+  // screens the trail strip).
+  function scrollToTurn(turn) {
+    const q = turn.querySelector('.turn-q') || turn;
+    const bar = document.querySelector('.bar')?.offsetHeight || 0;
+    const rail = el.trail.closest('.rail');
+    const strip = rail && getComputedStyle(rail).display === 'flex' ? rail.offsetHeight : 0;
+    const top = q.getBoundingClientRect().top + window.scrollY - bar - strip - 24;
+    window.scrollTo({ top: Math.max(0, top), behavior: reducedMotion() ? 'auto' : 'smooth' });
+  }
+
   // Rail ------------------------------------------------------------------------
 
   function updateRail() {
@@ -279,7 +290,7 @@ export function createApp(content, root = document) {
             class: 'trail-link',
             type: 'button',
             'aria-current': i === current ? 'step' : null,
-            onclick: () => t.el.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' }),
+            onclick: () => scrollToTurn(t.el),
           }, t.label),
         ),
       ),
