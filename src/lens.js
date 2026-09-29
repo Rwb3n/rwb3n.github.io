@@ -61,18 +61,81 @@ export function createLens(canvas, caption) {
     canvas.width = overlay.width = Math.round(W * dpr);
     canvas.height = overlay.height = Math.round(H * dpr);
     dirty = [];
-    R = W < 720 ? Math.round(Math.min(92, W * 0.22)) : Math.round(Math.max(110, Math.min(150, Math.min(W, H) * 0.2)));
-    scene = buildScene(W, H);
+    const rMax = W < 720 ? Math.round(Math.min(92, W * 0.22)) : Math.round(Math.max(110, Math.min(150, Math.min(W, H) * 0.2)));
+    const obs = obstacles();
+    const spot = placeFault(rMax, obs);
+    R = spot.r;
+    scene = buildScene(W, H, spot.x, spot.y);
+    scene.free = freeSpots(obs);
     under = renderUnder(scene);
     drawSurface();
-    if (!lens.x) { lens.x = lens.tx = W * 0.55; lens.y = lens.ty = H * 0.25; }
+    const first = !lens.x;
     planAuto();
+    if (first) {
+      lens.x = lens.tx = auto.legs[0].x;
+      lens.y = lens.ty = auto.legs[0].y;
+      auto.from = { x: lens.x, y: lens.y };
+      auto.i = 1;
+    }
     return true;
+  }
+
+  // Free space -------------------------------------------------------------
+  // The fault and the autopilot's route are placed where the lens won't cover
+  // words. Measured from the live layout, so it holds at any viewport.
+
+  function obstacles() {
+    const cr = canvas.getBoundingClientRect();
+    const range = document.createRange();
+    const out = [];
+    for (const el of document.querySelectorAll(OBSTACLES)) {
+      let r = el.getBoundingClientRect();
+      if (el.matches(TEXTY)) { range.selectNodeContents(el); r = range.getBoundingClientRect(); }
+      if (r.width && r.height) out.push({ x: r.left - cr.left - 10, y: r.top - cr.top - 10, w: r.width + 20, h: r.height + 20 });
+    }
+    return out;
+  }
+
+  const hit = (a, obs) => {
+    let s = 0;
+    for (const b of obs) {
+      const w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+      const h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+      if (w > 0 && h > 0) s += w * h;
+    }
+    return s;
+  };
+  const lensBox = (x, y, r) => ({ x: x - r * 0.86, y: y - r * 0.86, w: r * 1.72, h: r * 1.72 });
+  const noteBox = (x, y) => ({ x: x + 8, y: y - 72, w: 180, h: 108 });
+
+  function placeFault(rMax, obs) {
+    const px = W * 0.72, py = H * 0.3;
+    let best = null;
+    for (const r of [rMax, rMax * 0.86, rMax * 0.74]) {
+      for (let y = r + 12; y <= H - r - 12; y += 16) {
+        for (let x = r + 12; x <= W - Math.max(r, 196) - 12; x += 16) {
+          const score = hit(lensBox(x, y, r), obs) + hit(noteBox(x, y), obs);
+          const pull = Math.hypot(x - px, y - py) * 0.5;
+          const cand = { x, y, r, score, rank: score + pull };
+          if (!best || cand.score < best.score || (cand.score === best.score && cand.r === best.r && cand.rank < best.rank)) best = cand;
+        }
+      }
+      if (best && best.score === 0) break;
+    }
+    return best || { x: px, y: py, r: rMax };
+  }
+
+  function freeSpots(obs) {
+    const out = [];
+    for (let y = R + 12; y <= H - R - 12; y += 24)
+      for (let x = R + 12; x <= W - R - 12; x += 24)
+        if (hit(lensBox(x, y, R), obs) === 0) out.push({ x, y });
+    return out;
   }
 
   // Scene -------------------------------------------------------------------
 
-  function buildScene(w, h) {
+  function buildScene(w, h, fx, fy) {
     const rand = mulberry32(0x6d1d);
     const narrow = w < 720;
     const spacing = narrow ? 20 : 24;
@@ -91,9 +154,6 @@ export function createLens(canvas, caption) {
       }
     }
 
-    // The fault sits where the headline isn't: upper right on wide screens,
-    // upper middle on narrow ones.
-    const fx = w * (narrow ? 0.72 : 0.7), fy = narrow ? Math.max(120, h * 0.14) : Math.max(210, h * 0.26);
     if (!nodes.length) nodes.push({ x: fx, y: fy, r: 2, label: null });
     let fault = nodes[0];
     let best = Infinity;
@@ -341,16 +401,19 @@ export function createLens(canvas, caption) {
 
   // Motion ------------------------------------------------------------------
 
+  // Autopilot route: spread-out free spots, returning to the fault every third leg.
   function planAuto() {
     const f = scene.fault;
-    // Waypoints stay in the empty band around the headline, not across it.
-    const narrow = W < 720;
-    const fp = [f.x / W, f.y / H];
-    const pts = (narrow
-      ? [[0.3, 0.12], [0.78, 0.1], fp, [0.25, 0.16], [0.6, 0.08], fp]
-      : [[0.56, 0.16], [0.9, 0.66], fp, [0.46, 0.12], [0.9, 0.2], fp]
-    ).map(([x, y]) => ({ x: x * W, y: y * H, fault: Math.abs(x * W - f.x) < 1 }));
-    auto.legs = pts;
+    const pool = scene.free.filter((p) => Math.hypot(p.x - f.x, p.y - f.y) > R);
+    const picks = [];
+    const far = (p) => Math.min(Math.hypot(p.x - f.x, p.y - f.y), ...picks.map((q) => Math.hypot(p.x - q.x, p.y - q.y)));
+    while (picks.length < 4 && pool.length) {
+      pool.sort((a, b) => far(b) - far(a));
+      picks.push(pool.shift());
+    }
+    while (picks.length < 4) picks.push({ x: f.x + (picks.length % 2 ? -1 : 1) * R * 0.5, y: f.y + R * 0.3 });
+    const home = { x: f.x, y: f.y, fault: true };
+    auto.legs = [picks[0], picks[1], home, picks[2], picks[3], home];
     auto.i = 0;
     auto.t0 = performance.now();
     auto.from = { x: lens.x, y: lens.y };
@@ -452,7 +515,8 @@ export function createLens(canvas, caption) {
 
   readColors();
   resize();
-  document.fonts?.ready.then(() => { if (scene) under = renderUnder(scene); });
+  // Webfonts change the headline's measure, so re-plan once they land.
+  document.fonts?.ready.then(() => { if (resize() && !running) reduce.matches ? still() : frame(performance.now()); });
   start();
 
   return {
@@ -465,6 +529,8 @@ export function createLens(canvas, caption) {
 // Utils ---------------------------------------------------------------------
 
 const TAU = Math.PI * 2;
+const OBSTACLES = '.landing .eyebrow, .landing .display-line, .landing .lede, .landing .entry-item, .lens-caption, .ask';
+const TEXTY = '.eyebrow, .display-line, .lede';
 const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2);
 
 function mulberry32(a) {
