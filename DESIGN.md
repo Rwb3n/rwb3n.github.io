@@ -50,12 +50,24 @@ italic "see", the fault, the current step), *live state* (pulse dots), and
 
 **Shape.** 2–4px radii and 1px hairlines. It's an instrument, not an app.
 
-**Motion.** One easing curve (`--ease-out`, an expo-out), four durations.
-The landing cascades in; the chosen question morphs into the first turn
-(View Transitions, where supported); answers arrive block by block, text
-rises word by word, diagrams draw their edges and send a spark along the
-path, metrics count up. `prefers-reduced-motion` gets all of the content and
-none of the movement — the lens is parked, already on the fault.
+**Motion.** Motion carries the story: *surface → underneath → found → fixed*.
+Expo-out for arrivals, a cubic in-out for journeys, and a damped spring
+(`--ease-spring`, CSS `linear()`) for things that land.
+
+| Moment | What moves |
+| --- | --- |
+| Boot | The dot field ripples out from the word *see*; headline words rise through masks; the lens irises open; one sonar ping. |
+| Search | The lens follows the pointer (autopilot when idle); dots bulge off its rim; click anywhere to ping. |
+| X-ray | Under the lens, the copy becomes outlines with measured cap height, x-height, baseline and descender. |
+| Found | Magnetic pull, spring kick, ticks lock to the diagonals, crosshair, annotation draws and types in. |
+| Fix | Choosing a question opens the lens over the screen; the tangle snaps onto a grid; the question morphs into the first turn. |
+| Ask | Every later question flies from where it was asked (chip or ask bar) to its heading, sans to serif, with the scroll in step. |
+| Answer | Scan line, clip-and-rise blocks, odometer numbers, springy diagram nodes, staggered parts, a printing brief. |
+| Theme | The new theme spreads from the toggle as a circle. |
+
+`prefers-reduced-motion` gets all of the content and none of the movement:
+no boot, no flights, and the lens is parked, already on the fault. `?perf`
+records the lens's per-frame cost in `window.__lensFrames`.
 
 ## Components
 
