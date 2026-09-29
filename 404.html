@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Not found — mindunder.dev</title>
+    <meta name="robots" content="noindex" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@0;1&display=swap" />
+    <script>
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('mu-theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+    <link rel="stylesheet" href="/styles/tokens.css" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; }
+      html, body { height: 100%; }
+      body {
+        display: grid;
+        place-items: end start;
+        padding: clamp(1.5rem, 6vw, 5rem);
+        background: var(--bg) radial-gradient(circle, var(--dot) 0.8px, transparent 1.1px) 0 0 / 24px 24px;
+        color: var(--fg);
+        font-family: var(--font-sans);
+        overflow: hidden;
+        cursor: crosshair;
+      }
+      .lens {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 260px;
+        height: 260px;
+        margin: -130px 0 0 -130px;
+        border: 1px solid var(--fg-3);
+        border-radius: 50%;
+        background: var(--bg);
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+        transform: translate(70vw, 32vh);
+        transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .lens span { font: 400 10px/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+      main { position: relative; max-width: 44rem; }
+      .code { font: 400 11px/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); margin-bottom: 1.5rem; }
+      h1 { font: 400 clamp(3rem, 1rem + 6vw, 6.5rem)/0.95 var(--font-display); letter-spacing: -0.02em; text-wrap: balance; }
+      em { font-style: italic; color: var(--accent); }
+      a {
+        display: inline-flex;
+        gap: 0.75rem;
+        margin-top: 2rem;
+        padding: 0.8rem 1.1rem;
+        border-radius: 4px;
+        background: var(--accent);
+        color: var(--on-accent);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+      @media (prefers-reduced-motion: reduce) { .lens { transition: none; } }
+    </style>
+  </head>
+  <body>
+    <div class="lens" aria-hidden="true"><span>Nothing under here</span></div>
+    <main>
+      <p class="code">404 · No such page</p>
+      <h1>Nothing’s wrong here. It just isn’t <em>here</em>.</h1>
+      <a href="/">Back to the surface <span aria-hidden="true">→</span></a>
+    </main>
+    <script>
+      var lens = document.querySelector('.lens');
+      addEventListener('pointermove', function (e) {
+        lens.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+      }, { passive: true });
+    </script>
+  </body>
+</html>
