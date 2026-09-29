@@ -36,7 +36,7 @@ export function createApp(content, root = document) {
   if (rootNode && el.entry) {
     el.entry.replaceChildren(
       ...rootNode.chips.map((chip, i) =>
-        h('a', { class: 'entry-item', href: `#/${chip.target}`, onclick: (e) => { e.preventDefault(); choose(chip); } },
+        h('a', { class: 'entry-item', href: `#/${chip.target}`, onclick: (e) => { e.preventDefault(); choose(chip, { from: e.currentTarget.querySelector('.entry-label') }); } },
           h('span', { class: 'entry-index' }, String(i + 1).padStart(2, '0')),
           h('span', { class: 'entry-label' }, chip.label),
           h('span', { class: 'entry-arrow', 'aria-hidden': 'true' }, chip.expand ? '+' : '→'),
@@ -45,18 +45,41 @@ export function createApp(content, root = document) {
     );
   }
 
-  async function enterSession() {
-    if (mode === 'session') return;
+  // Leave the landing and open the first turn. Where View Transitions exist,
+  // the entry the visitor chose morphs into the turn's heading.
+  async function openTurn(question, meta, from) {
+    if (mode === 'session') return addTurn(question, meta);
     mode = 'session';
-    el.landing.classList.add('is-leaving');
+    busy = true;
     el.input.placeholder = copy.ui.placeholderSession;
-    await wait(360);
-    el.landing.hidden = true;
-    el.session.hidden = false;
-    el.body.classList.remove('is-landing');
-    el.body.classList.add('is-session');
-    window.scrollTo(0, 0);
-    document.dispatchEvent(new CustomEvent('mu:session'));
+    const swap = () => {
+      el.landing.hidden = true;
+      el.session.hidden = false;
+      el.body.classList.remove('is-landing');
+      el.body.classList.add('is-session');
+      window.scrollTo(0, 0);
+      document.dispatchEvent(new CustomEvent('mu:session'));
+      return addTurn(question, meta);
+    };
+
+    if (!document.startViewTransition || reducedMotion()) {
+      el.landing.classList.add('is-leaving');
+      await wait(360);
+      return swap();
+    }
+
+    let t;
+    if (from) from.style.viewTransitionName = 'mu-question';
+    const vt = document.startViewTransition(() => {
+      t = swap();
+      if (from) t.heading.style.viewTransitionName = 'mu-question';
+    });
+    await vt.updateCallbackDone;
+    vt.finished.finally(() => {
+      t.heading.style.viewTransitionName = '';
+      if (from) from.style.viewTransitionName = '';
+    });
+    return t;
   }
 
   function reset() {
@@ -173,22 +196,21 @@ export function createApp(content, root = document) {
 
   async function navigate(target, query, opts = {}) {
     if (busy) return;
-    await enterSession();
 
     if (target === '_engage') {
       const r = E.resolveL3(content, session);
-      const t = addTurn(query || copy.engagement.userTellMore, { label: copy.navigation.engageTrailLabel });
+      const t = await openTurn(query || copy.engagement.userTellMore, { label: copy.navigation.engageTrailLabel }, opts.from);
       return respond(t, r.blocks, r.chips, THINK.engage, opts);
     }
     if (target === '_show_brief') {
       const r = E.generateBrief(content, session);
-      const t = addTurn(query || copy.navigation.userShowBrief, { label: 'Brief' });
+      const t = await openTurn(query || copy.navigation.userShowBrief, { label: 'Brief' }, opts.from);
       return respond(t, r.blocks, r.chips, THINK.brief, opts);
     }
     if (target === '_book') {
       const data = E.briefData(content, session);
       const justSawBrief = turns.at(-1)?.label === 'Brief';
-      const t = addTurn(query || copy.booking.userStart, { label: 'Book' });
+      const t = await openTurn(query || copy.booking.userStart, { label: 'Book' }, opts.from);
       return respond(t,
         [{ type: 'text', content: copy.booking.intro }, !justSawBrief && { type: 'brief', data }, { type: 'compose', data }, { type: 'text', content: copy.booking.after }].filter(Boolean),
         [{ label: copy.chips.backToProjects, target: 'projects' }, { label: copy.chips.startOver, target: 'root' }],
@@ -197,7 +219,7 @@ export function createApp(content, root = document) {
     if (target === '_add_context') {
       session = { ...session, selfDisclosed: true };
       updateRail();
-      const t = addTurn(copy.engagement.userAddContext, { label: 'Context' });
+      const t = await openTurn(copy.engagement.userAddContext, { label: 'Context' }, opts.from);
       await respond(t, [{ type: 'text', content: copy.engagement.addContextPrompt }], [], 200);
       el.input.focus();
       return;
@@ -212,7 +234,7 @@ export function createApp(content, root = document) {
 
     let chips = E.withParentChip(content, node.chips || [], target, seen);
     chips = E.applyGravity(chips, session, content);
-    const t = addTurn(query || node.label, { label: node.label, quoted: !!query });
+    const t = await openTurn(query || node.label, { label: node.label, quoted: !!query }, opts.from);
     history.replaceState(null, '', target === content.root ? location.pathname : `#/${target}`);
     updateRail();
 
@@ -227,9 +249,8 @@ export function createApp(content, root = document) {
   async function expand(target, label, opts = {}) {
     const node = content.nodes[target];
     if (!node || busy) return;
-    await enterSession();
     session = { ...session, viewed: [...new Set([...session.viewed, target])] };
-    const t = addTurn(label || node.label, { label: node.label, aside: true });
+    const t = await openTurn(label || node.label, { label: node.label, aside: true }, opts.from);
     updateRail();
     return respond(t, node.blocks, node.chips || [], THINK.expand, opts);
   }
@@ -246,11 +267,9 @@ export function createApp(content, root = document) {
     const describing = session.selfDisclosed && q.split(/\s+/).length > 3;
     if (r.layer === 1 && !describing) return navigate(r.target, q);
 
-    await enterSession();
-
     if (session.selfDisclosed) {
       session = E.record(session, { nodeId: null, query: q, isFreeQuestion: true, isDisclosure: true });
-      const t = addTurn(q, { label: truncate(q) });
+      const t = await openTurn(q, { label: truncate(q) });
       return respond(t, [{ type: 'text', content: copy.engagement.addedToBrief }],
         [{ label: copy.chips.showBrief, target: '_show_brief' }, { label: copy.chips.keepExploring, target: 'projects' }],
         THINK.addToBrief);
@@ -258,13 +277,13 @@ export function createApp(content, root = document) {
 
     if (r.layer === 3) {
       session = E.record(session, { nodeId: null, query: q, isFreeQuestion: true, isDisclosure: true });
-      const t = addTurn(q, { label: truncate(q) });
+      const t = await openTurn(q, { label: truncate(q) });
       const res = E.resolveL3(content, session);
       return respond(t, res.blocks, res.chips, THINK.l3);
     }
 
     session = E.record(session, { nodeId: null, query: q, isFreeQuestion: true });
-    const t = addTurn(q, { label: truncate(q) });
+    const t = await openTurn(q, { label: truncate(q) });
     const res = E.resolveL2(q);
     return respond(t, res.blocks, E.applyGravity(res.chips, session, content), THINK.l2);
   }

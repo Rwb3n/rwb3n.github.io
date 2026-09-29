@@ -942,3 +942,10 @@ html:not(.js) .landing { padding-bottom: var(--space-8); }
   .session { display: block; padding: 0; }
   .reveal, .b-text .w, .b-flow .fl-node { opacity: 1 !important; transform: none !important; }
 }
+
+/* View transition: landing → session ------------------------------------ */
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 360ms; animation-timing-function: var(--ease-out); }
+::view-transition-group(mu-question) { animation-duration: 620ms; animation-timing-function: var(--ease-out); }
+::view-transition-old(mu-question),
+::view-transition-new(mu-question) { height: 100%; width: auto; object-fit: contain; object-position: left center; }
