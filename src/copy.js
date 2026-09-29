@@ -123,6 +123,7 @@ export const copy = {
       interest: 'Projects you looked at',
       context: 'What you told me',
       questions: 'Questions you asked',
+      estimate: 'Your estimate',
     },
     defaults: {
       minimal: 'None yet',

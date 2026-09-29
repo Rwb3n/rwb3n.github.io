@@ -59,7 +59,6 @@ if (hasAudio) createSound();
 createSettings({
   toggle: document.querySelector('[data-settings-toggle]'),
   panel: document.querySelector('[data-settings]'),
-  pause: document.querySelector('[data-motion-pause]'),
   soundAvailable: hasAudio,
 });
 

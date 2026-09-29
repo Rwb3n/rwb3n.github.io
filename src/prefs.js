@@ -1,23 +1,24 @@
 // Reading preferences, chosen by the visitor and remembered.
 //
-//   motion  'full'  every animation
-//           'calm'  nothing moves by itself; things respond only to you (default)
+//   motion  'full'  every animation (default). Anything that starts by itself
+//                   finishes within 5 seconds (WCAG 2.2.2 Pause, Stop, Hide).
+//           'calm'  nothing moves by itself; things respond only to you
 //           'off'   no animation at all
 //   text    'standard' | 'large'
 //   sound   true | false
 //
 // Defaults come from content/site.json ("reading"). If the operating system asks
-// for reduced motion, motion starts at 'off' unless the visitor picked otherwise.
+// for reduced motion, motion starts at 'calm' unless the visitor picked otherwise.
 
 const KEY = 'mu-reading';
-const state = { motion: 'calm', text: 'standard', sound: false };
+const state = { motion: 'full', text: 'standard', sound: false };
 const html = document.documentElement;
 
 export function initPrefs(defaults = {}) {
   Object.assign(state, pick(defaults));
   let stored = {};
   try { stored = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { /* private mode */ }
-  if (!stored.motion && matchMedia('(prefers-reduced-motion: reduce)').matches) state.motion = 'off';
+  if (!stored.motion && matchMedia('(prefers-reduced-motion: reduce)').matches) state.motion = 'calm';
   Object.assign(state, pick(stored));
   apply();
 }

@@ -76,6 +76,19 @@ export function nodeStrings(node) {
         b.edges.forEach((e) => label(e.label, where));
         if (b.loop) label(b.loop.label, where);
         break;
+      case 'compare':
+        label(b.label, where);
+        (b.states || []).forEach((st) => {
+          label(st.label, where); label(st.title, where); prose(st.text, where);
+          if (st.stat) label(st.stat.label, where);
+          st.nodes.forEach((n) => { label(n.label, where); label(n.via, where); });
+        });
+        break;
+      case 'estimate':
+        label(b.title, where); label(b.addLabel, where); prose(b.note, where); prose(b.added, where);
+        b.inputs.forEach((f) => { label(f.label, where); prose(f.hint, where); label(f.less, where); label(f.more, where); });
+        Object.values(b.labels || {}).forEach((l) => label(l, where));
+        break;
       default: break;
     }
   };

@@ -46,7 +46,10 @@ export function renderRegions(site, content) {
     '<nav class="entry" aria-label="Start here" data-entry>',
     ...entries.map((e) => `  ${e}`),
     '</nav>',
-    L.allLink ? `<p class="entry-all"><a href="#/all" data-all-link>${esc(L.allLink)} <span aria-hidden="true">→</span></a></p>` : '',
+    '<div class="entry-more">',
+    L.tool ? `  <a class="entry-tool" href="#/${esc(L.tool.target)}" data-target="${esc(L.tool.target)}"><span class="entry-tool-label">${esc(L.tool.label)}</span>${L.tool.note ? `<span class="entry-tool-note">${esc(L.tool.note)}</span>` : ''}<span class="entry-arrow" aria-hidden="true">→</span></a>` : '',
+    L.allLink ? `  <p class="entry-all"><a href="#/all" data-all-link>${esc(L.allLink)} <span aria-hidden="true">→</span></a></p>` : '',
+    '</div>',
   ].filter(Boolean);
 
   const meta = [

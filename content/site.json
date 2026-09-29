@@ -71,9 +71,10 @@
     "eyebrow": "Business process automation · London",
     "headline": ["I find the work your team repeats by hand.", "Then I build a system that does it."],
     "accent": "find",
-    "lede": "I work alone, from London, for businesses that want less manual work.",
+    "lede": "For example: copying data between systems, chasing approvals by email, or making the same report every week. I work alone, from London.",
     "facts": ["firstStep", "cost", "reply"],
     "allLink": "Read everything on one page",
+    "tool": { "target": "estimate", "label": "Work out what repeated work costs you", "note": "Type three numbers. It takes about one minute." },
     "lens": {
       "idle": "Illustration: a business process drawn as a network. Move your pointer to look underneath it. Click to scan the whole picture.",
       "idleTouch": "Illustration: a business process drawn as a network. Move your finger across it to look underneath. Tap to scan the whole picture.",
@@ -91,7 +92,7 @@
   },
 
   "reading": {
-    "motion": "calm",
+    "motion": "full",
     "text": "standard",
     "sound": false
   },

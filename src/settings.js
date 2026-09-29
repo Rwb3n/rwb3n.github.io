@@ -4,7 +4,7 @@
 
 import { prefs, setPref } from './prefs.js';
 
-export function createSettings({ toggle, panel, pause, soundAvailable = true }) {
+export function createSettings({ toggle, panel, soundAvailable = true }) {
   if (!toggle || !panel) return;
   toggle.hidden = false;
   if (!soundAvailable) panel.querySelector('[data-sound-field]')?.remove();
@@ -45,7 +45,6 @@ export function createSettings({ toggle, panel, pause, soundAvailable = true }) 
   });
 
   // The landing's "Stop the animation" button (shown only in full motion).
-  pause?.addEventListener('click', () => setPref('motion', 'calm'));
 
   document.addEventListener('mu:prefs', sync);
   sync();

@@ -53,13 +53,21 @@ export function createMap(content, { onPick } = {}) {
     if (id && onPick) onPick(id);
   });
 
+  // Put the label on whichever side of the point it fits; if neither, keep it
+  // inside the map (a label cut off at the edge is unreadable).
   function place(textEl, id, str) {
     const { x, y } = pos[id];
-    const right = x < W * 0.6;
-    textEl.setAttribute('x', right ? x + 7 : x - 7);
-    textEl.setAttribute('y', y + 3);
-    textEl.setAttribute('text-anchor', right ? 'start' : 'end');
     textEl.textContent = str;
+    textEl.setAttribute('y', y + 3);
+    textEl.setAttribute('text-anchor', 'start');
+    let len = 0;
+    try { len = textEl.getComputedTextLength(); } catch { /* not rendered yet */ }
+    if (!len) len = str.length * 5.4;
+    let lx;
+    if (x + 7 + len <= W) lx = x + 7;
+    else if (x - 7 - len >= 0) lx = x - 7 - len;
+    else lx = Math.max(0, W - len);
+    textEl.setAttribute('x', lx);
   }
 
   const route = [];

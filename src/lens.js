@@ -8,7 +8,8 @@
 //
 // Phases:  boot → live → fix
 //   boot  the dot field ripples out from the word "see"; the lens irises open
-//   live  search (pointer or autopilot), sonar pings, magnetic lock on the fault
+//   live  one short demonstration (the lens finds the fault by itself), then it
+//         follows the pointer, with a magnetic lock on the fault
 //   fix   the lens covers the screen and the graph untangles; resolves a promise
 //
 // Two canvases. The surface is drawn once per size/theme onto the base canvas.
@@ -34,9 +35,14 @@ export function createLens(canvas, caption, { onFrame } = {}) {
   const ctx = overlay.getContext('2d');
   let dirty = [];            // rects painted last frame, cleared next frame
   const mark = (x, y, w, h) => dirty.push([x, y, w, h]);
-  // Motion modes (prefs.js): 'full' animates freely; 'calm' never moves by itself —
-  // the lens parks on the fault and only follows the pointer while you move it;
-  // 'off' jumps without easing. `reduce.matches` = "no decorative animation".
+  // Motion modes (prefs.js):
+  //   full  boot, one demonstration and interaction. Everything that starts by
+  //         itself is over in under 5 seconds (WCAG 2.2.2), then the loop sleeps
+  //         until the visitor moves the pointer.
+  //   calm  no boot, no demonstration: the lens is parked on the fault and only
+  //         follows the pointer while you move it.
+  //   off   jumps without easing.
+  // `reduce.matches` = "no decorative animation".
   const reduce = { get matches() { return motion() !== 'full'; } };
   const calm = () => motion() === 'calm';
   const finePointer = matchMedia('(pointer: fine)').matches;
@@ -63,7 +69,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
   // Lens position: current, target, and who's driving.
   const lens = { x: 0, y: 0, tx: 0, ty: 0 };
   const pointer = { x: 0, y: 0 };
-  let driver = 'auto';       // 'auto' | 'pointer'
+  let driver = 'auto';       // 'auto' (the demonstration) | 'pointer' | 'home' (gliding back to the fault) | 'rest'
   let lastPointer = 0;
   const auto = { legs: [], i: 0, t0: 0, from: null };
 
@@ -103,6 +109,10 @@ export function createLens(canvas, caption, { onFrame } = {}) {
       lens.y = lens.ty = pointer.y = auto.legs[0].y;
       auto.from = { x: lens.x, y: lens.y };
       auto.i = 1;
+    } else if (driver === 'rest' || driver === 'home') {
+      lens.tx = scene.fault.x;
+      lens.ty = scene.fault.y;
+      if (!reduce.matches) wake();
     }
     return true;
   }
@@ -332,6 +342,8 @@ export function createLens(canvas, caption, { onFrame } = {}) {
       drawSurface();
       ctx.clearRect(0, 0, W, H);
       r = 0; rv = 0;
+      auto.t0 = now;
+      auto.from = { x: lens.x, y: lens.y };
       // One ping once the lens is open, so the visitor knows there's something under here.
       setTimeout(() => ping(lens.x, lens.y, false), 520);
     }
@@ -521,12 +533,22 @@ export function createLens(canvas, caption, { onFrame } = {}) {
       ctx.fillText(text, x, y);
     };
     const typed = (str, t0) => str.slice(0, Math.max(0, Math.floor((s - t0) / 0.028)));
+    // A paper plate behind the words, so the lines under the lens never run through them.
+    ctx.font = `10px ${colors.mono}`;
+    const lines = (copy.lens.noteLines || []).map((n) => n.toUpperCase());
+    const plateW = Math.max(ctx.measureText(copy.lens.note || '').width * 1.9, ...lines.map((n) => ctx.measureText(n).width)) + 10;
+    const plateH = 30 + lines.length * 14;
+    ctx.globalAlpha = 0.86 * clamp01((s - 0.28) / 0.2);
+    ctx.fillStyle = colors.bg;
+    ctx.fillRect(x1 + 12, y1 - 16, plateW, plateH);
+    ctx.globalAlpha = 1;
+    mark(x1 + 12, y1 - 16, plateW, plateH);
     ctx.font = `italic 22px ${colors.display}`;
     ctx.fillStyle = colors.accent;
     halo(typed(copy.lens.note || '', 0.28), x1 + 18, y1 + 6);
     ctx.font = `10px ${colors.mono}`;
     ctx.fillStyle = colors.fg2;
-    (copy.lens.noteLines || []).forEach((n, i) => halo(typed(n.toUpperCase(), 0.5 + i * 0.16), x1 + 18, y1 + 24 + i * 14));
+    lines.forEach((n, i) => halo(typed(n, 0.5 + i * 0.16), x1 + 18, y1 + 24 + i * 14));
     ctx.lineWidth = 1;
   }
 
@@ -626,26 +648,31 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     }
     while (picks.length < 4) picks.push({ x: f.x + (picks.length % 2 ? -1 : 1) * R * 0.5, y: f.y + R * 0.3 });
     const home = { x: f.x, y: f.y, fault: true };
-    auto.legs = [picks[0], picks[1], home, picks[2], picks[3], home];
-    auto.i = 0;
-    auto.t0 = performance.now();
-    auto.from = { x: lens.x, y: lens.y };
+    // One pass: a look somewhere else, then straight to the fault.
+    auto.legs = [{ ...picks[0], move: 900 }, { ...home, move: 1200 }];
+    // Re-planned on resize and when fonts land: keep the demonstration's clock.
+    if (!auto.t0) { auto.i = 0; auto.t0 = performance.now(); auto.from = { x: lens.x, y: lens.y }; }
   }
 
   function stepAuto(now) {
     const leg = auto.legs[auto.i];
-    const move = 2600, dwell = leg.fault ? 3600 : 900;
+    if (!leg) { driver = 'rest'; return; }
+    const move = leg.move || 1000;
     const e = now - auto.t0;
-    if (e < move) {
-      const p = easeInOut(e / move);
-      lens.tx = auto.from.x + (leg.x - auto.from.x) * p;
-      lens.ty = auto.from.y + (leg.y - auto.from.y) * p;
-    } else if (e > move + dwell) {
+    const p = easeInOut(clamp01(e / move));
+    lens.tx = auto.from.x + (leg.x - auto.from.x) * p;
+    lens.ty = auto.from.y + (leg.y - auto.from.y) * p;
+    if (e >= move) {
       auto.from = { x: leg.x, y: leg.y };
-      auto.i = (auto.i + 1) % auto.legs.length;
+      auto.i += 1;
       auto.t0 = now;
+      if (auto.i >= auto.legs.length) driver = 'rest';
     }
   }
+
+  // The lens has stopped moving, nothing is travelling: the frame is final.
+  const noteDone = () => !found || reduce.matches || (performance.now() - foundT) / 1000 > 0.5 + ((copy.lens.noteLines || []).length) * 0.16 + 0.45;
+  const settled = () => noteDone() && pings.length === 0 && Math.abs(lens.tx - lens.x) < 0.3 && Math.abs(lens.ty - lens.y) < 0.3 && Math.abs(rTarget - r) < 0.01 && Math.abs(rv) < 0.01 && Math.abs(foundAmt - (found ? 1 : 0)) < 0.01;
 
   function loop(now) {
     raf = 0;
@@ -654,13 +681,14 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     last = now;
 
     if (phase === 'live') {
-      if (!reduce.matches && driver === 'pointer' && now - lastPointer > 6000) {
-        driver = 'auto';
-        auto.from = { x: lens.x, y: lens.y };
-        auto.t0 = now;
+      // Full: when the pointer rests, the lens glides back to the fault once.
+      if (!reduce.matches && driver === 'pointer' && now - lastPointer > 2500) {
+        driver = 'home';
+        lens.tx = scene.fault.x;
+        lens.ty = scene.fault.y;
       }
       if (driver === 'auto') { if (!reduce.matches) stepAuto(now); }
-      else {
+      else if (driver === 'pointer') {
         // Magnetic: near the fault, the lens is pulled onto it.
         const f = scene.fault;
         const d = Math.hypot(pointer.x - f.x, pointer.y - f.y);
@@ -680,8 +708,10 @@ export function createLens(canvas, caption, { onFrame } = {}) {
       foundAmt += ((found ? 1 : 0) - foundAmt) * Math.min(1, dt * 8);
       updateFound(now);
     }
-    // Calm: once the lens has settled and no ping is travelling, stop drawing.
-    if (calm() && phase === 'live' && pings.length === 0 && Math.abs(lens.tx - lens.x) < 0.3 && Math.abs(lens.ty - lens.y) < 0.3 && Math.abs(1 - r) < 0.01 && Math.abs(rv) < 0.01 && Math.abs(foundAmt - (found ? 1 : 0)) < 0.01) {
+    // Once the lens has settled and nothing is travelling, stop drawing. In full
+    // motion, not while the demonstration runs or the pointer might go home.
+    const mayRest = calm() || driver === 'rest' || driver === 'home';
+    if (phase === 'live' && mayRest && settled()) {
       try { frame(now, dt); emit(); } catch (err) { console.error('[lens]', err); }
       running = false;
       raf = 0;
@@ -733,9 +763,9 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     last = performance.now();
     raf = requestAnimationFrame(loop);
   }
-  // Calm mode: start drawing again because the visitor did something.
+  // The loop sleeps when nothing moves; the visitor doing something wakes it.
   function wake() {
-    if (calm() && phase === 'live') run();
+    if (motion() !== 'off' && phase === 'live') run();
   }
   function stop() {
     running = false;
@@ -772,6 +802,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     if (e.type === 'pointerdown' && !e.target.closest?.('a, button, input, label, kbd')) ping(x, y, false);
     if (motion() === 'off') { lens.x = lens.tx = x; lens.y = lens.ty = y; updateFound(performance.now()); foundAmt = found ? 1 : 0; clearDirty(); frame(performance.now(), 0); emit(); }
     else if (calm()) { lens.tx = x; lens.ty = y; wake(); }
+    else wake();
   }
   addEventListener('pointermove', onPointer, { passive: true });
   addEventListener('pointerdown', onPointer, { passive: true });
@@ -821,7 +852,8 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     // Resolves when the lens has covered the screen and the graph is straight.
     // ms: the first time it plays in full; after that it's a quick reprise.
     fix(ms = FIX_MS) {
-      if (!running || reduce.matches || phase !== 'live') return Promise.resolve();
+      if (paused || !visible || !scene || reduce.matches || phase !== 'live') return Promise.resolve();
+      run(); // the loop may be asleep after the demonstration
       return new Promise((resolve) => {
         phase = 'fix';
         fix.ms = ms;
@@ -839,7 +871,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
 
 const TAU = Math.PI * 2;
 const PERF = /[?&]perf\b/.test(location.search); // ?perf records frame times in window.__lensFrames
-const OBSTACLES = '.landing .eyebrow, .landing .display-line, .landing .lede, .landing .offer-item, .landing .entry-item, .landing .entry-all, .lens-caption, .lens-pause, .ask';
+const OBSTACLES = '.landing .eyebrow, .landing .display-line, .landing .lede, .landing .offer-item, .landing .entry-item, .landing .entry-all, .landing .entry-tool, .lens-caption, .ask';
 const TEXTY = '.eyebrow, .display-line, .lede';
 const union = (rs) => {
   const l = Math.min(...rs.map((r) => r.left)), tp = Math.min(...rs.map((r) => r.top));

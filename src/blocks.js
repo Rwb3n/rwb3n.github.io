@@ -5,6 +5,7 @@ import { h, reducedMotion } from './dom.js';
 import { renderFlow } from './flow.js';
 import { copy, site, config, factText } from './copy.js';
 import { mailtoHref, briefAsText, briefRows } from './engine.js';
+import { compare, estimate } from './showpieces.js';
 
 export function renderBlock(block, ctx) {
   const fn = renderers[block.type];
@@ -37,7 +38,7 @@ const renderers = {
     const el = h('div', { class: 'b-metric-row' },
       items.map((m) => h('div', null,
         h('span', { class: 'b-metric-value', 'data-count': m.value }, m.value),
-        h('span', { class: 'b-metric-label micro' }, m.label),
+        h('span', { class: 'b-metric-label' }, m.label),
       )),
     );
     el.onReveal = () => el.querySelectorAll('[data-count]').forEach(odometer);
@@ -47,7 +48,7 @@ const renderers = {
   metric: ({ value, label, sublabel }) => {
     const el = h('div', { class: 'b-metric' },
       h('span', { class: 'b-metric-big', 'data-count': value }, value),
-      h('span', { class: 'b-metric-label micro' }, label),
+      h('span', { class: 'b-metric-label' }, label),
       sublabel && h('span', { class: 'b-metric-sub' }, sublabel),
     );
     el.onReveal = () => el.querySelectorAll('[data-count]').forEach(odometer);
@@ -188,6 +189,9 @@ const renderers = {
     return h('dl', { class: 'b-facts' }, rows.map(([f, v]) => h('div', null, h('dt', { class: 'micro' }, f.label), h('dd', null, v))));
   },
 
+  compare,
+  estimate,
+
   timeline: ({ items = [] }) =>
     h('ol', { class: 'b-layers', role: 'list' },
       items.map((i) => h('li', { class: 'b-layer' },
@@ -237,7 +241,7 @@ function odometer(el) {
   if (!m || reducedMotion() || el.dataset.rolled) return;
   el.dataset.rolled = '1';
   const [, pre, num, post] = m;
-  el.setAttribute('aria-label', raw);
+
   const digits = [...num];
   const cols = digits.map((ch, i) => {
     if (!/\d/.test(ch)) return h('span', { class: 'odo-lit' }, ch);
@@ -253,7 +257,8 @@ function odometer(el) {
     });
     return col;
   });
-  el.replaceChildren(h('span', { 'aria-hidden': 'true', class: 'odo' }, pre, cols, post));
+  // The rolling digits are hidden from screen readers; they read the plain value.
+  el.replaceChildren(h('span', { class: 'visually-hidden' }, raw), h('span', { 'aria-hidden': 'true', class: 'odo' }, pre, cols, post));
 }
 
 // Cards lean toward the pointer, with a light that follows it.

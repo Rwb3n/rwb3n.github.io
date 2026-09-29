@@ -62,3 +62,17 @@ test('brief and mailto carry the session', () => {
   assert.ok(href.startsWith('mailto:lab@mindunder.dev?subject='));
   assert.match(decodeURIComponent(href), /re-keying invoices/);
 });
+
+test('an estimate survives navigation and reaches the brief and email', () => {
+  let s = { ...E.newSession(), estimate: '3 people, 4 hours a week each, £30 an hour: about 552 hours and £16,560 a year.' };
+  s = E.record(s, { nodeId: 'method' });
+  const d = E.briefData(content, s);
+  assert.match(d.estimate, /552 hours/);
+  assert.match(decodeURIComponent(E.mailtoHref('lab@mindunder.dev', d)), /Your estimate: 3 people/);
+  assert.equal(E.briefData(content, E.newSession()).estimate, null, 'no estimate, no row');
+});
+
+test('time and value questions open the estimate; price questions open cost', () => {
+  for (const q of ['how much time do we waste', 'is it worth it', 'roi']) assert.equal(E.route(content.intents, q).target, 'estimate', q);
+  assert.equal(E.route(content.intents, 'how much does it cost').target, 'cost');
+});

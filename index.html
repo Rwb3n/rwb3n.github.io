@@ -27,7 +27,7 @@
 
     <!-- Theme and reading settings are applied before first paint, so there is no flash. -->
     <!-- sync:reading -->
-    <script>window.__muReading = {"motion":"calm","text":"standard"};</script>
+    <script>window.__muReading = {"motion":"full","text":"standard"};</script>
     <!-- /sync:reading -->
     <script>
       (function () {
@@ -35,7 +35,7 @@
         try { t = localStorage.getItem('mu-theme'); r = JSON.parse(localStorage.getItem('mu-reading') || '{}'); } catch (e) {}
         if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         var def = window.__muReading || {};
-        var motion = r.motion || (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'off' : def.motion || 'calm');
+        var motion = r.motion || (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'calm' : def.motion || 'full');
         d.dataset.theme = t;
         d.dataset.motion = motion;
         d.dataset.text = r.text || def.text || 'standard';
@@ -83,8 +83,8 @@
         <h2 class="settings-title" id="settings-title">Reading settings</h2>
         <fieldset>
           <legend>Motion</legend>
-          <label><input type="radio" name="motion" value="calm" /> <span><b>Calm</b> Nothing moves by itself.</span></label>
-          <label><input type="radio" name="motion" value="full" /> <span><b>Full</b> All animation.</span></label>
+          <label><input type="radio" name="motion" value="full" /> <span><b>Full</b> All animation. Nothing moves by itself for more than 5 seconds.</span></label>
+          <label><input type="radio" name="motion" value="calm" /> <span><b>Calm</b> Nothing moves by itself. Short fades only.</span></label>
           <label><input type="radio" name="motion" value="off" /> <span><b>Off</b> No animation at all.</span></label>
         </fieldset>
         <fieldset>
@@ -114,7 +114,7 @@
               <span class="display-line">I <em class="is-accent">find</em> the work your team repeats by hand.</span>
               <span class="display-line">Then I build a system that does it.</span>
             </h1>
-            <p class="lede">I work alone, from London, for businesses that want less manual work.</p>
+            <p class="lede">For example: copying data between systems, chasing approvals by email, or making the same report every week. I work alone, from London.</p>
           </div>
           <dl class="offer">
             <div class="offer-item"><dt>First step</dt><dd>A free 30-minute call. Afterwards you get a one-page written summary of where time is lost. You keep it whether or not we work together.</dd></div>
@@ -127,7 +127,10 @@
             <a class="entry-item" href="#/proof" data-target="proof"><span class="entry-index">03</span><span class="entry-label">Proof from systems I run</span><span class="entry-arrow" aria-hidden="true">→</span></a>
             <a class="entry-item" href="#/process" data-target="process"><span class="entry-index">04</span><span class="entry-label">How we start</span><span class="entry-arrow" aria-hidden="true">→</span></a>
           </nav>
-          <p class="entry-all"><a href="#/all" data-all-link>Read everything on one page <span aria-hidden="true">→</span></a></p>
+          <div class="entry-more">
+            <a class="entry-tool" href="#/estimate" data-target="estimate"><span class="entry-tool-label">Work out what repeated work costs you</span><span class="entry-tool-note">Type three numbers. It takes about one minute.</span><span class="entry-arrow" aria-hidden="true">→</span></a>
+            <p class="entry-all"><a href="#/all" data-all-link>Read everything on one page <span aria-hidden="true">→</span></a></p>
+          </div>
           <!-- /sync:landing -->
         </div>
 
@@ -136,7 +139,6 @@
           <span class="lens-caption-text" data-lens-caption-text>Illustration: a business process drawn as a network. Move your pointer to look underneath it. Click to scan the whole picture.</span>
           <!-- /sync:caption -->
         </figure>
-        <button class="lens-pause" type="button" data-motion-pause>Stop the animation</button>
       </section>
 
       <!-- Session. Rendered by the script once a question is asked. -->

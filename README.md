@@ -10,6 +10,7 @@ src/
   app.js          conversation controller (DOM)
   engine.js       routing, session, gravity, brief — pure, tested
   blocks.js       block renderers
+  showpieces.js   interactive blocks: compare (before/after), estimate
   flow.js         SVG flow diagrams
   lens.js         landing canvas
   copy.js         interface text (defaults; site.json overrides)

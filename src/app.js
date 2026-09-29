@@ -84,6 +84,12 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
       choose({ target: a.dataset.target }, { from: a.querySelector('.entry-label') });
     });
   }
+  for (const a of el.landing?.querySelectorAll('.entry-tool[data-target]') || []) {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      choose({ target: a.dataset.target }, { from: a.querySelector('.entry-tool-label') });
+    });
+  }
   for (const a of document.querySelectorAll('[data-all-link]')) {
     a.addEventListener('click', (e) => { e.preventDefault(); showAll(); });
   }
@@ -269,7 +275,7 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     if (gen !== generation) return;
     thinking.remove();
 
-    const ctx = { navigate: (target, label) => choose({ target, label }), route: () => map.snapshot() };
+    const ctx = { navigate: (target, label) => choose({ target, label }), route: () => map.snapshot(), addEstimate };
     for (const block of blocks) {
       const node = renderBlock(block, ctx);
       if (!node) continue;
@@ -447,6 +453,12 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
 
   // The trail is rebuilt only when turns change; scrolling just moves the
   // current marker, so keyboard focus on a trail button survives.
+  // From the estimate block: the visitor's own numbers, for their summary.
+  function addEstimate(text) {
+    session = { ...session, estimate: text };
+    updateRail();
+  }
+
   function updateRail() {
     el.trail.replaceChildren(
       ...turns.map((t) =>
@@ -499,6 +511,7 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
         if (a) animateScroll(a.getBoundingClientRect().top + window.scrollY - 80);
         else { el.page.hidden = true; mode = 'landing'; navigate(target); }
       },
+      addEstimate,
     };
     const main = (config.onePage.sections || []).filter((id) => content.nodes[id]);
     const extra = (config.onePage.appendix || []).filter((id) => content.nodes[id]);

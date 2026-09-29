@@ -69,11 +69,12 @@ Motion has three settings, chosen in **Reading settings**:
 
 | Setting | What moves |
 | --- | --- |
-| Calm (default) | Nothing starts by itself. The lens is parked on the fault and moves only while the visitor moves it. Short fades and scrolls (≤ 300 ms). |
-| Full | Everything above. A "Stop the animation" button is always visible (WCAG 2.2.2 Pause, Stop, Hide). |
+| Full (default) | Everything above, with one rule: anything that starts by itself is over within 5 seconds (WCAG 2.2.2 Pause, Stop, Hide). The boot plays, the lens makes one pass to the fault and locks, then the canvas stops drawing. After that, things move only when the visitor moves, scrolls or clicks. When the pointer rests, the lens glides back to the fault once. Measured: the last autonomous frame is at about 4 s. |
+| Calm | Nothing starts by itself. The lens is parked on the fault and moves only while the visitor moves it. Short fades and scrolls (≤ 300 ms). |
 | Off | Nothing moves. Scrolls jump. |
 
-`prefers-reduced-motion` maps to Off unless the visitor chose otherwise. The
+`prefers-reduced-motion` maps to Calm unless the visitor chose otherwise.
+Status pulses run twice, not forever. The
 choice (and text size) is stored in `localStorage` and applied before first
 paint as `html[data-motion]` / `html[data-text]`. `?perf`
 records the lens's per-frame cost in `window.__lensFrames`.
@@ -92,7 +93,24 @@ remembered.
 
 `src/blocks.js` renders the content blocks: `text`, `hero`, `callout`, `split`,
 `metric`, `metricRow`, `stats`, `pills`, `badge`, `grid`, `layers`, `table`,
-`code`, `progress`, `flow`, `brief`, `compose`, `timeline`.
+`code`, `progress`, `flow`, `brief`, `compose`, `fact`, `facts`, `timeline`,
+and the two interactive blocks in `src/showpieces.js`:
+
+- **`compare`**: one process in two states (Before / After). Steps that exist
+  in both states keep an `id` and move to their new place (FLIP); steps that
+  go away fade out; new ones grow in; the counter rolls. The steps are an
+  ordered list, the toggle is two `aria-pressed` buttons, and the change is
+  announced once. With motion Calm or Off it switches instantly.
+- **`estimate`**: what repeated work costs a year, from three numbers
+  (people, hours a week, cost an hour). Big numbers count to the new value;
+  a grid of working weeks fills in (two rows = one full-time person-year).
+  Every assumption is printed. Nothing is sent. Screen readers hear one
+  sentence after typing stops, not every frame. "Add this estimate to my
+  summary" puts the sentence into the visit summary and the booking email.
+
+The one-page view (`#/all`) uses scroll-driven animation (`animation-timeline:
+view()`): sections rise as they scroll into view, so they move only when the
+visitor scrolls.
 
 Flow diagrams (`src/flow.js`) are laid out by hand in SVG. They measure their
 labels, then choose a shape that fits: a horizontal flow folds to vertical, a

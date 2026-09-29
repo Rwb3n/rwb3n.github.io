@@ -36,6 +36,8 @@ test('site.json text passes the plain-language rules', () => {
     ...L.headline.map((t, i) => ({ kind: 'prose', text: t, where: `landing.headline[${i}]` })),
     { kind: 'prose', text: L.lede, where: 'landing.lede' },
     { kind: 'label', text: L.allLink, where: 'landing.allLink' },
+    L.tool && { kind: 'label', text: L.tool.label, where: 'landing.tool.label' },
+    L.tool?.note && { kind: 'prose', text: L.tool.note, where: 'landing.tool.note' },
     { kind: 'prose', text: site.meta.description, where: 'meta.description' },
     { kind: 'label', text: site.meta.title, where: 'meta.title' },
     { kind: 'label', text: site.onePage.title, where: 'onePage.title' },
@@ -44,8 +46,8 @@ test('site.json text passes the plain-language rules', () => {
       { kind: 'label', text: f.label, where: `facts.${k}.label` },
       f.value && !f.link && { kind: /\.$/.test(f.value) ? 'prose' : 'label', text: f.value, where: `facts.${k}.value` },
       f.missing && { kind: 'prose', text: f.missing, where: `facts.${k}.missing` },
-    ]).filter(Boolean),
-  ];
+    ]),
+  ].filter(Boolean);
   const issues = lintStrings(strings, site.language, { scope: 'site.json' }).filter((i) => i.level === 'error' && i.where !== 'whole topic');
   assert.equal(issues.length, 0, `\n${issues.length} problem(s):\n${report(issues)}`);
 });
@@ -53,6 +55,7 @@ test('site.json text passes the plain-language rules', () => {
 test('landing and one-page topics exist', () => {
   for (const id of [...site.onePage.sections, ...site.onePage.appendix]) assert.ok(content.nodes[id], `onePage lists missing topic "${id}"`);
   for (const k of site.landing.facts) assert.ok(site.facts[k], `landing lists missing fact "${k}"`);
+  if (site.landing.tool) assert.ok(content.nodes[site.landing.tool.target], `landing.tool opens missing topic "${site.landing.tool.target}"`);
 });
 
 test('facts still to fill in (reported, not a failure)', (t) => {

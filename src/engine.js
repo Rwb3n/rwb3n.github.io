@@ -95,6 +95,7 @@ export function newSession() {
     depth: 0,
     selfDisclosed: false,
     disclosureContent: [],
+    estimate: null,
   };
 }
 
@@ -106,6 +107,7 @@ export function record(s, { nodeId, query, isFreeQuestion = false, isDisclosure:
     depth: s.depth + 1,
     selfDisclosed: s.selfDisclosed || disclosed,
     disclosureContent: disclosed && query ? [...s.disclosureContent, query] : s.disclosureContent,
+    estimate: s.estimate ?? null,
   };
 }
 
@@ -204,6 +206,7 @@ export function briefData(content, s) {
     interest: projects.join(', ') || d.none,
     context: s.disclosureContent.join('; ') || d.nothingYet,
     questions: s.freeQuestions.join('; ') || d.none,
+    estimate: s.estimate || null,
   };
 }
 
