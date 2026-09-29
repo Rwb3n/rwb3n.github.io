@@ -42,7 +42,10 @@ export function renderFlow(block) {
   let wanted = false;
   const settle = () => requestAnimationFrame(() => requestAnimationFrame(() => wrap.classList.add('is-drawn')));
 
-  const ro = new ResizeObserver(([entry]) => draw(entry.contentRect.width));
+  const ro = new ResizeObserver(([entry]) => {
+    if (!canvas.isConnected) return ro.disconnect();
+    draw(entry.contentRect.width);
+  });
   ro.observe(canvas);
   wrap.drawIn = () => {
     wanted = true;

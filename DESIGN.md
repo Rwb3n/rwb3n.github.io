@@ -10,6 +10,12 @@ it all snags. Put the lens on it and it locks: **found**. On touch screens, or
 when the pointer is idle, the lens searches by itself and periodically settles
 on the fault.
 
+The fault and the autopilot's route aren't fixed coordinates: the lens
+measures the landing's text (the headline lines via `Range`, so it's the ink,
+not the box) and searches for the spot — and radius — where the lens and its
+annotation cover the fewest words. It holds from a 390px phone to a 1920px
+desktop and re-plans when webfonts land.
+
 Everything after the landing is a conversation. Visitors ask; the system
 answers in structured blocks — diagrams, metrics, tables — and offers the next
 questions. The deeper they go, the closer the "how would this work in my
@@ -45,10 +51,17 @@ italic "see", the fault, the current step), *live state* (pulse dots), and
 **Shape.** 2–4px radii and 1px hairlines. It's an instrument, not an app.
 
 **Motion.** One easing curve (`--ease-out`, an expo-out), four durations.
-The landing cascades in; answers arrive block by block, text rises word by word, diagrams
+The landing cascades in; the chosen question morphs into the first turn
+(View Transitions, where supported); answers arrive block by block, text rises word by word, diagrams
 draw their edges and send a spark along the path, metrics count up.
 `prefers-reduced-motion` gets all of the content and none of the movement — the
 lens is parked, already on the fault.
+
+The fault and the autopilot's route aren't fixed coordinates: the lens
+measures the landing's text (the headline lines via `Range`, so it's the ink,
+not the box) and searches for the spot — and radius — where the lens and its
+annotation cover the fewest words. It holds from a 390px phone to a 1920px
+desktop and re-plans when webfonts land.
 
 ## Components
 
