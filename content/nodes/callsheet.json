@@ -1,212 +1,228 @@
 [
   {
     "id": "callsheet",
-    "label": "CALLSHEET",
+    "label": "Callsheet: an automated online directory",
     "parent": null,
-    "intents": ["callsheet", "film", "media", "broadcasting", "directory"],
+    "intents": ["callsheet", "directory", "film", "media", "broadcasting"],
     "tags": ["project", "deep"],
     "blocks": [
-      { "type": "text", "content": "Autonomous directory for UK film, broadcasting, and media." },
-      { "type": "metricRow", "items": [{ "value": "54", "label": "Tables" }, { "value": "118", "label": "Procedures" }, { "value": "37", "label": "Scheduled" }, { "value": "~\u00a336", "label": "/month" }] },
-      { "type": "badge", "status": "Solo build \u00b7 Zero human ops", "variant": "active" }
+      { "type": "text", "content": "Callsheet is a public online directory of UK film, TV and media companies. I built it alone, and it runs without staff." },
+      { "type": "metricRow", "items": [
+        { "value": "37", "label": "Jobs run on a timetable" },
+        { "value": "~95%", "label": "Problems fixed automatically" },
+        { "value": "~£36", "label": "Running cost per month" }
+      ]},
+      { "type": "fact", "key": "callsheetUrl" }
     ],
     "chips": [
-      { "label": "What does zero ops mean?", "target": "callsheet_zero_ops", "expand": true },
-      { "label": "Architecture", "target": "callsheet_arch" },
-      { "label": "Autonomy model", "target": "callsheet_graduation" },
-      { "label": "Scheduler", "target": "callsheet_scheduler" },
-      { "label": "Projects", "target": "projects" }
+      { "target": "callsheet_zero_ops" },
+      { "target": "callsheet_graduation" },
+      { "target": "callsheet_arch" },
+      { "target": "projects" }
     ]
   },
   {
     "id": "callsheet_zero_ops",
-    "label": "Zero Ops",
-    "parent": null,
-    "intents": [],
-    "tags": ["project", "technical"],
+    "label": "Callsheet: how it runs without staff",
+    "parent": "callsheet",
+    "intents": ["without staff", "no staff", "runs itself"],
+    "tags": ["project"],
     "blocks": [
-      { "type": "text", "content": "No human reviews listings. No human runs compliance checks. No human schedules enrichment." },
-      { "type": "stats", "items": [{ "label": "Manual interventions", "value": "0 / week" }, { "label": "Auto-resolved", "value": "~95%" }, { "label": "Escalation rate", "value": "<5%" }] },
-      { "type": "text", "content": "The system handles everything from data ingestion to compliance to outreach. Ruben reviews the weekly briefing. That\u2019s it." }
+      { "type": "text", "content": "Nobody checks new listings by hand. Nobody runs the legal checks by hand. Nobody decides by hand when to update the data." },
+      { "type": "stats", "items": [
+        { "label": "Problems fixed automatically", "value": "About 95%" },
+        { "label": "Problems sent to me", "value": "Fewer than 5%" },
+        { "label": "My regular task", "value": "Reading one summary report each week" }
+      ]},
+      { "type": "text", "content": "The system handles new data, legal checks and emails to listed companies. I read the weekly report and deal with the few problems it sends me." }
     ],
     "chips": [
-      { "label": "How does it earn that trust?", "target": "callsheet_graduation" },
-      { "label": "What\u2019s the scheduler doing?", "target": "callsheet_scheduler" }
+      { "target": "callsheet_graduation" },
+      { "target": "callsheet_scheduler" }
     ]
   },
   {
     "id": "callsheet_arch",
-    "label": "CALLSHEET / Arch",
+    "label": "Callsheet: how it is built",
     "parent": "callsheet",
-    "intents": ["architecture", "layers", "five layer", "event bus"],
+    "intents": ["architecture", "layers", "how it is built"],
     "tags": ["project", "technical", "deep"],
+    "audience": "technical",
     "blocks": [
-      { "type": "text", "content": "Five layers. Closed-loop autonomy ladder." },
+      { "type": "text", "content": "In plain terms: the system watches what happens, records it, checks the results, and gives itself more work only when the results are good." },
       { "type": "flow", "layout": "horizontal", "nodes": [
-        { "id": "ob", "label": "Observe" },
-        { "id": "lo", "label": "Log" },
-        { "id": "ev", "label": "Evaluate" },
-        { "id": "gr", "label": "Graduate" },
-        { "id": "go", "label": "Govern" }
+        { "id": "ob", "label": "Watch" },
+        { "id": "lo", "label": "Record" },
+        { "id": "ev", "label": "Check results" },
+        { "id": "gr", "label": "Allow more" },
+        { "id": "go", "label": "Set limits" }
       ], "edges": [
         { "from": "ob", "to": "lo", "label": "events" },
         { "from": "lo", "to": "ev", "label": "decisions" },
-        { "from": "ev", "to": "gr", "label": "thresholds" },
-        { "from": "gr", "to": "go", "label": "authority" }
+        { "from": "ev", "to": "gr", "label": "targets" },
+        { "from": "gr", "to": "go", "label": "permission" }
       ], "loop": { "from": "go", "to": "ob", "label": "feedback" } },
       { "type": "layers", "items": [
-        { "label": "L4", "title": "Meatspace Interface", "detail": "Next.js 16 \u00b7 20 pages \u00b7 118 tRPC" },
-        { "label": "L3", "title": "Domain Instances", "detail": "Data \u00b7 Ops \u00b7 Platform \u00b7 Commercial" },
-        { "label": "L2", "title": "Cognitive Substrate", "detail": "Scoring \u00b7 Decay \u00b7 Ceremonies \u00b7 Graduation" },
-        { "label": "L1", "title": "Core Invariants", "detail": "Event Bus \u00b7 Scheduler \u00b7 Flow Engine \u00b7 Log" },
-        { "label": "L0", "title": "External", "detail": "Paddle \u00b7 Supabase \u00b7 R2 \u00b7 Resend" }
+        { "label": "Layer 4", "title": "Website and admin screens", "detail": "20 pages and 118 server functions." },
+        { "label": "Layer 3", "title": "Business areas", "detail": "Data, operations, platform and sales." },
+        { "label": "Layer 2", "title": "Rules for decisions", "detail": "Scoring, ageing of old data, and approval of new automatic tasks." },
+        { "label": "Layer 1", "title": "Core services", "detail": "Messages between parts, the timetable, process steps and the record of events." },
+        { "label": "Layer 0", "title": "Outside services", "detail": "Payments, database, file storage and email." }
       ]}
     ],
     "chips": [
-      { "label": "Domains", "target": "callsheet_domains" },
-      { "label": "Graduation", "target": "callsheet_graduation" },
-      { "label": "Scheduler", "target": "callsheet_scheduler" }
+      { "target": "callsheet_domains" },
+      { "target": "callsheet_graduation" },
+      { "target": "callsheet_scheduler" }
     ]
   },
   {
     "id": "callsheet_domains",
-    "label": "CALLSHEET / Domains",
+    "label": "Callsheet: its four business areas",
     "parent": "callsheet",
-    "intents": ["domain", "listings", "commercial"],
+    "intents": ["business areas", "domains", "domain"],
     "tags": ["project", "technical"],
+    "audience": "technical",
     "blocks": [
-      { "type": "text", "content": "Four bounded domains." },
-      { "type": "flow", "layout": "fanout", "title": "Event Bus \u2192 Domain Consumers", "nodes": [
-        { "id": "bus", "label": "Event Bus", "sublabel": "25 types", "variant": "accent" },
-        { "id": "d", "label": "Data", "sublabel": "9 consumers" },
-        { "id": "o", "label": "Operations", "sublabel": "12 consumers" },
-        { "id": "p", "label": "Platform", "sublabel": "4 consumers" },
-        { "id": "c", "label": "Commercial", "sublabel": "8 consumers" }
+      { "type": "text", "content": "The system is split into four business areas. A central message system sends each area the events it needs." },
+      { "type": "flow", "layout": "fanout", "title": "Central message system and the four areas", "nodes": [
+        { "id": "bus", "label": "Message system", "sublabel": "25 event types", "variant": "accent" },
+        { "id": "d", "label": "Data", "sublabel": "9 handlers" },
+        { "id": "o", "label": "Operations", "sublabel": "12 handlers" },
+        { "id": "p", "label": "Platform", "sublabel": "4 handlers" },
+        { "id": "c", "label": "Sales", "sublabel": "8 handlers" }
       ], "edges": [
         { "from": "bus", "to": "d", "label": "listings" },
-        { "from": "bus", "to": "o", "label": "compliance" },
-        { "from": "bus", "to": "p", "label": "lifecycle" },
+        { "from": "bus", "to": "o", "label": "legal checks" },
+        { "from": "bus", "to": "p", "label": "accounts" },
         { "from": "bus", "to": "c", "label": "revenue" }
       ]}
     ],
     "chips": [
-      { "label": "Trust verification", "target": "callsheet_trust" },
-      { "label": "Orchestrated flows", "target": "callsheet_flows" },
-      { "label": "Architecture", "target": "callsheet_arch" }
+      { "target": "callsheet_trust" },
+      { "target": "callsheet_flows" },
+      { "target": "callsheet_arch" }
     ]
   },
   {
     "id": "callsheet_graduation",
-    "label": "CALLSHEET / Graduation",
+    "label": "Callsheet: how tasks are approved to run alone",
     "parent": "callsheet",
-    "intents": ["graduation", "autonomy", "earns authority", "threshold"],
+    "intents": ["approved", "approval", "autonomy", "run alone", "threshold"],
     "tags": ["project", "technical", "deep"],
+    "audience": "technical",
     "blocks": [
-      { "type": "text", "content": "The system earns authority. Nothing starts autonomous." },
-      { "type": "progress", "label": "Capabilities Graduated", "current": 2, "total": 3, "sublabel": "Two graduated. Third earning trust." },
-      { "type": "table", "headers": ["Capability", "Threshold", "Cap"], "rows": [
-        ["Enrichment cadence", "FP < 2%, ROI > 50%", "10/mo"],
-        ["Ceremony auto-apply", "Non-financial, precedent \u2265 50", "5/mo"],
-        ["Algorithm rollout", "4wk @ 100%, declass < 5%", "1/mo"]
+      { "type": "text", "content": "No task starts out running alone. Each task must meet a clear target before it is allowed to." },
+      { "type": "progress", "label": "Tasks approved to run alone", "current": 2, "total": 3, "sublabel": "Two tasks are approved. The third is still being checked." },
+      { "type": "table", "headers": ["Task", "Target it must meet", "Monthly limit"], "rows": [
+        ["Deciding how often to refresh listings", "Fewer than 2% wrong results, and a return of more than 50% on its cost", "10 a month"],
+        ["Applying routine rule changes", "Nothing to do with money, and at least 50 similar past decisions", "5 a month"],
+        ["Releasing a new scoring method", "Four weeks in full use, with fewer than 5% of listings changing category", "1 a month"]
       ]},
-      { "type": "text", "content": "Rollout: 10% \u2192 25% \u2192 50% \u2192 100%. Auto-rollback if declassification exceeds 10% in 7 days." }
+      { "type": "text", "content": "A new scoring method is released in stages: to 10% of listings, then 25%, 50% and 100%. If more than 10% of listings change category within 7 days, the change is undone automatically." }
     ],
     "chips": [
-      { "label": "Scheduler", "target": "callsheet_scheduler" },
-      { "label": "Trust", "target": "callsheet_trust" },
-      { "label": "CALLSHEET", "target": "callsheet" }
+      { "target": "callsheet_scheduler" },
+      { "target": "callsheet_trust" },
+      { "target": "callsheet" }
     ]
   },
   {
     "id": "callsheet_scheduler",
-    "label": "CALLSHEET / Scheduler",
+    "label": "Callsheet: scheduled jobs",
     "parent": "callsheet",
-    "intents": ["scheduler", "metabolism", "heartbeat", "cadence"],
+    "intents": ["scheduler", "scheduled", "timetable", "jobs"],
     "tags": ["project", "technical", "deep"],
+    "audience": "technical",
     "blocks": [
       { "type": "split", "left": [
-        { "type": "metric", "value": "37", "label": "Deferred Actions", "sublabel": "18 self-rescheduling" }
+        { "type": "metric", "value": "37", "label": "Scheduled jobs", "sublabel": "18 of them set their own next run time" }
       ], "right": [
-        { "type": "text", "content": "The system\u2019s metabolism. Most platforms have CRUD and cron jobs. This one breathes." }
+        { "type": "text", "content": "Most websites only do something when a person uses them. This one also runs its own jobs on a timetable." }
       ]},
-      { "type": "code", "language": "cadences", "content": "daily    [4]  compliance, audit, cleanup, abandonment\nweekly   [1]  churn detection\nmonthly  [8]  health, briefings, learning, outreach\nquarterly[4]  taxonomy, calibration, pricing, perf" }
+      { "type": "code", "language": "timetable", "content": "every day      [4]  legal checks, audit, clean-up, unfinished sign-ups\nevery week     [1]  finding customers who may leave\nevery month    [8]  health checks, reports, learning, emails\nevery quarter  [4]  categories, calibration, prices, performance" }
     ],
     "chips": [
-      { "label": "Graduation", "target": "callsheet_graduation" },
-      { "label": "Flows", "target": "callsheet_flows" },
-      { "label": "CALLSHEET", "target": "callsheet" }
+      { "target": "callsheet_graduation" },
+      { "target": "callsheet_flows" },
+      { "target": "callsheet" }
     ]
   },
   {
     "id": "callsheet_trust",
-    "label": "CALLSHEET / Trust",
+    "label": "Callsheet: how listings are checked",
     "parent": "callsheet",
-    "intents": ["trust", "verification", "badge", "companies house"],
+    "intents": ["verification", "verified", "checked", "companies house", "claim listing"],
     "tags": ["project", "technical"],
+    "audience": "technical",
     "blocks": [
-      { "type": "text", "content": "Every listing starts unclaimed. 75% auto-approve." },
+      { "type": "text", "content": "Every listing starts as unclaimed. When a company claims its listing, 75% of claims are approved automatically." },
       { "type": "flow", "layout": "horizontal", "nodes": [
         { "id": "u", "label": "Unclaimed", "variant": "muted" },
         { "id": "c", "label": "Claimed" },
-        { "id": "v", "label": "Verified" },
+        { "id": "v", "label": "Checked" },
         { "id": "p", "label": "Premium", "variant": "accent" }
       ], "edges": [
-        { "from": "u", "to": "c", "label": "email/CH" },
+        { "from": "u", "to": "c", "label": "email or Companies House" },
         { "from": "c", "to": "v", "label": "checks" },
-        { "from": "v", "to": "p", "label": "human" }
+        { "from": "v", "to": "p", "label": "a person" }
       ]}
     ],
     "chips": [
-      { "label": "Domains", "target": "callsheet_domains" },
-      { "label": "Flows", "target": "callsheet_flows" },
-      { "label": "CALLSHEET", "target": "callsheet" }
+      { "target": "callsheet_domains" },
+      { "target": "callsheet_flows" },
+      { "target": "callsheet" }
     ]
   },
   {
     "id": "callsheet_flows",
-    "label": "CALLSHEET / Flows",
+    "label": "Callsheet: two automatic processes",
     "parent": "callsheet",
-    "intents": ["flow", "gdpr", "erasure", "closure", "compliance"],
+    "intents": ["gdpr", "erasure", "delete my data", "closure", "data protection"],
     "tags": ["project", "technical"],
+    "audience": "technical",
     "blocks": [
-      { "type": "text", "content": "Two multi-step workflows. Can run concurrently." },
-      { "type": "flow", "layout": "horizontal", "nodes": [
-        { "id": "v", "label": "Verify" },
-        { "id": "e", "label": "Extract" },
-        { "id": "c", "label": "Close" },
-        { "id": "er", "label": "Erase", "variant": "accent" },
-        { "id": "d", "label": "DSAR" },
-        { "id": "dn", "label": "Complete", "variant": "muted" }
+      { "type": "text", "content": "Two processes run step by step, and both can run at the same time." },
+      { "type": "flow", "layout": "horizontal", "title": "Closing a company's listing", "nodes": [
+        { "id": "v", "label": "Check the request" },
+        { "id": "e", "label": "Export the data" },
+        { "id": "c", "label": "Close the listing", "variant": "accent" }
       ], "edges": [
         { "from": "v", "to": "e" },
-        { "from": "e", "to": "c" },
-        { "from": "c", "to": "er" },
+        { "from": "e", "to": "c" }
+      ]},
+      { "type": "flow", "layout": "horizontal", "title": "Deleting personal data", "nodes": [
+        { "id": "er", "label": "Delete the data", "variant": "accent" },
+        { "id": "d", "label": "Answer the request" },
+        { "id": "dn", "label": "Done", "variant": "muted" }
+      ], "edges": [
         { "from": "er", "to": "d" },
         { "from": "d", "to": "dn" }
       ]},
-      { "type": "text", "content": "GDPR erasure: 30-day deadline. Auto-escalation at 7d, 3d, past-deadline." }
+      { "type": "text", "content": "Under UK data protection law (GDPR), a request to delete personal data must be completed within 30 days. The system flags the request at 7 days, 3 days, and after the deadline." }
     ],
     "chips": [
-      { "label": "Stack", "target": "callsheet_stack" },
-      { "label": "Architecture", "target": "callsheet_arch" },
-      { "label": "CALLSHEET", "target": "callsheet" }
+      { "target": "callsheet_stack" },
+      { "target": "callsheet_arch" },
+      { "target": "callsheet" }
     ]
   },
   {
     "id": "callsheet_stack",
-    "label": "CALLSHEET / Stack",
+    "label": "Callsheet: software it uses",
     "parent": "callsheet",
-    "intents": ["stack", "tech stack", "next.js", "typescript", "supabase"],
+    "intents": ["stack", "tech stack", "software it uses", "next.js", "typescript", "supabase"],
     "tags": ["project", "technical"],
+    "audience": "technical",
     "blocks": [
-      { "type": "text", "content": "Boring where boring works." },
-      { "type": "pills", "label": "Stack", "items": ["Next.js 16", "TypeScript strict", "tRPC", "Supabase", "Drizzle", "Paddle", "Cloudflare R2", "Resend", "Vitest", "Playwright"] },
-      { "type": "metricRow", "items": [{ "value": "20", "label": "Pages" }, { "value": "6", "label": "API Routes" }, { "value": "~\u00a336", "label": "/month" }] }
+      { "type": "text", "content": "It uses common, well-tested tools, so there are fewer surprises." },
+      { "type": "pills", "label": "Software, for developers", "items": ["Next.js 16", "TypeScript", "tRPC", "Supabase", "Drizzle", "Paddle", "Cloudflare R2 (file storage)", "Resend", "Vitest", "Playwright"] },
+      { "type": "metricRow", "items": [{ "value": "20", "label": "Pages" }, { "value": "6", "label": "Server addresses for other software" }, { "value": "~£36", "label": "Running cost per month" }] }
     ],
     "chips": [
-      { "label": "Architecture", "target": "callsheet_arch" },
-      { "label": "Projects", "target": "projects" },
-      { "label": "Who built this?", "target": "ruben" }
+      { "target": "callsheet_arch" },
+      { "target": "projects" },
+      { "target": "ruben" }
     ]
   }
 ]

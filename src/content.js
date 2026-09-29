@@ -17,3 +17,9 @@ async function getJSON(url) {
   if (!res.ok) throw new Error(`${res.status} ${url.pathname}`);
   return res.json();
 }
+
+// content/site.json: offer, facts, landing text, interface text, reading
+// defaults, features and writing rules.
+export async function loadSiteConfig() {
+  return getJSON(new URL('../content/site.json', import.meta.url));
+}

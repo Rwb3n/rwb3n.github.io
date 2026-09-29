@@ -3,8 +3,8 @@
 
 import { h, reducedMotion } from './dom.js';
 import { renderFlow } from './flow.js';
-import { copy, site } from './copy.js';
-import { mailtoHref, briefAsText } from './engine.js';
+import { copy, site, config, factText } from './copy.js';
+import { mailtoHref, briefAsText, briefRows } from './engine.js';
 
 export function renderBlock(block, ctx) {
   const fn = renderers[block.type];
@@ -135,7 +135,6 @@ const renderers = {
   },
 
   brief: ({ data }, ctx) => {
-    const l = copy.brief.labels;
     const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: site.timeZone });
     return h('article', { class: 'b-brief', 'aria-label': copy.brief.blockTitle },
       h('header', { class: 'b-brief-head' },
@@ -144,11 +143,11 @@ const renderers = {
       ),
       h('div', { class: 'b-brief-body' },
         h('dl', null,
-          [[l.journey, data.journey], [l.interest, data.interest], [l.depth, data.depth], [l.context, data.context], [l.questions, data.questions], [l.interactions, data.interactions]]
-            .map(([k, v], n) => h('div', { style: { '--i': n } }, h('dt', { class: 'micro' }, k), h('dd', null, v))),
+          briefRows(data).map(([k, v], n) => h('div', { style: { '--i': n } }, h('dt', { class: 'micro' }, k), h('dd', null, v))),
         ),
-        ctx?.route && h('figure', { class: 'b-brief-map' }, ctx.route(), h('figcaption', { class: 'micro' }, 'Your route')),
+        ctx?.route && h('figure', { class: 'b-brief-map' }, ctx.route(), h('figcaption', { class: 'micro' }, 'Topics you read, in order')),
       ),
+      h('p', { class: 'b-brief-note' }, copy.booking.privacy),
     );
   },
 
@@ -170,6 +169,23 @@ const renderers = {
       ),
       h('p', { class: 'b-compose-note' }, 'Goes to ', h('a', { class: 'rail-mail', href: `mailto:${site.email}` }, site.email), '.'),
     );
+  },
+
+  // A fact from content/site.json. Renders nothing if the fact is not set and
+  // has no "missing" sentence, so the site never shows an empty promise.
+  fact: ({ key, label = true }) => {
+    const f = config.facts[key];
+    const text = factText(key);
+    if (!f || !text) return null;
+    const value = f.link && f.value ? h('a', { class: 'b-fact-link', href: f.value }, f.value) : text;
+    return h('p', { class: `b-fact${f.value == null ? ' is-missing' : ''}` }, label && h('strong', null, `${f.label}: `), value);
+  },
+
+  // Several facts as a list.
+  facts: ({ keys = [] }) => {
+    const rows = keys.map((k) => [config.facts[k], factText(k)]).filter(([f, v]) => f && v);
+    if (!rows.length) return null;
+    return h('dl', { class: 'b-facts' }, rows.map(([f, v]) => h('div', null, h('dt', { class: 'micro' }, f.label), h('dd', null, v))));
   },
 
   timeline: ({ items = [] }) =>

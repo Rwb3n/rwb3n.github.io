@@ -1,94 +1,91 @@
 [
   {
     "id": "about",
-    "label": "About",
+    "label": "About this business",
     "parent": null,
-    "intents": ["what is this", "what's this", "about this", "the lab"],
+    "intents": ["about this business", "your company", "your business", "what is this", "what is mindunder"],
     "tags": ["overview", "identity"],
     "blocks": [
-      { "type": "text", "content": "A one-person skunkworks. Systems design meets autonomous operations." },
+      { "type": "text", "content": "mindunder.dev is a business run by one person. I design and build software that does routine business work automatically." },
       { "type": "split", "left": [
-        { "type": "metricRow", "items": [{ "value": "3", "label": "Active Projects" }, { "value": "1", "label": "Operator" }] }
+        { "type": "metricRow", "items": [{ "value": "3", "label": "Active projects" }, { "value": "1", "label": "Person" }] }
       ], "right": [
-        { "type": "pills", "label": "Domain", "items": ["Intelligence Architecture", "Autonomous Systems", "Process Design"] }
+        { "type": "pills", "label": "Areas of work", "items": ["Designing how work moves", "Automated systems", "Process design"] }
       ]},
-      { "type": "text", "content": "The mission: you decide it in the morning. It’s done by lunch. Nobody chased anyone." }
+      { "type": "text", "content": "The aim is simple. A decision you make in the morning is carried out the same day, and nobody has to chase it." }
     ],
     "chips": [
-      { "label": "Show me what\u2019s shipped", "target": "projects" },
-      { "label": "How do you think about this?", "target": "philosophy" },
-      { "label": "Who\u2019s behind this?", "target": "ruben" }
+      { "target": "projects" },
+      { "target": "philosophy" },
+      { "target": "ruben" }
     ]
   },
   {
     "id": "philosophy",
-    "label": "Philosophy",
+    "label": "How I choose software tools",
     "parent": null,
-    "intents": ["philosophy", "upstream", "approach", "thinking", "why", "thesis"],
-    "tags": ["deep", "identity"],
+    "intents": ["philosophy", "approach", "which software", "which tools", "tools", "platform", "platforms"],
+    "tags": ["identity"],
     "blocks": [
-      { "type": "hero", "title": "Upstream of platforms.", "accentWord": "Upstream" },
-      { "type": "text", "content": "Every platform is an expression of a deeper pattern: observe, decide, act, remember. The tooling is incidental." },
+      { "type": "text", "content": "Most business software does four things. It collects information, helps someone decide, carries out an action, and keeps a record." },
       { "type": "flow", "layout": "horizontal", "nodes": [
-        { "id": "o", "label": "Observe" },
+        { "id": "o", "label": "Collect information" },
         { "id": "d", "label": "Decide" },
         { "id": "a", "label": "Act" },
-        { "id": "r", "label": "Remember" }
+        { "id": "r", "label": "Keep a record" }
       ], "edges": [
         { "from": "o", "to": "d" },
         { "from": "d", "to": "a" },
         { "from": "a", "to": "r" }
-      ], "loop": { "from": "r", "to": "o", "label": "loop" } },
-      { "type": "text", "content": "Design the system of systems. Platform choice becomes a deployment detail." }
+      ], "loop": { "from": "r", "to": "o", "label": "repeat" } },
+      { "type": "text", "content": "I design those four steps first. After that, I choose the software. This means you are not tied to one supplier." }
     ],
     "chips": [
-      { "label": "How does that show up?", "target": "projects" },
-      { "label": "The agent systems", "target": "haios" },
-      { "label": "Salesforce connection", "target": "salesforce" }
+      { "target": "projects" },
+      { "target": "haios" },
+      { "target": "salesforce" }
     ]
   },
   {
     "id": "salesforce",
-    "label": "Salesforce",
+    "label": "My Salesforce work",
     "parent": null,
-    "intents": ["salesforce", "sf", "crm", "admin", "london & partners"],
-    "tags": ["capability", "background"],
+    "intents": ["salesforce", "crm", "london & partners", "certification", "certifications", "certified"],
+    "tags": ["identity", "background"],
     "blocks": [
-      { "type": "text", "content": "Salesforce is the day job. It’s also where I learned that automation fails for organisational reasons, not technical ones." },
+      { "type": "text", "content": "My main job is looking after Salesforce at London & Partners. Salesforce is software that companies use to keep track of their customers." },
+      { "type": "text", "content": "That work taught me one thing above all. When automation fails, the cause is usually how people work together, not the software." },
       { "type": "split", "left": [
-        { "type": "pills", "label": "Certifications", "items": ["Administrator", "Platform App Builder", "Agentforce Specialist"] }
+        { "type": "pills", "label": "Salesforce certifications", "items": ["Salesforce Administrator", "Salesforce Platform App Builder", "Salesforce Agentforce Specialist"] }
       ], "right": [
-        { "type": "stats", "items": [{ "label": "Background", "value": "London & Partners" }, { "label": "KB Articles", "value": "37+" }] }
+        { "type": "stats", "items": [{ "label": "Employer", "value": "London & Partners" }, { "label": "Help articles written", "value": "More than 37" }] }
       ]},
-      { "type": "text", "content": "The same thinking that designs a Salesforce automation designs an autonomous agent. Different runtime, same logic." }
+      { "type": "text", "content": "I use the same way of thinking to plan a Salesforce task and an AI system. Only the software is different." }
     ],
     "chips": [
-      { "label": "The agent work", "target": "haios" },
-      { "label": "Autonomous directory", "target": "callsheet" },
-      { "label": "Back to projects", "target": "projects" }
+      { "target": "haios" },
+      { "target": "callsheet" },
+      { "target": "projects" }
     ]
   },
   {
     "id": "ruben",
-    "label": "Ruben",
+    "label": "About me",
     "parent": null,
-    "intents": ["who", "ruben", "behind", "founder", "builder", "about you"],
+    "intents": ["who", "ruben", "about you", "founder", "background", "your experience"],
     "tags": ["identity", "overview"],
     "blocks": [
-      { "type": "hero", "title": "The systems are the headcount.", "accentWord": "headcount" },
-      { "type": "text", "content": "Ruben. London. Years spent automating other people’s operations — now building systems that run without anyone. One operator, on purpose." },
-      { "type": "split", "left": [
-        { "type": "pills", "label": "Credentials", "items": ["SF Admin", "App Builder", "Agentforce"] }
-      ], "right": [
-        { "type": "badge", "status": "Active \u00b7 London, UK", "variant": "active" },
-        { "type": "text", "content": "Fewer hands on the wheel every month. By design." }
-      ]},
-      { "type": "callout", "text": "Most operational complexity is artificial. Fix the design, and the complexity collapses." }
+      { "type": "text", "content": "My name is Ruben. I live and work in London." },
+      { "type": "text", "content": "I have spent several years automating work for other organisations. I now build systems that need as little manual work as possible. I work alone, by choice." },
+      { "type": "pills", "label": "Salesforce certifications", "items": ["Salesforce Administrator", "Salesforce Platform App Builder", "Salesforce Agentforce Specialist"] },
+      { "type": "badge", "status": "Based in London, UK", "variant": "default" },
+      { "type": "callout", "text": "In my experience, much of the complexity in a business process is not needed. When the design is simpler, the work is simpler." },
+      { "type": "fact", "key": "handover" }
     ],
     "chips": [
-      { "label": "What are you building?", "target": "projects" },
-      { "label": "What’s your background?", "target": "salesforce" },
-      { "label": "The lab", "target": "about" }
+      { "target": "projects" },
+      { "target": "salesforce" },
+      { "target": "about" }
     ]
   }
 ]

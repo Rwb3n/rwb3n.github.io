@@ -56,7 +56,7 @@ Expo-out for arrivals, a cubic in-out for journeys, and a damped spring
 
 | Moment | What moves |
 | --- | --- |
-| Boot | The dot field ripples out from the word *see*; headline words rise through masks; the lens irises open; one sonar ping. |
+| Boot | The dot field ripples out from the word *find*; headline words rise through masks; the lens irises open; one sonar ping. |
 | Search | The lens follows the pointer (autopilot when idle); dots bulge off its rim; click anywhere to ping. |
 | X-ray | Under the lens, the copy becomes outlines with measured cap height, x-height, baseline and descender. |
 | Found | Magnetic pull, spring kick, ticks lock to the diagonals, crosshair, annotation draws and types in. |
@@ -65,8 +65,17 @@ Expo-out for arrivals, a cubic in-out for journeys, and a damped spring
 | Answer | Scan line, clip-and-rise blocks, odometer numbers, springy diagram nodes, staggered parts, a printing brief. |
 | Theme | The new theme spreads from the toggle as a circle. |
 
-`prefers-reduced-motion` gets all of the content and none of the movement:
-no boot, no flights, and the lens is parked, already on the fault. `?perf`
+Motion has three settings, chosen in **Reading settings**:
+
+| Setting | What moves |
+| --- | --- |
+| Calm (default) | Nothing starts by itself. The lens is parked on the fault and moves only while the visitor moves it. Short fades and scrolls (≤ 300 ms). |
+| Full | Everything above. A "Stop the animation" button is always visible (WCAG 2.2.2 Pause, Stop, Hide). |
+| Off | Nothing moves. Scrolls jump. |
+
+`prefers-reduced-motion` maps to Off unless the visitor chose otherwise. The
+choice (and text size) is stored in `localStorage` and applied before first
+paint as `html[data-motion]` / `html[data-text]`. `?perf`
 records the lens's per-frame cost in `window.__lensFrames`.
 
 **The map.** In the session rail, every topic is a point in a constellation
@@ -88,6 +97,29 @@ remembered.
 Flow diagrams (`src/flow.js`) are laid out by hand in SVG. They measure their
 labels, then choose a shape that fits: a horizontal flow folds to vertical, a
 fan-out folds to a trunk. Text is never scaled down to fit.
+
+## Writing for tired, autistic and ADHD readers
+
+The reader is a director with little time and energy, who may read words
+literally. Sources: GOV.UK "Designing for users on the autistic spectrum"
+and W3C COGA ("Making content usable for people with cognitive and learning
+disabilities").
+
+- The offer, first step, price status and reply time are on the landing, in
+  a definition list, before any interaction.
+- Literal words only: no idioms, metaphors or in-jokes. Banned phrases are
+  listed in `site.json` → `language` and checked by `npm test`.
+- Short sentences (≤ 25 words), statements not questions, reading grade ≤ 9.
+- Buttons say where they go, and share a word with the title of the topic
+  they open.
+- Abbreviations are written out once, as "Full words (ABBR)".
+- Examples are labelled as examples; illustrations are labelled as
+  illustrations. Nothing is presented as a client quote unless it is one.
+- Technical topics are marked as technical and kept out of the main path.
+- Everything is also available on one plain page (`/#/all`).
+
+The linter is an approximation. It is not a substitute for testing with
+autistic and ADHD readers.
 
 ## Honesty
 

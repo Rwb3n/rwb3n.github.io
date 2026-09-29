@@ -9,11 +9,11 @@
 //   tick    an answer block arriving: barely there
 //   theme   a small upward blip
 
-const KEY = 'mu-sound';
+import { prefs } from './prefs.js';
 
-export function createSound(button) {
-  let on = false;
-  try { on = localStorage.getItem(KEY) === 'on'; } catch { /* private mode */ }
+// On/off lives in reading preferences (prefs.js, "sound").
+export function createSound() {
+  let on = prefs().sound;
   let ac = null, master = null, echo = null, lastTick = 0;
 
   function ensure() {
@@ -107,18 +107,12 @@ export function createSound(button) {
   addEventListener('pointerdown', wake, { once: true, capture: true });
   addEventListener('keydown', wake, { once: true, capture: true });
 
-  function render() {
-    button.setAttribute('aria-pressed', String(on));
-    button.setAttribute('aria-label', on ? 'Sound on — turn off' : 'Sound off — turn on');
-    button.title = on ? 'Sound on' : 'Sound off';
-  }
-  button.addEventListener('click', () => {
-    on = !on;
-    try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch { /* ignore */ }
-    render();
+  document.addEventListener('mu:prefs', (e) => {
+    if (e.detail.key !== 'sound') return;
+    on = e.detail.value;
+    // The change comes from a click in the settings panel, so audio may start.
     if (on) { ensure(); setTimeout(() => voices.found(), 60); }
   });
-  render();
 }
 
 export const sfx = (name) => document.dispatchEvent(new CustomEvent('mu:sfx', { detail: name }));

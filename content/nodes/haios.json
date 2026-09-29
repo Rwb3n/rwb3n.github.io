@@ -1,86 +1,90 @@
 [
   {
     "id": "haios",
-    "label": "HAIOS",
+    "label": "Haios: a way to organise AI work",
     "parent": null,
-    "intents": ["haios", "hybrid", "multi-agent", "orchestration", "agent os"],
+    "intents": ["haios", "multi-agent"],
     "tags": ["project", "deep"],
+    "audience": "technical",
     "blocks": [
-      { "type": "text", "content": "HAIOS \u2014 Hybrid AI Operating System." },
-      { "type": "flow", "layout": "vertical", "nodes": [
-        { "id": "ep", "label": "Epochs", "sublabel": "Long arcs" },
-        { "id": "ar", "label": "Arcs", "sublabel": "Themes" },
-        { "id": "ch", "label": "Chapters", "sublabel": "Sessions" },
-        { "id": "wi", "label": "Work Items", "sublabel": "Tasks" }
+      { "type": "text", "content": "In plain terms: Haios is a research project. It organises work for AI software using ordinary files and folders, instead of a database or a special server." },
+      { "type": "flow", "layout": "vertical", "title": "Work is organised in four levels, largest first", "nodes": [
+        { "id": "ep", "label": "Epoch", "sublabel": "a long period" },
+        { "id": "ar", "label": "Arc", "sublabel": "a theme" },
+        { "id": "ch", "label": "Chapter", "sublabel": "one work session" },
+        { "id": "wi", "label": "Work item", "sublabel": "one task" }
       ], "edges": [
         { "from": "ep", "to": "ar", "label": "contains" },
         { "from": "ar", "to": "ch", "label": "contains" },
         { "from": "ch", "to": "wi", "label": "produces" }
       ]},
-      { "type": "pills", "label": "Properties", "items": ["File-Based", "Stateless Agents", "Platform-Agnostic", "3-Layer Memory"] }
+      { "type": "pills", "label": "Main features", "items": ["Uses plain files", "Works with different AI software", "Keeps three kinds of notes"] }
     ],
     "chips": [
-      { "label": "Why file-based?", "target": "haios_why_files", "expand": true },
-      { "label": "File-based orchestration", "target": "haios_architecture" },
-      { "label": "Memory model", "target": "haios_memory" },
-      { "label": "Other projects", "target": "projects" }
+      { "target": "haios_why_files" },
+      { "target": "haios_architecture" },
+      { "target": "haios_memory" },
+      { "target": "projects" }
     ]
   },
   {
     "id": "haios_why_files",
-    "label": "Why Files",
-    "parent": null,
-    "intents": [],
+    "label": "Haios: why it uses plain files",
+    "parent": "haios",
+    "intents": ["why files", "why file-based", "file-based"],
     "tags": ["project", "deep"],
+    "audience": "technical",
     "blocks": [
-      { "type": "text", "content": "Message buses, databases, APIs \u2014 all infrastructure that breaks, costs money, and locks you in." },
-      { "type": "text", "content": "Files are universal. Every LLM can read them. Every OS supports them. Git gives you versioning for free. The protocol IS the filesystem." },
-      { "type": "callout", "text": "If your agent can\u2019t operate by reading and writing files, it\u2019s the agent that\u2019s limited \u2014 not the medium." }
+      { "type": "text", "content": "Databases, message systems and online services can break, cost money, and tie you to one supplier." },
+      { "type": "text", "content": "Plain files work everywhere. Every AI tool can read them, and every computer can store them. A version control tool such as Git records every change for free." },
+      { "type": "callout", "text": "If an AI tool cannot do its work by reading and writing files, the limit is in the tool, not in the files." }
     ],
     "chips": [
-      { "label": "See the structure", "target": "haios_architecture" },
-      { "label": "How memory works", "target": "haios_memory" }
+      { "target": "haios_architecture" },
+      { "target": "haios_memory" }
     ]
   },
   {
     "id": "haios_architecture",
-    "label": "HAIOS / Arch",
+    "label": "Haios: its folder structure",
     "parent": "haios",
-    "intents": ["file-based", "filesystem", "file structure"],
+    "intents": ["folder structure", "file structure", "filesystem"],
     "tags": ["project", "technical", "deep"],
+    "audience": "technical",
     "blocks": [
-      { "type": "text", "content": "No message bus. Coordination emerges from the file structure." },
-      { "type": "code", "language": "structure", "content": "epochs/\n  arc-001/\n    chapter-001/\n      work-items/\n        WI-001.md\n      hindsight.md\n      reasoning-bank.md" },
-      { "type": "text", "content": "If the file structure is the protocol, you don\u2019t need infrastructure. Any LLM that reads files can participate." }
+      { "type": "text", "content": "There is no central server. The folders themselves tell each AI tool what to do next." },
+      { "type": "code", "language": "folders", "content": "epochs/\n  arc-001/\n    chapter-001/\n      work-items/\n        WI-001.md\n      hindsight.md\n      reasoning-bank.md" },
+      { "type": "text", "content": "Because the rules are in the folder structure, no extra software is needed. Any AI tool that can read files can take part." }
     ],
     "chips": [
-      { "label": "Memory model", "target": "haios_memory" },
-      { "label": "BEHOLD", "target": "behold" },
-      { "label": "Projects", "target": "projects" }
+      { "target": "haios_memory" },
+      { "target": "behold" },
+      { "target": "projects" }
     ]
   },
   {
     "id": "haios_memory",
-    "label": "HAIOS / Memory",
+    "label": "Haios: how it keeps notes",
     "parent": "haios",
-    "intents": ["memory model", "hindsight", "foresight", "reasoning bank"],
+    "intents": ["memory", "notes", "hindsight", "foresight", "reasoning bank"],
     "tags": ["project", "technical", "deep"],
+    "audience": "technical",
     "blocks": [
-      { "type": "text", "content": "Three paradigms. Modelled on human memory." },
+      { "type": "text", "content": "Haios keeps three kinds of notes. The idea comes from how people remember things." },
       { "type": "flow", "layout": "vertical", "nodes": [
-        { "id": "h", "label": "HINDSIGHT", "sublabel": "What happened" },
-        { "id": "r", "label": "ReasoningBank", "sublabel": "How to do it" },
-        { "id": "f", "label": "FORESIGHT", "sublabel": "What\u2019s next" }
+        { "id": "h", "label": "Hindsight", "sublabel": "what happened" },
+        { "id": "r", "label": "Reasoning bank", "sublabel": "how to do it" },
+        { "id": "f", "label": "Foresight", "sublabel": "what is likely next" }
       ], "edges": [
         { "from": "h", "to": "r", "label": "informs" },
         { "from": "r", "to": "f", "label": "predicts" }
-      ], "loop": { "from": "f", "to": "h", "label": "validates" } },
-      { "type": "text", "content": "Each chapter generates all three. Compounding knowledge through structured markdown." }
+      ], "loop": { "from": "f", "to": "h", "label": "is checked later" } },
+      { "type": "text", "content": "Each work session writes all three kinds of notes. Over time, the notes build up into useful knowledge." }
     ],
     "chips": [
-      { "label": "File structure", "target": "haios_architecture" },
-      { "label": "CALLSHEET", "target": "callsheet" },
-      { "label": "Projects", "target": "projects" }
+      { "target": "haios_architecture" },
+      { "target": "callsheet" },
+      { "target": "projects" }
     ]
   }
 ]

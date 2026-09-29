@@ -12,20 +12,44 @@ src/
   blocks.js       block renderers
   flow.js         SVG flow diagrams
   lens.js         landing canvas
-  copy.js         UI strings
-content/          the conversation graph (edit this to change what the site says)
+  copy.js         interface text (defaults; site.json overrides)
+  prefs.js        reading preferences: motion, text size, sound
+  settings.js     the "Reading settings" panel
+  lint.js         plain-language checks (run by npm test)
+  static.js       generates the static parts of index.html
+content/
+  site.json             offer, facts, landing text, features, reading
+                        defaults, interface text overrides, writing rules
   graphs/default.json   which node files to load
-  nodes/*.json          nodes: blocks + chips + intents
+  nodes/*.json          topics: blocks + chips + intents (+ "audience")
+scripts/sync.mjs  writes site.json into index.html's sync regions
 tests/            node --test
 ```
+
+## Change what the site says
+
+1. Edit `content/site.json` (offer, facts, landing) or `content/nodes/*.json`
+   (topics). Keys starting with `$` are comments.
+2. `npm run sync` if you changed site.json or the root topic's chips. This
+   rewrites the `<!-- sync:… -->` regions of index.html, so the page reads the
+   same without JavaScript.
+3. `npm test`. It fails on idioms, jargon, in-jokes, long sentences,
+   unexplained abbreviations, vague buttons, and a reading grade over 9
+   (12 for topics marked `"audience": "technical"`). It also lists the facts
+   that are still empty; the site says plainly that they are not published.
+
+Facts are `{ label, value, missing }`. With no `value`, the site shows the
+`missing` sentence; with neither, the fact is hidden.
 
 ## Work on it
 
 ```sh
 npm run dev      # python3 -m http.server 8000
-npm test         # engine + content-graph integrity
+npm run sync     # regenerate index.html's static regions from site.json
+npm test         # sync check, engine, content graph, plain-language lint
 ```
 
 Deep links: `/#/<node-id>` opens straight into a node, e.g. `/#/method`.
+`/#/all` opens every topic on one page (also printable).
 
 See [DESIGN.md](DESIGN.md) for the design system.

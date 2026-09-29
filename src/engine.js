@@ -80,7 +80,7 @@ export function resolveL2(text) {
   const q = text.toLowerCase();
   const topic = copy.l2.topics.find((t) => t.keywords.some((k) => q.includes(k)));
   return {
-    blocks: [{ type: 'text', content: topic ? topic.response : copy.l2.fallback }],
+    blocks: [{ type: 'text', content: fill(topic ? topic.response : copy.l2.fallback) }],
     chips: copy.chips.l2Suggest,
   };
 }
@@ -199,14 +199,11 @@ export function briefData(content, s) {
   const nodes = s.viewed.filter((id) => content.nodes[id]);
   const label = (id) => content.nodes[id].label;
   const projects = nodes.filter((id) => content.nodes[id].tags?.includes('project')).map(label);
-  const technical = nodes.filter((id) => content.nodes[id].tags?.includes('technical')).map(label);
   return {
     journey: nodes.map(label).join(' → ') || d.minimal,
     interest: projects.join(', ') || d.none,
-    depth: technical.length ? d.deepPrefix + technical.join(', ') : d.surface,
     context: s.disclosureContent.join('; ') || d.nothingYet,
     questions: s.freeQuestions.join('; ') || d.none,
-    interactions: String(s.depth),
   };
 }
 
@@ -225,18 +222,13 @@ export function generateBrief(content, s) {
   };
 }
 
+// Only the rows that have a label in copy.brief.labels are shown or sent.
+export function briefRows(data) {
+  return Object.entries(copy.brief.labels).filter(([k]) => data[k] != null).map(([k, l]) => [l, data[k]]);
+}
+
 export function briefAsText(data) {
-  const l = copy.brief.labels;
-  return [
-    [l.journey, data.journey],
-    [l.interest, data.interest],
-    [l.depth, data.depth],
-    [l.context, data.context],
-    [l.questions, data.questions],
-    [l.interactions, data.interactions],
-  ]
-    .map(([k, v]) => `${k}: ${v}`)
-    .join('\n');
+  return briefRows(data).map(([k, v]) => `${k}: ${v}`).join('\n');
 }
 
 export function mailtoHref(email, data) {

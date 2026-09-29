@@ -17,9 +17,9 @@
 
 import { copy } from './copy.js';
 import { sfx } from './sound.js';
+import { motion } from './prefs.js';
 
 const VOCAB = ['inbox', 'CRM', 'invoice', 'approval', 'spreadsheet', 'Monday report', 'PO', 'supplier', 'ERP', 'Slack', 'sign-off', 'reconcile', 'forecast', 'tender', 'CSV export', 'ticket', 'renewal', 're-key', 'shared drive', 'quote', 'chaser', 'dashboard', 'timesheet', 'contract'];
-const FAULT_NOTES = ['3 handoffs', '1 spreadsheet', '0 owners'];
 
 const BOOT_MS = 1500;
 const FIX_MS = 950;
@@ -34,7 +34,11 @@ export function createLens(canvas, caption, { onFrame } = {}) {
   const ctx = overlay.getContext('2d');
   let dirty = [];            // rects painted last frame, cleared next frame
   const mark = (x, y, w, h) => dirty.push([x, y, w, h]);
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  // Motion modes (prefs.js): 'full' animates freely; 'calm' never moves by itself —
+  // the lens parks on the fault and only follows the pointer while you move it;
+  // 'off' jumps without easing. `reduce.matches` = "no decorative animation".
+  const reduce = { get matches() { return motion() !== 'full'; } };
+  const calm = () => motion() === 'calm';
   const finePointer = matchMedia('(pointer: fine)').matches;
   const captionText = caption?.querySelector('[data-lens-caption-text]');
   if (captionText && !finePointer) captionText.textContent = copy.lens.idleTouch;
@@ -45,9 +49,9 @@ export function createLens(canvas, caption, { onFrame } = {}) {
   let under = null;          // offscreen canvas: the hidden graph
   let raf = 0, running = false, visible = true, paused = false;
 
-  let phase = reduce.matches ? 'live' : 'boot';
+  let phase = motion() === 'full' ? 'boot' : 'live';
   let bootT0 = performance.now();
-  let r = reduce.matches ? 1 : 0, rv = 0;   // drawn radius as a fraction of R, and its velocity
+  let r = motion() === 'full' ? 0 : 1, rv = 0;   // drawn radius as a fraction of R, and its velocity
   let rTarget = 1;                          // < 1 while the pointer is over something clickable
   let last = performance.now();
 
@@ -420,9 +424,10 @@ export function createLens(canvas, caption, { onFrame } = {}) {
   }
 
   function ping(x, y, accent) {
-    if (reduce.matches || phase !== 'live') return;
+    if (motion() === 'off' || phase !== 'live') return;
     pings.push({ x, y, t0: performance.now(), accent, max: Math.hypot(Math.max(x, W - x), Math.max(y, H - y)) + 40 });
     sfx(accent ? 'ping-accent' : 'ping');
+    wake();
     if (pings.length > 4) pings.shift();
   }
 
@@ -518,10 +523,10 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     const typed = (str, t0) => str.slice(0, Math.max(0, Math.floor((s - t0) / 0.028)));
     ctx.font = `italic 22px ${colors.display}`;
     ctx.fillStyle = colors.accent;
-    halo(typed('the drag', 0.28), x1 + 18, y1 + 6);
+    halo(typed(copy.lens.note || '', 0.28), x1 + 18, y1 + 6);
     ctx.font = `10px ${colors.mono}`;
     ctx.fillStyle = colors.fg2;
-    FAULT_NOTES.forEach((n, i) => halo(typed(n.toUpperCase(), 0.5 + i * 0.16), x1 + 18, y1 + 24 + i * 14));
+    (copy.lens.noteLines || []).forEach((n, i) => halo(typed(n.toUpperCase(), 0.5 + i * 0.16), x1 + 18, y1 + 24 + i * 14));
     ctx.lineWidth = 1;
   }
 
@@ -649,12 +654,12 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     last = now;
 
     if (phase === 'live') {
-      if (driver === 'pointer' && now - lastPointer > 6000) {
+      if (!reduce.matches && driver === 'pointer' && now - lastPointer > 6000) {
         driver = 'auto';
         auto.from = { x: lens.x, y: lens.y };
         auto.t0 = now;
       }
-      if (driver === 'auto') stepAuto(now);
+      if (driver === 'auto') { if (!reduce.matches) stepAuto(now); }
       else {
         // Magnetic: near the fault, the lens is pulled onto it.
         const f = scene.fault;
@@ -674,6 +679,13 @@ export function createLens(canvas, caption, { onFrame } = {}) {
       r += rv * dt;
       foundAmt += ((found ? 1 : 0) - foundAmt) * Math.min(1, dt * 8);
       updateFound(now);
+    }
+    // Calm: once the lens has settled and no ping is travelling, stop drawing.
+    if (calm() && phase === 'live' && pings.length === 0 && Math.abs(lens.tx - lens.x) < 0.3 && Math.abs(lens.ty - lens.y) < 0.3 && Math.abs(1 - r) < 0.01 && Math.abs(rv) < 0.01 && Math.abs(foundAmt - (found ? 1 : 0)) < 0.01) {
+      try { frame(now, dt); emit(); } catch (err) { console.error('[lens]', err); }
+      running = false;
+      raf = 0;
+      return;
     }
     // A bad frame must not kill the loop (and with it the whole landing).
     const t0 = PERF ? performance.now() : 0;
@@ -713,9 +725,17 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     if (running || paused || !visible) return;
     if (!scene && !resize()) return;
     if (reduce.matches) return still();
+    run();
+  }
+  function run() {
+    if (running || paused || !visible || !scene) return;
     running = true;
     last = performance.now();
     raf = requestAnimationFrame(loop);
+  }
+  // Calm mode: start drawing again because the visitor did something.
+  function wake() {
+    if (calm() && phase === 'live') run();
   }
   function stop() {
     running = false;
@@ -750,7 +770,8 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     pointer.x = x;
     pointer.y = y;
     if (e.type === 'pointerdown' && !e.target.closest?.('a, button, input, label, kbd')) ping(x, y, false);
-    if (reduce.matches) { lens.x = lens.tx = x; lens.y = lens.ty = y; updateFound(performance.now()); foundAmt = found ? 1 : 0; clearDirty(); frame(performance.now(), 0); emit(); }
+    if (motion() === 'off') { lens.x = lens.tx = x; lens.y = lens.ty = y; updateFound(performance.now()); foundAmt = found ? 1 : 0; clearDirty(); frame(performance.now(), 0); emit(); }
+    else if (calm()) { lens.tx = x; lens.ty = y; wake(); }
   }
   addEventListener('pointermove', onPointer, { passive: true });
   addEventListener('pointerdown', onPointer, { passive: true });
@@ -765,7 +786,14 @@ export function createLens(canvas, caption, { onFrame } = {}) {
       if (!running) reduce.matches ? still() : frame(performance.now(), 0);
     }, 60);
   }).observe(canvas);
-  reduce.addEventListener?.('change', () => { stop(); start(); });
+  document.addEventListener('mu:prefs', (e) => {
+    if (e.detail.key !== 'motion' || phase === 'fix') return;
+    stop();
+    if (phase === 'boot') { phase = 'live'; r = 1; drawSurface(); }
+    pings.length = 0;
+    dirty = [[0, 0, W, H]];
+    start();
+  });
 
   readColors();
   resize();
@@ -789,7 +817,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
       if (!running) reduce.matches ? still() : frame(performance.now(), 0);
     },
     setYield(on) { rTarget = on ? 0.55 : 1; },
-    get state() { return { phase, found, fault: scene && { x: scene.fault.x, y: scene.fault.y }, R, lens: { x: lens.x, y: lens.y } }; },
+    get state() { return { phase, running, found, fault: scene && { x: scene.fault.x, y: scene.fault.y }, R, lens: { x: lens.x, y: lens.y } }; },
     // Resolves when the lens has covered the screen and the graph is straight.
     // ms: the first time it plays in full; after that it's a quick reprise.
     fix(ms = FIX_MS) {
@@ -811,7 +839,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
 
 const TAU = Math.PI * 2;
 const PERF = /[?&]perf\b/.test(location.search); // ?perf records frame times in window.__lensFrames
-const OBSTACLES = '.landing .eyebrow, .landing .display-line, .landing .lede, .landing .entry-item, .lens-caption, .ask';
+const OBSTACLES = '.landing .eyebrow, .landing .display-line, .landing .lede, .landing .offer-item, .landing .entry-item, .landing .entry-all, .lens-caption, .lens-pause, .ask';
 const TEXTY = '.eyebrow, .display-line, .lede';
 const union = (rs) => {
   const l = Math.min(...rs.map((r) => r.left)), tp = Math.min(...rs.map((r) => r.top));

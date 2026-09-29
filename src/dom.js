@@ -1,5 +1,7 @@
 // Tiny DOM helpers.
 
+import { motion } from './prefs.js';
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 export function h(tag, attrs, ...children) {
@@ -35,6 +37,10 @@ function assign(el, attrs, children) {
   return el;
 }
 
-export const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+// "Reduced" means anything short of full motion: decorative animation is off in
+// both 'calm' and 'off'. motionOff() is for the few things calm still allows
+// (smooth scrolling, the lens easing after the pointer).
+export const reducedMotion = () => motion() !== 'full';
+export const motionOff = () => motion() === 'off';
 
 export const wait = (ms) => new Promise((r) => setTimeout(r, reducedMotion() ? 0 : ms));

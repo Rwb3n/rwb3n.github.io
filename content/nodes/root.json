@@ -1,18 +1,19 @@
 {
   "id": "root",
-  "label": "Home",
+  "label": "Start",
   "parent": null,
-  "intents": ["home", "start over", "restart", "beginning", "reset"],
+  "intents": ["home", "start over", "restart", "beginning", "start page"],
   "tags": ["entry"],
   "blocks": [
-    { "type": "hero", "title": "You know something’s wrong. You just can’t see where.", "accentWord": "see", "subtitle": "Systems that run the business while you sleep · London, UK" },
-    { "type": "text", "content": "The business works. But it’s heavy. It takes too many people, too many hours, too many decisions that shouldn’t need a human. You can feel the drag but you can’t point at the part that’s broken." },
-    { "type": "callout", "text": "I find it. I show you. Then I fix it so it runs without you." }
+    { "type": "hero", "title": "I find the work your team repeats by hand. Then I build a system that does it.", "accentWord": "find" },
+    { "type": "fact", "key": "what" },
+    { "type": "fact", "key": "firstStep" },
+    { "type": "fact", "key": "cost" }
   ],
   "chips": [
-    { "label": "Sound familiar?", "target": "signals" },
-    { "label": "What would I get out of it?", "target": "ahead", "expand": true },
-    { "label": "What do you actually do?", "target": "method" },
-    { "label": "Who’s behind this?", "target": "ruben" }
+    { "target": "method" },
+    { "target": "signals" },
+    { "target": "proof" },
+    { "target": "process" }
   ]
 }

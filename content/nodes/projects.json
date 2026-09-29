@@ -1,20 +1,20 @@
 {
   "id": "projects",
-  "label": "Projects",
+  "label": "My three projects",
   "parent": null,
-  "intents": ["project", "builds", "built", "show me", "portfolio", "work"],
+  "intents": ["project", "projects", "portfolio", "what have you built", "built", "your work"],
   "tags": ["overview", "work"],
   "blocks": [
-    { "type": "text", "content": "Three active builds. Same thesis: autonomous systems that earn trust incrementally." },
+    { "type": "text", "content": "I am working on three projects. All three test the same idea: software that does more work on its own only after it has shown that it works." },
     { "type": "grid", "items": [
-      { "title": "HAIOS", "status": "Active", "description": "Multi-agent orchestration. File-based memory.", "target": "haios" },
-      { "title": "CALLSHEET", "status": "Active", "description": "Autonomous directory. UK film & media.", "target": "callsheet" },
-      { "title": "BEHOLD", "status": "Active", "description": "Workspace agent framework. Daily driver.", "target": "behold" }
+      { "title": "Callsheet", "status": "Running", "description": "A public online directory of UK film, TV and media companies. It runs without staff.", "target": "callsheet" },
+      { "title": "Haios", "status": "Research", "description": "A way to organise work for AI software using ordinary files and folders.", "target": "haios" },
+      { "title": "Behold", "status": "In daily use", "description": "A simpler version of Haios that I use for my own daily work.", "target": "behold" }
     ]}
   ],
   "chips": [
-    { "label": "HAIOS", "target": "haios" },
-    { "label": "CALLSHEET", "target": "callsheet" },
-    { "label": "BEHOLD", "target": "behold" }
+    { "target": "callsheet" },
+    { "target": "haios" },
+    { "target": "behold" }
   ]
 }

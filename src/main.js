@@ -1,12 +1,22 @@
-// Boot: chrome first (theme, clock), then type and the lens, then content.
+// Boot: config → reading preferences → chrome (theme, clock) → landing (type,
+// lens) → topics.
 
-import { site } from './copy.js';
-import { loadContent } from './content.js';
+import { site, config, applyConfig } from './copy.js';
+import { loadContent, loadSiteConfig } from './content.js';
+import { initPrefs } from './prefs.js';
+import { createSettings } from './settings.js';
 import { createApp } from './app.js';
 import { createLens } from './lens.js';
 import { splitWords, createXray } from './type.js';
 import { reducedMotion } from './dom.js';
 import { createSound, sfx } from './sound.js';
+
+try {
+  applyConfig(await loadSiteConfig());
+} catch (err) {
+  console.warn('[config] using defaults:', err.message);
+}
+initPrefs(config.reading);
 
 const THEME_KEY = 'mu-theme';
 const html = document.documentElement;
@@ -43,12 +53,15 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
   if (!stored) setTheme(e.matches ? 'dark' : 'light');
 });
 
-// Sound (opt-in) ----------------------------------------------------------------
-const soundBtn = document.querySelector('[data-sound]');
-if (soundBtn && (window.AudioContext || window.webkitAudioContext)) {
-  soundBtn.hidden = false;
-  createSound(soundBtn);
-}
+// Reading settings and sound -------------------------------------------------
+const hasAudio = config.features.sound !== false && !!(window.AudioContext || window.webkitAudioContext);
+if (hasAudio) createSound();
+createSettings({
+  toggle: document.querySelector('[data-settings-toggle]'),
+  panel: document.querySelector('[data-settings]'),
+  pause: document.querySelector('[data-motion-pause]'),
+  soundAvailable: hasAudio,
+});
 
 // London clock ----------------------------------------------------------------
 const clock = document.querySelector('[data-clock]');
@@ -74,6 +87,8 @@ onScroll();
 // Landing type ------------------------------------------------------------------
 const display = document.querySelector('.landing .display');
 if (display && !reducedMotion()) splitWords(display);
+// Text size changes the layout the lens measured.
+document.addEventListener('mu:prefs', (e) => { if (e.detail.key === 'text') dispatchEvent(new Event('resize')); });
 
 // Lens + x-ray -------------------------------------------------------------------
 let lens = null;

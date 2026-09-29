@@ -584,10 +584,8 @@ main { flex: 1; display: flex; flex-direction: column; }
   display: inline-flex;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
-  font-family: var(--font-mono);
-  font-size: var(--step--2);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: var(--step--1);
+  text-align: left;
   color: var(--fg);
   border: 1px solid var(--line-2);
   border-radius: var(--radius-1);
@@ -1247,3 +1245,176 @@ html:not(.js) .landing { padding-bottom: var(--space-8); }
 .map.is-print .map-route line { transition: none; animation: route-draw 900ms var(--ease-in-out) backwards; animation-delay: calc(var(--i, 0) * 180ms + 400ms); }
 @keyframes route-draw { from { stroke-dashoffset: calc(var(--len) * 1px); } }
 @media (max-width: 720px) { .b-brief-body { grid-template-columns: 1fr; } .b-brief-map { max-width: 16rem; } }
+
+/* ==========================================================================
+   Reading settings — motion, text size (see src/prefs.js)
+   ========================================================================== */
+
+/* Text size */
+html[data-text='large'] { font-size: 118.75%; }
+
+/* Calm and off: nothing moves by itself. No entrance animations, no loops,
+   no staggered reveals, no drawn-in diagrams. Content is simply there. */
+html:not([data-motion='full']) .js .landing :is(.eyebrow, .display-line, .lede, .entry-item, .lens-caption, .offer, .entry-all),
+html:not([data-motion='full']).js .landing :is(.eyebrow, .display-line, .lede, .entry-item, .lens-caption, .offer, .entry-all) { animation: none; }
+html:not([data-motion='full']) :is(.pulse, .pulse::after, .scan-track i, .chip, .b-card, .b-layer, .b-pill, .b-brief dl > div, .b-progress-track i, .thinking-dots i) { animation: none !important; }
+html:not([data-motion='full']) .pulse::after { animation: none !important; opacity: 0; }
+html:not([data-motion='full']) :is(.b-brief::after, .is-in .b-brief::after) { content: none; }
+html:not([data-motion='full']) .reveal { opacity: 1; transform: none; clip-path: none; }
+html:not([data-motion='full']) .b-flow * { transition-delay: 0s !important; transition-duration: 0.01ms !important; }
+html:not([data-motion='full']) .b-flow .fl-node { opacity: 1; transform: none; }
+html:not([data-motion='full']) .b-flow .fl-edge { stroke-dashoffset: 0; }
+html:not([data-motion='full']) .b-flow .fl-edge.is-loop,
+html:not([data-motion='full']) .b-flow :is(.fl-head, .fl-edge-label, .fl-edge-label-bg) { opacity: 1; }
+html:not([data-motion='full']) .fl-spark { display: none; }
+html:not([data-motion='full']) .map-route line { transition: none; stroke-dashoffset: 0; }
+html[data-motion='calm'] *, html[data-motion='calm'] *::before, html[data-motion='calm'] *::after { transition-duration: 150ms !important; transition-delay: 0s !important; }
+html[data-motion='off'] *, html[data-motion='off'] *::before, html[data-motion='off'] *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transition-delay: 0ms !important; }
+
+/* The pause control for the landing animation (WCAG 2.2.2). Only needed, and
+   only shown, when motion is full. */
+.lens-pause {
+  position: absolute;
+  z-index: 2;
+  right: var(--gutter);
+  top: calc(var(--space-6) + 3.25rem);
+  display: none;
+  padding: 0.35rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.04em;
+  color: var(--fg);
+  background: var(--bg-raised);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-round);
+}
+.lens-pause:hover { border-color: var(--fg-3); }
+html[data-motion='full'] .lens-pause { display: inline-flex; }
+@media (max-width: 720px) { .lens-pause { top: auto; bottom: calc(3.25rem + var(--space-6)); } }
+
+/* Settings button and panel */
+.settings-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 36px;
+  padding: 0 0.8rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.04em;
+  color: var(--fg-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-round);
+}
+.settings-toggle:hover, .settings-toggle[aria-expanded='true'] { color: var(--fg); border-color: var(--fg-3); }
+.settings-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+.settings {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + var(--space-2));
+  right: var(--gutter);
+  display: grid;
+  gap: var(--space-4);
+  width: min(22rem, calc(100vw - var(--gutter) * 2));
+  padding: var(--space-5);
+  background: var(--bg-raised);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow);
+}
+.settings-title { font-size: var(--step-1); font-weight: 500; }
+.settings fieldset { display: grid; gap: var(--space-1); border: 0; padding: 0; margin: 0; }
+.settings legend { margin-bottom: var(--space-2); font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: var(--tracking-micro); text-transform: uppercase; color: var(--fg-2); }
+.settings label {
+  display: grid;
+  grid-template-columns: 1.25rem 1fr;
+  align-items: start;
+  gap: var(--space-3);
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-1);
+  font-size: var(--step--1);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.settings label:hover { background: var(--bg-sunken); }
+.settings label:has(input:checked) { background: var(--accent-soft); color: var(--fg); }
+.settings label b { display: block; font-weight: 500; color: var(--fg); }
+.settings input { width: 1rem; height: 1rem; margin-top: 0.15rem; accent-color: var(--accent); }
+.settings-close { justify-self: start; }
+@media (max-width: 720px) { .settings-toggle span { display: none; } .settings-toggle { width: 36px; padding: 0; justify-content: center; } }
+
+/* ==========================================================================
+   Landing: the offer in plain words
+   ========================================================================== */
+.offer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--space-4) var(--space-6);
+  max-width: 62rem;
+  margin: var(--space-6) 0 0;
+}
+.offer-item { padding-top: var(--space-3); border-top: 1px solid var(--line-2); background: color-mix(in srgb, var(--bg) 75%, transparent); }
+.offer dt { font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: var(--tracking-micro); text-transform: uppercase; color: var(--fg-2); }
+.offer dd { margin: var(--space-1) 0 0; font-size: var(--step-0); line-height: 1.5; color: var(--fg); }
+.js .landing .offer { animation: rise var(--dur-4) var(--ease-out) 600ms backwards; }
+.entry-all { margin-top: var(--space-4); }
+.entry-all a { font-size: var(--step-0); color: var(--fg); border-bottom: 1px solid var(--accent-line); padding-bottom: 2px; }
+.entry-all a:hover { color: var(--accent); border-color: var(--accent); }
+.noscript .offer { margin: var(--space-4) 0; }
+.ask-prompt { font-size: var(--step--2); letter-spacing: var(--tracking-micro); text-transform: uppercase; color: var(--fg-2); }
+
+/* Topic tags, facts, summary note */
+.turn-tag {
+  justify-self: start;
+  margin-top: var(--space-2);
+  padding: 0.2rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.04em;
+  color: var(--fg-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-round);
+}
+.b-fact { max-width: var(--measure); font-size: var(--step-1); line-height: 1.6; }
+.b-fact strong { font-weight: 500; }
+.b-fact.is-missing { padding-left: var(--space-4); border-left: 2px solid var(--line-2); color: var(--fg-2); }
+.b-fact-link { color: var(--accent); border-bottom: 1px solid currentColor; overflow-wrap: anywhere; }
+.b-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); border-top: 1px solid var(--line-2); }
+.b-facts > div { display: grid; gap: var(--space-1); padding: var(--space-3) var(--space-4) var(--space-3) 0; border-bottom: 1px solid var(--line); }
+.b-facts dd { margin: 0; font-size: var(--step--1); line-height: 1.5; }
+.b-brief-note { margin-top: var(--space-4); font-size: var(--step--1); color: var(--fg-2); }
+
+/* ==========================================================================
+   One page (/#/all)
+   ========================================================================== */
+.page { width: min(46rem, 100%); margin: 0 auto; padding: var(--space-7) var(--gutter) var(--space-9); display: grid; gap: var(--space-8); }
+.page-head { display: grid; gap: var(--space-5); }
+.page-title { font-family: var(--font-display); font-weight: 400; font-size: var(--step-4); line-height: 1; letter-spacing: var(--tracking-tight); outline: none; }
+.page-intro { font-size: var(--step-1); color: var(--fg-2); max-width: var(--measure); }
+.page-toc { display: grid; gap: var(--space-2); }
+.page-toc-list { display: grid; gap: var(--space-1); list-style: decimal; padding-left: 1.5rem; }
+.page-toc-list a { color: var(--fg); border-bottom: 1px solid var(--line-2); }
+.page-toc-list a:hover { color: var(--accent); border-color: var(--accent); }
+.page-section { display: grid; gap: var(--space-5); scroll-margin-top: calc(var(--bar-h) + var(--space-5)); }
+.page-section.is-l2 { padding-top: var(--space-6); border-top: 1px solid var(--line-2); }
+.page-section.is-l3 { padding: var(--space-5) 0 0 var(--space-5); border-left: 1px solid var(--line-2); }
+.page-heading { font-family: var(--font-display); font-weight: 400; font-size: var(--step-3); line-height: 1.1; }
+.is-l3 > .page-heading { font-size: var(--step-2); }
+.page-body { display: grid; gap: var(--space-5); min-width: 0; }
+.page-appendix { display: grid; gap: var(--space-8); }
+.page-appendix-title { font-family: var(--font-mono); font-size: var(--step--1); font-weight: 400; letter-spacing: var(--tracking-micro); text-transform: uppercase; color: var(--fg-2); padding-top: var(--space-6); border-top: 2px solid var(--fg); }
+.page-foot { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.is-session:has(.page:not([hidden])) .ask { display: none; }
+@media print {
+  .page { display: block; padding: 0; }
+  .page-section { break-inside: avoid-page; margin-bottom: 1.5rem; }
+  .page-foot, .lens-pause, .settings, .settings-toggle, .theme-toggle { display: none !important; }
+}
+
+/* Small screens: the illustration caption sits under the content, not over it. */
+@media (max-width: 720px) {
+  .lens-caption { position: relative; top: auto; left: auto; right: auto; grid-row: 2; margin-top: var(--space-5); max-width: none; }
+  /* Room under the caption for the illustration itself. */
+  .landing { padding-bottom: calc(3.25rem + 15rem); }
+}

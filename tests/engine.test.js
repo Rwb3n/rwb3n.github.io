@@ -32,7 +32,8 @@ test('intent matching respects word boundaries', () => {
 });
 
 test('routing: disclosure goes to L3, general to L2', () => {
-  assert.equal(E.route(content.intents, 'we spend Mondays in spreadsheets').layer, 3);
+  assert.equal(E.route(content.intents, 'our team is struggling and we need help with admin').layer, 3);
+  assert.equal(E.route(content.intents, 'we spend Mondays in spreadsheets').target, 'signal_monday', 'a described problem that matches a topic opens that topic');
   assert.equal(E.route(content.intents, 'our team of 40 people is struggling').layer, 3);
   assert.equal(E.route(content.intents, 'do you use llm agents').layer, 2);
   assert.equal(E.route(content.intents, 'CALLSHEET').layer, 1);
@@ -54,8 +55,7 @@ test('brief and mailto carry the session', () => {
   s = E.record(s, { nodeId: 'callsheet_arch' });
   s = E.record(s, { nodeId: null, query: 'we have 12 staff re-keying invoices', isFreeQuestion: true, isDisclosure: true });
   const d = E.briefData(content, s);
-  assert.match(d.journey, /CALLSHEET → CALLSHEET \/ Arch/);
-  assert.match(d.depth, /^Deep/);
+  assert.ok(d.journey.includes(' → '), 'journey lists topics in order');
   assert.equal(d.context, 'we have 12 staff re-keying invoices');
   assert.equal(d.questions, 'None', 'disclosures are context, not questions');
   const href = E.mailtoHref('lab@mindunder.dev', d);

@@ -1,113 +1,14 @@
 [
   {
-    "id": "ahead",
-    "label": "Ahead",
-    "parent": null,
-    "intents": ["ahead", "anticipate", "advantage", "competitors", "first mover"],
-    "tags": ["overview"],
-    "blocks": [
-      { "type": "text", "content": "You want to be ahead. Not reacting — anticipating. Seeing the thing before everyone else sees it. Knowing while others are still guessing." },
-      { "type": "text", "content": "That’s a system, not a talent. Mine reads UK company filings, insolvency notices, and contract awards every night — it tells you the morning it happens, not the week after. Yours would read whatever moves your market." }
-    ],
-    "chips": [
-      { "label": "Sound familiar?", "target": "signals" },
-      { "label": "Show me how", "target": "method" }
-    ]
-  },
-  {
-    "id": "signals",
-    "label": "Signals",
-    "parent": null,
-    "intents": ["familiar", "symptoms", "problems", "pain", "dragging", "sound familiar"],
-    "tags": ["overview"],
-    "blocks": [
-      { "type": "text", "content": "Four conversations I keep having. See if one of them is yours." },
-      { "type": "grid", "items": [
-        { "title": "THE BLINDSIDE", "description": "“Our biggest supplier went under. I found out from a LinkedIn post.”", "target": "signal_blindside" },
-        { "title": "THE MONDAY RITUAL", "description": "“Someone spends the whole day pulling the same data into the same spreadsheet.”", "target": "signal_monday" },
-        { "title": "THE COFFEE MEETING", "description": "“By the time we heard about the tender, the winner had already had coffee with the buyer.”", "target": "signal_late" },
-        { "title": "THE HOLIDAY TEST", "description": "“I haven’t taken two weeks off in six years. The answers live in my head.”", "target": "signal_instinct" }
-      ]}
-    ],
-    "chips": [
-      { "label": "What do you do about it?", "target": "method" },
-      { "label": "Have you done this before?", "target": "proof" }
-    ]
-  },
-  {
-    "id": "signal_blindside",
-    "label": "The Blindside",
-    "parent": "signals",
-    "intents": [],
-    "tags": ["overview"],
-    "blocks": [
-      { "type": "callout", "text": "Our biggest supplier went under. I found out from a LinkedIn post — same day the client called asking where their delivery was." },
-      { "type": "text", "content": "You should have known weeks ago. Now you do. The morning it’s filed, it’s in your inbox. Their problems become your preparation, not your emergency." }
-    ],
-    "chips": [
-      { "label": "Next: the Monday ritual", "target": "signal_monday" },
-      { "label": "How does that work?", "target": "method" },
-      { "label": "All signals", "target": "signals" }
-    ]
-  },
-  {
-    "id": "signal_monday",
-    "label": "The Monday Ritual",
-    "parent": "signals",
-    "intents": [],
-    "tags": ["overview"],
-    "blocks": [
-      { "type": "callout", "text": "Every Monday, someone spends the whole day pulling the same data from the same five places into the same spreadsheet. Then someone else checks it. Then it goes out wrong anyway." },
-      { "type": "text", "content": "It’s already done when you walk in. Correct. Consistent. Nobody touched it. That person works on something that matters now." }
-    ],
-    "chips": [
-      { "label": "Next: always second", "target": "signal_late" },
-      { "label": "How does that work?", "target": "method" },
-      { "label": "All signals", "target": "signals" }
-    ]
-  },
-  {
-    "id": "signal_late",
-    "label": "The Coffee Meeting",
-    "parent": "signals",
-    "intents": [],
-    "tags": ["overview"],
-    "blocks": [
-      { "type": "callout", "text": "By the time we heard about the tender, the winner had already had coffee with the buyer. Twice. The people who get there first seem to just… know." },
-      { "type": "text", "content": "They don’t know. They have a system that watches and tells them. Mine watches five public registers every night. Yours would watch whatever moves your market." }
-    ],
-    "chips": [
-      { "label": "Next: the bus factor", "target": "signal_instinct" },
-      { "label": "How does that work?", "target": "method" },
-      { "label": "All signals", "target": "signals" }
-    ]
-  },
-  {
-    "id": "signal_instinct",
-    "label": "The Holiday Test",
-    "parent": "signals",
-    "intents": [],
-    "tags": ["overview"],
-    "blocks": [
-      { "type": "callout", "text": "I haven’t taken two weeks off in six years. Not because of money — because the answers live in my head. If I’m not in the room, things stop." },
-      { "type": "text", "content": "Your instinct becomes a machine. It captures what you’d notice, flags what you’d flag, runs the checks you run. Except it never takes a day off and it never forgets." }
-    ],
-    "chips": [
-      { "label": "What do you do about it?", "target": "method" },
-      { "label": "Have you done this before?", "target": "proof" },
-      { "label": "All signals", "target": "signals" }
-    ]
-  },
-  {
     "id": "method",
-    "label": "Method",
+    "label": "What I do",
     "parent": null,
-    "intents": ["what do you do", "method", "how it works", "automation", "before after", "services"],
-    "tags": ["overview", "identity"],
+    "intents": ["what do you do", "what you do", "method", "how it works", "services", "service"],
+    "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "Here’s what I actually do. I look at how you work. I find the pattern — the thing that’s actually working, buried under the noise. Then I pull it out, simplify it, and build a system around it." },
-      { "type": "flow", "layout": "horizontal", "title": "Before", "nodes": [
-        { "id": "d1", "label": "Data" },
+      { "type": "text", "content": "First, I look at how work moves through your business. I find the steps that people repeat by hand. Then I build software that does those steps." },
+      { "type": "flow", "layout": "horizontal", "title": "Before: people pass the work along", "nodes": [
+        { "id": "d1", "label": "Information" },
         { "id": "p1", "label": "Person", "variant": "muted" },
         { "id": "dc", "label": "Decision" },
         { "id": "p2", "label": "Person", "variant": "muted" },
@@ -118,117 +19,241 @@
         { "from": "dc", "to": "p2" },
         { "from": "p2", "to": "ac" }
       ]},
-      { "type": "text", "content": "Every link is a handoff. Every handoff is a delay. Every delay is a risk." },
-      { "type": "flow", "layout": "horizontal", "title": "After", "nodes": [
-        { "id": "d2", "label": "Data" },
+      { "type": "text", "content": "Each time work passes from one person to another, it waits. Each wait adds delay and a chance of a mistake." },
+      { "type": "flow", "layout": "horizontal", "title": "After: the system does the routine steps", "nodes": [
+        { "id": "d2", "label": "Information" },
         { "id": "sy", "label": "System", "variant": "accent" },
-        { "id": "de", "label": "Decision" }
+        { "id": "de", "label": "Your decision" },
+        { "id": "a2", "label": "System acts" }
       ], "edges": [
-        { "from": "d2", "to": "sy" },
-        { "from": "sy", "to": "de" }
+        { "from": "d2", "to": "sy", "label": "collects" },
+        { "from": "sy", "to": "de", "label": "prepares" },
+        { "from": "de", "to": "a2", "label": "you approve" }
       ]},
-      { "type": "text", "content": "The system does the watching, the checking, the compiling. You do the deciding." }
+      { "type": "text", "content": "The system collects and checks the information. You make the decision. Then the system carries it out." }
     ],
     "chips": [
-      { "label": "Why would I trust it?", "target": "trust_ladder" },
-      { "label": "Have you done this before?", "target": "proof" },
-      { "label": "How do we start?", "target": "process" }
+      { "target": "trust_ladder" },
+      { "target": "proof" },
+      { "target": "process" }
+    ]
+  },
+  {
+    "id": "ahead",
+    "label": "What you get from it",
+    "parent": null,
+    "intents": ["benefit", "benefits", "what do i get", "outcome", "outcomes", "value"],
+    "tags": ["overview"],
+    "blocks": [
+      { "type": "text", "content": "You find out about important changes early, so you can act before they cause problems." },
+      { "type": "text", "content": "This comes from a system that checks information every day. My own system reads UK company records, insolvency notices and public contract awards every night. It tells me about changes the same morning." },
+      { "type": "text", "content": "A system for your business would check the sources that matter in your market." }
+    ],
+    "chips": [
+      { "target": "signals" },
+      { "target": "method" }
+    ]
+  },
+  {
+    "id": "signals",
+    "label": "Problems I solve",
+    "parent": null,
+    "intents": ["problems", "problem you solve", "examples", "symptoms", "pain points"],
+    "tags": ["overview"],
+    "blocks": [
+      { "type": "text", "content": "Here are four common problems. Each one is an example, not a quote from a client. Choose one to read more." },
+      { "type": "grid", "items": [
+        { "title": "A supplier fails without warning", "description": "You find out from social media or from an unhappy customer.", "target": "signal_blindside" },
+        { "title": "Weekly reports made by hand", "description": "Someone copies the same data into the same spreadsheet every week.", "target": "signal_monday" },
+        { "title": "Hearing about tenders too late", "description": "A competitor has already met the buyer before you hear about the tender.", "target": "signal_late" },
+        { "title": "Only one person knows how things work", "description": "The owner cannot take two weeks off, because the answers are in their head.", "target": "signal_instinct" }
+      ]}
+    ],
+    "chips": [
+      { "target": "method" },
+      { "target": "proof" }
+    ]
+  },
+  {
+    "id": "signal_blindside",
+    "label": "Problem: a supplier fails without warning",
+    "parent": "signals",
+    "intents": ["supplier fails", "insolvency", "warning"],
+    "tags": ["overview"],
+    "blocks": [
+      { "type": "callout", "text": "Example: a company's biggest supplier stopped trading. The company found out from a LinkedIn post. On the same day, a client asked where their delivery was." },
+      { "type": "text", "content": "Public records often show warning signs weeks earlier. I build systems that check those records every day. They email you on the morning a relevant record appears, so you have time to prepare." }
+    ],
+    "chips": [
+      { "target": "signal_monday" },
+      { "target": "method" },
+      { "target": "signals" }
+    ]
+  },
+  {
+    "id": "signal_monday",
+    "label": "Problem: weekly reports made by hand",
+    "parent": "signals",
+    "intents": ["report", "reports", "spreadsheet", "spreadsheets", "copy data"],
+    "tags": ["overview"],
+    "blocks": [
+      { "type": "callout", "text": "Example: every Monday, one person spends the whole day copying data from five places into one spreadsheet. A second person checks it. It still contains mistakes." },
+      { "type": "text", "content": "I build a system that makes the report automatically before your working day starts. It follows the same steps every time, so it does not make copying mistakes. The person who made the report can do other work." }
+    ],
+    "chips": [
+      { "target": "signal_late" },
+      { "target": "method" },
+      { "target": "signals" }
+    ]
+  },
+  {
+    "id": "signal_late",
+    "label": "Problem: hearing about tenders too late",
+    "parent": "signals",
+    "intents": ["tender", "tenders", "contracts", "too late"],
+    "tags": ["overview"],
+    "blocks": [
+      { "type": "callout", "text": "Example: a company heard about a public tender late. By then, the company that won it had already met the buyer twice." },
+      { "type": "text", "content": "Companies that hear first usually have a system that checks public notices every day. My system checks five public registers every night. A system for your business would check the sources that matter in your market." }
+    ],
+    "chips": [
+      { "target": "signal_instinct" },
+      { "target": "method" },
+      { "target": "signals" }
+    ]
+  },
+  {
+    "id": "signal_instinct",
+    "label": "Problem: only one person knows how things work",
+    "parent": "signals",
+    "intents": ["only one person", "key person", "holiday", "time off"],
+    "tags": ["overview"],
+    "blocks": [
+      { "type": "callout", "text": "Example: a business owner has not taken two weeks off in six years. The reason is not money. The knowledge needed to run the business is only in their head." },
+      { "type": "text", "content": "I write down the checks and decisions that person makes every day. Then I build a system that does the routine ones. It keeps working when that person is away." }
+    ],
+    "chips": [
+      { "target": "method" },
+      { "target": "proof" },
+      { "target": "signals" }
     ]
   },
   {
     "id": "trust_ladder",
-    "label": "Trust",
+    "label": "How a new system is tested",
     "parent": "method",
-    "intents": ["earn trust", "trust the system", "handover", "supervised", "control"],
-    "tags": ["overview", "deep"],
+    "intents": ["trust", "safe", "safety", "risk", "testing", "supervised", "control", "mistakes"],
+    "tags": ["overview"],
     "blocks": [
-      { "type": "flow", "layout": "horizontal", "title": "How trust is earned", "nodes": [
-        { "id": "yd", "label": "You do it" },
-        { "id": "sg", "label": "It suggests" },
-        { "id": "ck", "label": "It does, you check" },
-        { "id": "rn", "label": "It runs", "variant": "accent" }
+      { "type": "flow", "layout": "horizontal", "title": "The four stages, in order", "nodes": [
+        { "id": "yd", "label": "You do the task" },
+        { "id": "sg", "label": "System suggests" },
+        { "id": "ck", "label": "System acts, you check" },
+        { "id": "rn", "label": "System runs alone", "variant": "accent" }
       ], "edges": [
         { "from": "yd", "to": "sg" },
         { "from": "sg", "to": "ck" },
         { "from": "ck", "to": "rn" }
       ]},
-      { "type": "text", "content": "Nothing skips a step. If it gets worse, it goes back a step. Automatically." },
-      { "type": "callout", "text": "One of my systems has earned two of its three autonomy levels this way. The third is still on probation." }
+      { "type": "text", "content": "A new system moves up one stage at a time. It never skips a stage. If it starts making more mistakes, it moves back one stage automatically." },
+      { "type": "callout", "text": "In one of my own systems, two of three tasks have reached the last stage. The third task is still at the checking stage." }
     ],
     "chips": [
-      { "label": "See it in a live system", "target": "callsheet_zero_ops" },
-      { "label": "Proof it works", "target": "proof" },
-      { "label": "How do we start?", "target": "process" }
+      { "target": "callsheet_zero_ops" },
+      { "target": "proof" },
+      { "target": "process" }
     ]
   },
   {
     "id": "proof",
-    "label": "Proof",
+    "label": "Proof from systems I run",
     "parent": null,
-    "intents": ["proof", "done it", "track record", "evidence", "yourself first"],
+    "intents": ["proof", "evidence", "track record", "case study", "case studies", "clients", "done this before"],
     "tags": ["overview", "work"],
     "blocks": [
-      { "type": "text", "content": "I’ve done it for myself first." },
-      { "type": "pills", "label": "Watched nightly", "items": ["UK company filings", "Property transactions", "Government contracts", "Insolvency notices", "Grant funding"] },
-      { "type": "text", "content": "All public. All available to anyone. The difference: mine talk to each other." },
-      { "type": "flow", "layout": "horizontal", "nodes": [
-        { "id": "cf", "label": "Company fails" },
-        { "id": "ps", "label": "Property surfaces" },
-        { "id": "co", "label": "Contracts orphan" },
-        { "id": "op", "label": "Opportunity appears", "variant": "accent" }
+      { "type": "fact", "key": "clients" },
+      { "type": "pills", "label": "Public sources my system checks every night", "items": ["UK company records", "Property sales", "Government contracts", "Insolvency notices", "Grant funding"] },
+      { "type": "text", "content": "Anyone can read these sources. My system links them together, so a change in one source can show an opportunity in another." },
+      { "type": "flow", "layout": "horizontal", "title": "Example of linked changes", "nodes": [
+        { "id": "cf", "label": "A company closes" },
+        { "id": "ps", "label": "Its building is for sale" },
+        { "id": "co", "label": "Its contracts need a supplier" },
+        { "id": "op", "label": "A chance for you", "variant": "accent" }
       ], "edges": [
         { "from": "cf", "to": "ps" },
         { "from": "ps", "to": "co" },
         { "from": "co", "to": "op" }
       ]},
-      { "type": "text", "content": "One of these runs a live public directory: 37 scheduled jobs, roughly 95% of issues resolved without me, about £36 a month, zero staff. I read one briefing a week. Same method. Your data. Your operation." }
+      { "type": "text", "content": "One of my systems runs a public online directory called Callsheet. It runs 37 jobs on a timetable. About 95% of problems are fixed without me. It costs about £36 a month to run." },
+      { "type": "fact", "key": "callsheetUrl" }
     ],
     "chips": [
-      { "label": "What would this look like for my business?", "target": "process" },
-      { "label": "The systems behind this", "target": "projects" },
-      { "label": "Who runs all this?", "target": "ruben" }
+      { "target": "process" },
+      { "target": "projects" },
+      { "target": "ruben" }
     ]
   },
   {
     "id": "process",
-    "label": "Process",
+    "label": "How we start",
     "parent": null,
-    "intents": ["process", "engagement", "work together", "how do we start", "getting started", "hire"],
+    "intents": ["process", "how do we start", "getting started", "get started", "work together", "engagement", "hire", "steps", "next step"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "How we work together. The shape is always the same:" },
+      { "type": "text", "content": "Every project follows the same five steps, in this order." },
       { "type": "layers", "items": [
-        { "label": "1", "title": "You talk, I listen", "detail": "What’s working. What’s painful. What you wish happened automatically." },
-        { "label": "2", "title": "I map the real operation", "detail": "Not what the org chart says. What actually happens. Where the time goes. Where the value is." },
-        { "label": "3", "title": "I show you the design", "detail": "What stays. What goes. What becomes a machine. You approve before anything changes." },
-        { "label": "4", "title": "I build it. You watch it prove itself", "detail": "Supervised first. Measured. When it earns your trust, it graduates. Not before." },
-        { "label": "5", "title": "It runs. You decide", "detail": "The system handles the work. You handle the judgment. The split is clean." }
+        { "label": "1", "title": "We talk, and I listen", "detail": "You tell me what works, what is difficult, and what you wish happened automatically." },
+        { "label": "2", "title": "I map how the work really happens", "detail": "I look at what people actually do, where time goes, and where the value is." },
+        { "label": "3", "title": "I show you a design", "detail": "It shows what stays, what changes, and what becomes automatic. Nothing changes until you approve it." },
+        { "label": "4", "title": "I build it and we test it", "detail": "At first a person checks everything it does. It only runs alone after it has shown that it works." },
+        { "label": "5", "title": "It runs, and you decide", "detail": "The system does the routine work. You make the decisions that need judgement." }
       ]},
-      { "type": "text", "content": "Nothing skips a step. Nothing graduates before it’s earned it. The first step costs 30 minutes." }
+      { "type": "fact", "key": "firstStep" },
+      { "type": "fact", "key": "cost" },
+      { "type": "fact", "key": "timeline" },
+      { "type": "fact", "key": "handover" }
     ],
     "chips": [
-      { "label": "Let’s talk", "target": "contact" },
-      { "label": "Why would I trust it?", "target": "trust_ladder" }
+      { "target": "contact" },
+      { "target": "cost" },
+      { "target": "trust_ladder" }
+    ]
+  },
+  {
+    "id": "cost",
+    "label": "Cost",
+    "parent": null,
+    "intents": ["cost", "costs", "price", "prices", "pricing", "fee", "fees", "quote", "budget", "how much", "charge", "rates"],
+    "tags": ["overview"],
+    "blocks": [
+      { "type": "fact", "key": "cost" },
+      { "type": "fact", "key": "timeline" },
+      { "type": "text", "content": "The first step is a free 30-minute call. After the call you get a one-page written summary." }
+    ],
+    "chips": [
+      { "label": "Book the free 30-minute call", "target": "_book" },
+      { "target": "process" }
     ]
   },
   {
     "id": "contact",
-    "label": "Contact",
+    "label": "Contact and booking",
     "parent": null,
-    "intents": ["contact", "email", "talk", "call", "reach", "get in touch"],
+    "intents": ["contact", "email", "talk", "call", "book", "booking", "get in touch", "meeting", "speak"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "Tell me what’s dragging. Thirty minutes — you talk, I map. You leave with a one-page read on where the drag actually is, yours to keep either way." },
+      { "type": "text", "content": "Tell me which work takes too much time in your business. The first call takes 30 minutes and is free." },
+      { "type": "text", "content": "After the call you get a one-page written summary of where time is lost. You keep it, whether or not we work together." },
       { "type": "stats", "items": [
-        { "label": "Base", "value": "London" },
-        { "label": "Response", "value": "Same-day" },
-        { "label": "First call", "value": "30 min · no charge" },
+        { "label": "Based in", "value": "London, UK" },
+        { "label": "Reply time", "value": "The same day" },
+        { "label": "First call", "value": "30 minutes, free" },
         { "label": "Email", "value": "lab@mindunder.dev" }
       ]},
-      { "type": "text", "content": "No pitch, no deck. If I can’t see anything worth fixing, I’ll say so." }
+      { "type": "text", "content": "There is no sales presentation. If I cannot find anything worth fixing, I will tell you." }
     ],
     "chips": [
-      { "label": "Book the 30 minutes", "target": "_book" }
+      { "label": "Book the free 30-minute call", "target": "_book" }
     ]
   }
 ]

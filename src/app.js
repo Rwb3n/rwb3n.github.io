@@ -1,7 +1,7 @@
 // Application controller: wires content, engine and DOM together.
 
-import { h, wait, reducedMotion } from './dom.js';
-import { copy, site } from './copy.js';
+import { h, wait, reducedMotion, motionOff } from './dom.js';
+import { copy, site, config, factText } from './copy.js';
 import { renderBlock } from './blocks.js';
 import { splitWords } from './type.js';
 import { createMap } from './map.js';
@@ -28,6 +28,7 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     ask: $('[data-ask]'),
     input: $('[data-ask-input]'),
     entry: $('[data-entry]'),
+    page: $('[data-page]'),
   };
 
   let session = E.newSession();
@@ -56,24 +57,35 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
   el.trail.after(mapToggle);
   const countMap = () => {
     const seen = new Set(map.route).size;
-    mapCount.textContent = `${seen} of ${total} explored`;
-    mapToggle.textContent = `Map ${seen}/${total}`;
+    mapCount.textContent = `${seen} of ${total} topics read`;
+    mapToggle.textContent = `Map: ${seen} of ${total} read`;
   };
   countMap();
 
+  el.input.placeholder = copy.ui.placeholder;
+
+  // Features switched in content/site.json.
+  if (!config.features.map) { el.trail.closest('.rail').querySelector('.rail-map').hidden = true; mapToggle.hidden = true; }
+  if (!config.features.depthMeter) el.depth.closest('.rail-block').hidden = true;
+  if (config.features.freeText === false) el.ask.hidden = true;
+  el.brief.closest('.rail-block').append(h('a', { class: 'rail-mail', href: '#/all', onclick: (e) => { e.preventDefault(); showAll(); } }, copy.ui.allLink));
+
+  // Chips without a label use the title of the topic they open, so a button
+  // always says where it goes.
+  const labelled = (chips) => chips.map((c) => ({ ...c, label: c.label || content.nodes[c.target]?.label || c.target }));
+
   // Landing -------------------------------------------------------------------
 
-  const rootNode = content.nodes[content.root];
-  if (rootNode && el.entry) {
-    el.entry.replaceChildren(
-      ...rootNode.chips.map((chip, i) =>
-        h('a', { class: 'entry-item', href: `#/${chip.target}`, onclick: (e) => { e.preventDefault(); choose(chip, { from: e.currentTarget.querySelector('.entry-label') }); } },
-          h('span', { class: 'entry-index' }, String(i + 1).padStart(2, '0')),
-          h('span', { class: 'entry-label' }, chip.label),
-          h('span', { class: 'entry-arrow', 'aria-hidden': 'true' }, chip.expand ? '+' : '→'),
-        ),
-      ),
-    );
+  // The entry links are static markup (written by `npm run sync` from the root
+  // topic's chips), so the landing reads the same with or without JavaScript.
+  for (const a of el.entry?.querySelectorAll('.entry-item[data-target]') || []) {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      choose({ target: a.dataset.target }, { from: a.querySelector('.entry-label') });
+    });
+  }
+  for (const a of document.querySelectorAll('[data-all-link]')) {
+    a.addEventListener('click', (e) => { e.preventDefault(); showAll(); });
   }
 
   // Leave the landing and open the first turn. Where View Transitions exist,
@@ -86,6 +98,7 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     el.input.placeholder = copy.ui.placeholderSession;
     const swap = (split = true) => {
       el.landing.hidden = true;
+      if (el.page) el.page.hidden = true;
       el.session.hidden = false;
       el.body.classList.remove('is-landing');
       el.body.classList.add('is-session');
@@ -134,6 +147,7 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     map.reset();
     countMap();
     el.session.hidden = true;
+    if (el.page) { el.page.hidden = true; el.page.replaceChildren(); }
     el.landing.hidden = false;
     el.landing.classList.remove('is-leaving', 'is-fixing');
     for (const c of el.landing.querySelectorAll('.is-chosen')) c.classList.remove('is-chosen');
@@ -162,13 +176,14 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     return { left: r.left, top: r.top, font: `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} / ${cs.lineHeight} ${cs.fontFamily}`, size: parseFloat(cs.fontSize), color: cs.color, text: text ?? from.textContent };
   }
 
-  function addTurn(question, { label, aside = false, quoted = true, split = true } = {}, from) {
+  function addTurn(question, { label, aside = false, quoted = false, split = true, technical = false } = {}, from) {
     const src = snapshot(from);
     spendChips();
     const n = turns.length + 1;
     const q = h('div', { class: 'turn-q' },
-      h('span', { class: 'turn-index' }, h('b', null, `${copy.ui.questionIndex}.${String(n).padStart(2, '0')}`)),
+      h('span', { class: 'turn-index' }, h('b', null, `${copy.ui.questionIndex} ${n}`)),
       h('h2', { class: `turn-question${quoted ? ' is-quoted' : ''}`, tabindex: '-1' }, question),
+      technical && h('p', { class: 'turn-tag' }, copy.ui.technical),
     );
     const answer = h('div', { class: 'turn-a' });
     const turn = h('article', { class: `turn${aside ? ' is-aside' : ''}`, id: `turn-${n}` }, q, answer);
@@ -222,7 +237,8 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
   function animateScroll(to, dur = 700, onCancel) {
     cancelAnimationFrame(scrollRaf);
     const from = window.scrollY, d = to - from;
-    if (Math.abs(d) < 2 || reducedMotion()) { window.scrollTo(0, to); return; }
+    if (Math.abs(d) < 2 || motionOff()) { window.scrollTo(0, to); return; }
+    if (reducedMotion()) dur = Math.min(dur, 300);
     const t0 = performance.now();
     const off = () => { removeEventListener('wheel', stop); removeEventListener('touchstart', stop); removeEventListener('keydown', stop); };
     const stop = () => { cancelAnimationFrame(scrollRaf); off(); onCancel?.(); };
@@ -351,9 +367,10 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     const revisit = seen.has(target) && target !== content.root;
     session = E.record(session, { nodeId: target, query });
 
-    let chips = E.withParentChip(content, node.chips || [], target, seen);
+    let chips = E.withParentChip(content, labelled(node.chips || []), target, seen);
     chips = E.applyGravity(chips, session, content);
-    const t = await openTurn(query || node.label, { label: node.label, quoted: !!query }, opts.from);
+    const typed = !!(query && opts.typed);
+    const t = await openTurn(typed ? query : node.label, { label: node.label, quoted: typed, technical: node.audience === 'technical' }, opts.from);
     map.visit(target);
     countMap();
     history.replaceState(null, '', target === content.root ? location.pathname : `#/${target}`);
@@ -371,11 +388,11 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     const node = content.nodes[target];
     if (!node || busy) return;
     session = { ...session, viewed: [...new Set([...session.viewed, target])] };
-    const t = await openTurn(label || node.label, { label: node.label, aside: mode === 'session' }, opts.from);
+    const t = await openTurn(node.label, { label: node.label, aside: mode === 'session', technical: node.audience === 'technical' }, opts.from);
     map.visit(target);
     countMap();
     updateRail();
-    return respond(t, node.blocks, node.chips || [], THINK.expand, opts);
+    return respond(t, node.blocks, labelled(node.chips || []), THINK.expand, opts);
   }
 
   async function ask(text) {
@@ -391,11 +408,11 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     // Once the visitor is describing their own business, longer messages are
     // context for the brief even if they mention a keyword ("our CRM…").
     const describing = session.selfDisclosed && q.split(/\s+/).length > 3;
-    if (r.layer === 1 && !describing) return navigate(r.target, q, { from: fromInput });
+    if (r.layer === 1 && !describing) return navigate(r.target, q, { from: fromInput, typed: true });
 
     if (session.selfDisclosed) {
       session = E.record(session, { nodeId: null, query: q, isFreeQuestion: true, isDisclosure: true });
-      const t = await openTurn(q, { label: truncate(q) }, fromInput);
+      const t = await openTurn(q, { label: truncate(q), quoted: true }, fromInput);
       return respond(t, [{ type: 'text', content: copy.engagement.addedToBrief }],
         [{ label: copy.chips.showBrief, target: '_show_brief' }, { label: copy.chips.keepExploring, target: 'projects' }],
         THINK.addToBrief);
@@ -403,13 +420,13 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
 
     if (r.layer === 3) {
       session = E.record(session, { nodeId: null, query: q, isFreeQuestion: true, isDisclosure: true });
-      const t = await openTurn(q, { label: truncate(q) }, fromInput);
+      const t = await openTurn(q, { label: truncate(q), quoted: true }, fromInput);
       const res = E.resolveL3(content, session);
       return respond(t, res.blocks, res.chips, THINK.l3);
     }
 
     session = E.record(session, { nodeId: null, query: q, isFreeQuestion: true });
-    const t = await openTurn(q, { label: truncate(q) }, fromInput);
+    const t = await openTurn(q, { label: truncate(q), quoted: true }, fromInput);
     const res = E.resolveL2(q);
     return respond(t, res.blocks, E.applyGravity(res.chips, session, content), THINK.l2);
   }
@@ -467,6 +484,75 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
       }, { rootMargin: '-30% 0px -60% 0px' })
     : null;
 
+  // One page ----------------------------------------------------------------------
+  // Everything in order on a single page: the key facts, then the main topics
+  // (each followed by its sub-topics), then a labelled technical appendix.
+  // No conversation, no waiting, printable.
+
+  function showAll() {
+    if (!el.page) return;
+    const byParent = {};
+    for (const [id, p] of Object.entries(content.parents)) (byParent[p] ||= []).push(id);
+    const ctx = {
+      navigate: (target) => {
+        const a = el.page.querySelector(`#page-${CSS.escape(target)}`);
+        if (a) animateScroll(a.getBoundingClientRect().top + window.scrollY - 80);
+        else { el.page.hidden = true; mode = 'landing'; navigate(target); }
+      },
+    };
+    const main = (config.onePage.sections || []).filter((id) => content.nodes[id]);
+    const extra = (config.onePage.appendix || []).filter((id) => content.nodes[id]);
+    const listed = new Set([...main, ...extra]);
+    const done = new Set();
+    // Each topic appears once: listed topics at their own place, others under their parent.
+    const section = (id, level) => {
+      const node = content.nodes[id];
+      if (!node || done.has(id) || (level === 3 && listed.has(id))) return null;
+      done.add(id);
+      const H = level === 2 ? 'h2' : 'h3';
+      const body = h('div', { class: 'page-body' });
+      for (const b of node.blocks) {
+        const n = renderBlock(b, ctx);
+        if (n) { body.append(n); n.onReveal?.(); n.querySelectorAll('*').forEach((c) => c.onReveal?.()); }
+      }
+      return h('section', { class: `page-section is-l${level}`, id: `page-${id}`, 'aria-labelledby': `page-h-${id}` },
+        h(H, { class: 'page-heading', id: `page-h-${id}` }, node.label),
+        node.audience === 'technical' && h('p', { class: 'turn-tag' }, copy.ui.technical),
+        body,
+        level === 2 && (byParent[id] || []).map((c) => section(c, 3)),
+      );
+    };
+    const toc = (ids) => h('ol', { class: 'page-toc-list' }, ids.map((id) => h('li', null, h('a', { href: `#page-${id}`, onclick: (e) => { e.preventDefault(); ctx.navigate(id); } }, content.nodes[id].label))));
+    const factKeys = Object.keys(config.facts).filter((k) => factText(k) && !config.facts[k].link);
+
+    el.page.replaceChildren(
+      h('header', { class: 'page-head' },
+        h('h1', { class: 'page-title', id: 'page-title', tabindex: '-1' }, config.onePage.title || copy.ui.allLink),
+        config.onePage.intro && h('p', { class: 'page-intro' }, config.onePage.intro),
+        renderBlock({ type: 'facts', keys: factKeys }, ctx),
+        h('nav', { class: 'page-toc', 'aria-label': 'Contents' },
+          h('h2', { class: 'micro' }, 'Contents'), toc(main),
+          extra.length && h('h2', { class: 'micro' }, 'Technical appendix'), extra.length && toc(extra)),
+      ),
+      main.map((id) => section(id, 2)),
+      extra.length && h('div', { class: 'page-appendix' }, h('h2', { class: 'page-appendix-title' }, 'Technical appendix'), extra.map((id) => section(id, 2))),
+      h('footer', { class: 'page-foot' },
+        h('a', { class: 'btn btn-primary', href: `mailto:${site.email}` }, `Email ${site.email}`),
+        h('button', { class: 'btn btn-ghost', type: 'button', onclick: () => reset() }, copy.ui.backToStart),
+      ),
+    );
+    mode = 'page';
+    el.landing.hidden = true;
+    el.session.hidden = true;
+    el.page.hidden = false;
+    el.body.classList.remove('is-landing');
+    el.body.classList.add('is-session');
+    document.dispatchEvent(new CustomEvent('mu:session'));
+    history.replaceState(null, '', '#/all');
+    window.scrollTo(0, 0);
+    el.page.querySelector('.page-title')?.focus({ preventScroll: true });
+  }
+
   // Wiring ----------------------------------------------------------------------
 
   el.ask.addEventListener('submit', (e) => { e.preventDefault(); ask(el.input.value); });
@@ -487,9 +573,10 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
 
   // Deep link: /#/method opens straight into that node.
   const start = location.hash.match(/^#\/([\w-]+)/)?.[1];
-  if (start && content.nodes[start] && start !== content.root) navigate(start);
+  if (start === 'all') showAll();
+  else if (start && content.nodes[start] && start !== content.root) navigate(start);
 
-  return { navigate, ask, reset, get session() { return session; } };
+  return { navigate, ask, reset, showAll, get session() { return session; } };
 }
 
 function truncate(s, n = 28) {
