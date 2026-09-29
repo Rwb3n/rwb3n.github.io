@@ -1,32 +1,144 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mindunder.dev</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>mindunder.dev — systems that run the business while you sleep</title>
     <meta name="description" content="You know something’s wrong. You just can’t see where. I find it, show you, and fix it so it runs without you. Systems that run the business while you sleep — London." />
+    <meta name="theme-color" content="#f3f0e9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0c0d0d" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://mindunder.dev/" />
+    <meta property="og:title" content="mindunder.dev" />
+    <meta property="og:description" content="You know something’s wrong. You just can’t see where. I find it. I show you. Then I fix it so it runs without you." />
+    <meta property="og:image" content="https://mindunder.dev/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://mindunder.dev/" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
-    <style>
-      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body, #root { height: 100%; }
-      body { background: #050505; color: #c0c0c0; font-family: 'IBM Plex Mono', monospace; }
-      ::-webkit-scrollbar { width: 0; }
-      * { scrollbar-width: none; }
-    </style>
-    
-    <script type="module" crossorigin src="/assets/index-Bk6ydorn.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CtWfeskk.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@0;1&display=swap" />
+
+    <!-- Theme is resolved before first paint so there is no flash. -->
+    <script>
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('mu-theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = t;
+        document.documentElement.classList.add('js');
+      })();
+    </script>
+
+    <link rel="stylesheet" href="/styles/tokens.css" />
+    <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="modulepreload" href="/src/app.js" />
+    <script type="module" src="/src/main.js"></script>
   </head>
   <body>
-    <noscript>
-      <div style="padding: 2rem; font-family: 'IBM Plex Mono', monospace; color: #c0c0c0; background: #050505; min-height: 100vh;">
-        <h1 style="font-weight: 300; font-size: 1.25rem; margin-bottom: 1rem;">MINDUNDER.DEV</h1>
-        <p>You know something’s wrong. You just can’t see where. I find it. I show you. Then I fix it so it runs without you.</p>
-        <p style="margin-top: 1rem; color: #888;">This site requires JavaScript to run.</p>
-      </div>
-    </noscript>
-    <div id="root"></div>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="bar">
+      <a class="brand" href="/" data-home aria-label="mindunder.dev — home">
+        <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="9" r="5.25" />
+          <path d="M3 17.5h18M6 21h12" />
+        </svg>
+        <span class="brand-name">mindunder<span class="brand-tld">.dev</span></span>
+      </a>
+
+      <p class="bar-status" aria-label="Local time in London">
+        <span class="pulse" aria-hidden="true"></span>
+        <span>London</span>
+        <time class="clock" data-clock>--:--</time>
+      </p>
+
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch colour theme">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="8.25" />
+          <path class="theme-toggle-fill" d="M12 3.75a8.25 8.25 0 0 1 0 16.5z" />
+        </svg>
+      </button>
+    </header>
+
+    <main id="main">
+      <!-- Landing. Static markup: readable without JS and by crawlers; the script enhances it. -->
+      <section class="landing" data-landing aria-labelledby="landing-title">
+        <canvas class="lens" data-lens aria-hidden="true"></canvas>
+
+        <div class="landing-inner">
+          <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Operational systems · London</p>
+
+          <h1 class="display" id="landing-title">
+            <span class="display-line">You know something’s <em>wrong</em>.</span>
+            <span class="display-line">You just can’t <em class="is-accent">see</em> where.</span>
+          </h1>
+
+          <p class="lede">I find it. I show you. Then I fix it so it runs without&nbsp;you.</p>
+
+          <nav class="entry" aria-label="Start here" data-entry>
+            <a class="entry-item" href="#/signals"><span class="entry-index">01</span><span class="entry-label">Sound familiar?</span><span class="entry-arrow" aria-hidden="true">→</span></a>
+            <a class="entry-item" href="#/ahead"><span class="entry-index">02</span><span class="entry-label">What would I get out of it?</span><span class="entry-arrow" aria-hidden="true">→</span></a>
+            <a class="entry-item" href="#/method"><span class="entry-index">03</span><span class="entry-label">What do you actually do?</span><span class="entry-arrow" aria-hidden="true">→</span></a>
+            <a class="entry-item" href="#/ruben"><span class="entry-index">04</span><span class="entry-label">Who’s behind this?</span><span class="entry-arrow" aria-hidden="true">→</span></a>
+          </nav>
+        </div>
+
+        <figure class="lens-caption" data-lens-caption aria-hidden="true">
+          <span class="lens-caption-fig">Fig. 1</span>
+          <span class="lens-caption-text" data-lens-caption-text>Your operation, under the surface. Move to look.</span>
+        </figure>
+      </section>
+
+      <!-- Session. Rendered by the script once a question is asked. -->
+      <section class="session" data-session hidden aria-labelledby="session-title">
+        <h1 class="visually-hidden" id="session-title">Conversation with mindunder.dev</h1>
+        <aside class="rail" aria-label="Session">
+          <div class="rail-block">
+            <h2 class="rail-heading">Session</h2>
+            <ol class="trail" data-trail></ol>
+          </div>
+          <div class="rail-block">
+            <h2 class="rail-heading">Depth</h2>
+            <div class="depth" data-depth>
+              <div class="depth-track" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+              <p class="depth-label" data-depth-label>Surface</p>
+            </div>
+          </div>
+          <div class="rail-block rail-actions">
+            <button class="rail-brief" type="button" data-brief>Compile the brief <span aria-hidden="true">→</span></button>
+            <a class="rail-mail" href="mailto:lab@mindunder.dev">lab@mindunder.dev</a>
+          </div>
+        </aside>
+
+        <div class="log" data-log role="log" aria-live="polite" aria-relevant="additions"></div>
+      </section>
+
+      <noscript>
+        <section class="noscript">
+          <p>Everything on this site is also a conversation. Without JavaScript, here is the short version:</p>
+          <p>The business works, but it’s heavy. Too many people, too many hours, too many decisions that shouldn’t need a human. I look at how you work, find the pattern that’s actually working, and build a system around it — supervised first, autonomous only once it has earned it.</p>
+          <p>Thirty minutes, no charge. <a href="mailto:lab@mindunder.dev">lab@mindunder.dev</a></p>
+        </section>
+      </noscript>
+    </main>
+
+    <form class="ask" data-ask autocomplete="off" aria-label="Ask a question">
+      <label class="ask-prompt" for="ask-input"><span class="visually-hidden">Ask a question</span><span aria-hidden="true">$</span></label>
+      <input class="ask-input" id="ask-input" name="q" type="text" enterkeyhint="send" spellcheck="false" placeholder="Or ask anything — “we spend Mondays in spreadsheets”" data-ask-input />
+      <kbd class="ask-hint" aria-hidden="true">/</kbd>
+      <button class="ask-send" type="submit" aria-label="Send">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg>
+      </button>
+    </form>
+
+    <footer class="foot">
+      <span>mindunder.dev · London, UK</span>
+      <span>© <span data-year>2026</span></span>
+    </footer>
   </body>
 </html>

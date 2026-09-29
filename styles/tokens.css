@@ -1,0 +1,116 @@
+/* ==========================================================================
+   mindunder.dev — design tokens
+   Every colour pair used for text is AA (≥ 4.5:1) in both themes.
+   See DESIGN.md for rationale.
+   ========================================================================== */
+
+:root {
+  /* Type families */
+  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Type scale — a 1.25 minor-third ramp, fluid at the display end */
+  --step--2: 0.6875rem;   /* 11px  micro labels */
+  --step--1: 0.8125rem;   /* 13px  chrome, captions */
+  --step-0: 1rem;         /* 16px  UI */
+  --step-1: 1.125rem;     /* 18px  body copy in the log */
+  --step-2: clamp(1.375rem, 1.1rem + 0.9vw, 1.75rem);
+  --step-3: clamp(1.75rem, 1.3rem + 1.6vw, 2.625rem);
+  --step-4: clamp(2.25rem, 1.4rem + 3vw, 3.75rem);
+  --step-display: clamp(3rem, 1rem + 6.6vw, 7.75rem);
+
+  --tracking-micro: 0.14em;
+  --tracking-tight: -0.02em;
+
+  /* Space — 4px base */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  --gutter: clamp(1rem, 0.5rem + 2.2vw, 2.5rem);
+  --measure: 38rem;
+  --bar-h: 3.5rem;
+  --ask-h: 4.25rem;
+
+  /* Radii are deliberately small: this is an instrument, not a toy. */
+  --radius-1: 2px;
+  --radius-2: 4px;
+  --radius-round: 999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-1: 120ms;
+  --dur-2: 240ms;
+  --dur-3: 480ms;
+  --dur-4: 900ms;
+}
+
+/* Light — warm paper, ink, and a single burnt-orange signal. */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f3f0e9;
+  --bg-raised: #fbfaf6;
+  --bg-sunken: #ebe7de;
+  --fg: #1b1a17;
+  --fg-2: #55524b;
+  --fg-3: #6b675f;
+  --line: #dcd7cc;
+  --line-2: #c9c3b6;
+  --accent: #b53f14;
+  --accent-soft: rgb(181 63 20 / 0.09);
+  --accent-line: rgb(181 63 20 / 0.35);
+  --on-accent: #fbfaf6;
+  --dot: rgb(27 26 23 / 0.16);
+  --shadow: 0 1px 0 rgb(27 26 23 / 0.04), 0 12px 32px -18px rgb(27 26 23 / 0.28);
+  --selection: rgb(181 63 20 / 0.18);
+}
+
+/* Dark — carbon ink, not pure black; phosphor-orange signal. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0c0d0d;
+  --bg-raised: #141616;
+  --bg-sunken: #080909;
+  --fg: #ecebe6;
+  --fg-2: #a9a69e;
+  --fg-3: #85827b;
+  --line: #232626;
+  --line-2: #343838;
+  --accent: #ff6a3d;
+  --accent-soft: rgb(255 106 61 / 0.1);
+  --accent-line: rgb(255 106 61 / 0.4);
+  --on-accent: #0c0d0d;
+  --dot: rgb(236 235 230 / 0.13);
+  --shadow: 0 1px 0 rgb(0 0 0 / 0.4), 0 16px 40px -20px rgb(0 0 0 / 0.8);
+  --selection: rgb(255 106 61 / 0.25);
+}
+
+/* No-JS fallback follows the OS. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #0c0d0d;
+    --bg-raised: #141616;
+    --bg-sunken: #080909;
+    --fg: #ecebe6;
+    --fg-2: #a9a69e;
+    --fg-3: #85827b;
+    --line: #232626;
+    --line-2: #343838;
+    --accent: #ff6a3d;
+    --accent-soft: rgb(255 106 61 / 0.1);
+    --accent-line: rgb(255 106 61 / 0.4);
+    --on-accent: #0c0d0d;
+    --dot: rgb(236 235 230 / 0.13);
+    --selection: rgb(255 106 61 / 0.25);
+  }
+}
