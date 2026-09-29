@@ -5,8 +5,10 @@
 // tools, handoffs and re-keyed spreadsheets, and one node where it all snags.
 // Find it and the lens locks on. That's the pitch, as an interaction.
 //
-// Everything is drawn on one canvas. The surface is live (so the dots can bend
-// around the lens); the graph under it is pre-rendered once per size/theme.
+// Two canvases. The surface is drawn once per size/theme onto the base canvas.
+// A transparent overlay repaints only what moves: the lens (where dots bend
+// around the rim and the hidden graph shows through) and the small patch where
+// the surface trembles over the fault. Cost scales with the lens, not the screen.
 
 import { copy } from './copy.js';
 
@@ -14,7 +16,14 @@ const VOCAB = ['inbox', 'CRM', 'invoice', 'approval', 'spreadsheet', 'Monday rep
 const FAULT_NOTES = ['3 handoffs', '1 spreadsheet', '0 owners'];
 
 export function createLens(canvas, caption) {
-  const ctx = canvas.getContext('2d');
+  const base = canvas.getContext('2d');
+  const overlay = document.createElement('canvas');
+  overlay.className = canvas.className;
+  overlay.setAttribute('aria-hidden', 'true');
+  canvas.after(overlay);
+  const ctx = overlay.getContext('2d');
+  let dirty = [];            // rects painted last frame, cleared next frame
+  const mark = (x, y, w, h) => dirty.push([x, y, w, h]);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(pointer: fine)').matches;
   const captionText = caption?.querySelector('[data-lens-caption-text]');
@@ -46,12 +55,16 @@ export function createLens(canvas, caption) {
     if (r.width < 2 || r.height < 2) return false; // hidden (session view)
     W = Math.max(1, Math.round(r.width));
     H = Math.max(1, Math.round(r.height));
-    dpr = Math.min(2, window.devicePixelRatio || 1);
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
+    // Cap the backing store at ~6 MP: two full-screen canvases at 2× on a 1440p
+    // display would otherwise be 30 MP of texture for a field of 1.6px dots.
+    dpr = Math.min(2, window.devicePixelRatio || 1, Math.sqrt(6e6 / (W * H)));
+    canvas.width = overlay.width = Math.round(W * dpr);
+    canvas.height = overlay.height = Math.round(H * dpr);
+    dirty = [];
     R = W < 720 ? Math.round(Math.min(92, W * 0.22)) : Math.round(Math.max(110, Math.min(150, Math.min(W, H) * 0.2)));
     scene = buildScene(W, H);
     under = renderUnder(scene);
+    drawSurface();
     if (!lens.x) { lens.x = lens.tx = W * 0.55; lens.y = lens.ty = H * 0.25; }
     planAuto();
     return true;
@@ -159,31 +172,61 @@ export function createLens(canvas, caption) {
 
   // Drawing -----------------------------------------------------------------
 
+  function drawSurface() {
+    base.setTransform(dpr, 0, 0, dpr, 0, 0);
+    base.clearRect(0, 0, W, H);
+    base.fillStyle = colors.dot;
+    const { dots } = scene;
+    for (let i = 0; i < dots.length; i += 2) base.fillRect(dots[i] - 0.8, dots[i + 1] - 0.8, 1.6, 1.6);
+  }
+
   function frame(now) {
     if (!scene) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, W, H);
+    for (const [x, y, w, h] of dirty) ctx.clearRect(x, y, w, h);
+    dirty = [];
+
     const t = now / 1000;
     const { dots, fault } = scene;
-
-    // Surface: dots bulge away from the lens rim, and tremble near the fault.
-    ctx.fillStyle = colors.dot;
     const rim = R * 1.35;
+    const FR = 72;
+    const tremble = !reduce.matches;
+
+    // Patch out the static dots wherever the surface moves…
+    ctx.fillStyle = colors.bg;
+    ctx.beginPath();
+    ctx.arc(lens.x, lens.y, rim + 1, 0, TAU);
+    mark(lens.x - rim - 3, lens.y - rim - 3, rim * 2 + 6, rim * 2 + 6);
+    if (tremble) {
+      ctx.moveTo(fault.x + FR, fault.y);
+      ctx.arc(fault.x, fault.y, FR, 0, TAU);
+      mark(fault.x - FR - 4, fault.y - FR - 4, FR * 2 + 8, FR * 2 + 8);
+    }
+    ctx.fill();
+
+    // …and redraw those dots moved: bulging off the lens rim, trembling over the fault.
+    ctx.fillStyle = colors.dot;
+    const rim2 = (rim + 1) ** 2, fr2 = FR * FR;
     for (let i = 0; i < dots.length; i += 2) {
-      let x = dots[i], y = dots[i + 1];
-      const dx = x - lens.x, dy = y - lens.y;
-      const d = Math.hypot(dx, dy);
+      const x0 = dots[i], y0 = dots[i + 1];
+      const dx = x0 - lens.x, dy = y0 - lens.y;
+      const d2 = dx * dx + dy * dy;
+      const nearFault = tremble && (x0 - fault.x) ** 2 + (y0 - fault.y) ** 2 < fr2;
+      if (d2 >= rim2 && !nearFault) continue;
+      const d = Math.sqrt(d2);
       if (d < R + 1) continue;
+      let x = x0, y = y0;
       if (d < rim) {
         const push = (1 - (d - R) / (rim - R)) ** 2 * 10;
         x += (dx / d) * push;
         y += (dy / d) * push;
       }
-      const fd = Math.hypot(x - fault.x, y - fault.y);
-      if (fd < 70 && !reduce.matches) {
-        const k = (1 - fd / 70) * 1.6;
-        x += Math.sin(t * 7 + y * 0.3) * k;
-        y += Math.cos(t * 6 + x * 0.3) * k;
+      if (nearFault) {
+        const k = (1 - Math.hypot(x - fault.x, y - fault.y) / FR) * 1.6;
+        if (k > 0) {
+          x += Math.sin(t * 7 + y * 0.3) * k;
+          y += Math.cos(t * 6 + x * 0.3) * k;
+        }
       }
       ctx.fillRect(x - 0.8, y - 0.8, 1.6, 1.6);
     }
@@ -191,11 +234,11 @@ export function createLens(canvas, caption) {
     // Under the lens.
     ctx.save();
     ctx.beginPath();
-    ctx.arc(lens.x, lens.y, R, 0, Math.PI * 2);
+    ctx.arc(lens.x, lens.y, R, 0, TAU);
     ctx.clip();
-    ctx.fillStyle = colors.bg;
-    ctx.fill();
-    ctx.drawImage(under, 0, 0, W, H);
+    const sx = Math.max(0, lens.x - R), sy = Math.max(0, lens.y - R);
+    const sw = Math.min(W, lens.x + R) - sx, sh = Math.min(H, lens.y + R) - sy;
+    if (sw > 0 && sh > 0) ctx.drawImage(under, sx * dpr, sy * dpr, sw * dpr, sh * dpr, sx, sy, sw, sh);
     drawHot(t);
     drawFault(t);
     ctx.restore();
@@ -240,6 +283,7 @@ export function createLens(canvas, caption) {
 
   function drawNote() {
     const f = scene.fault;
+    mark(f.x, f.y - 70, 190, 110);
     const x0 = f.x + 10, y0 = f.y - 10, x1 = f.x + 34, y1 = f.y - 34;
     ctx.strokeStyle = colors.accent;
     ctx.beginPath();
@@ -290,7 +334,9 @@ export function createLens(canvas, caption) {
     if (!found && W < 720) return;
     const label = found ? 'FOUND' : `X ${(lens.x / W).toFixed(2)}  Y ${(lens.y / H).toFixed(2)}`;
     const a = -Math.PI / 4;
-    ctx.fillText(label, lens.x + Math.cos(a) * (R + 12), lens.y + Math.sin(a) * (R + 12));
+    const rx = lens.x + Math.cos(a) * (R + 12), ry = lens.y + Math.sin(a) * (R + 12);
+    ctx.fillText(label, rx, ry);
+    mark(rx - 2, ry - 12, 150, 17);
   }
 
   // Motion ------------------------------------------------------------------
@@ -302,7 +348,7 @@ export function createLens(canvas, caption) {
     const fp = [f.x / W, f.y / H];
     const pts = (narrow
       ? [[0.3, 0.12], [0.78, 0.1], fp, [0.25, 0.16], [0.6, 0.08], fp]
-      : [[0.56, 0.2], [0.9, 0.52], fp, [0.46, 0.14], [0.88, 0.16], fp]
+      : [[0.56, 0.16], [0.9, 0.66], fp, [0.46, 0.12], [0.9, 0.2], fp]
     ).map(([x, y]) => ({ x: x * W, y: y * H, fault: Math.abs(x * W - f.x) < 1 }));
     auto.legs = pts;
     auto.i = 0;
@@ -412,12 +458,13 @@ export function createLens(canvas, caption) {
   return {
     pause() { paused = true; stop(); },
     resume() { paused = false; start(); },
-    refresh() { readColors(); if (!scene) return; under = renderUnder(scene); if (!running) reduce.matches ? still() : frame(performance.now()); },
+    refresh() { readColors(); if (!scene) return; under = renderUnder(scene); drawSurface(); dirty = [[0, 0, W, H]]; if (!running) reduce.matches ? still() : frame(performance.now()); },
   };
 }
 
 // Utils ---------------------------------------------------------------------
 
+const TAU = Math.PI * 2;
 const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2);
 
 function mulberry32(a) {
