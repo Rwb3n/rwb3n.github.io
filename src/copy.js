@@ -19,8 +19,8 @@ export const copy = {
   depth: ['Surface', 'Exploring', 'Deep', 'Engaged'],
 
   lens: {
-    idle: 'Your operation, under the surface. Move to look.',
-    idleTouch: 'Your operation, under the surface. Drag to look.',
+    idle: 'Your operation, under the surface. Move to look, click to ping.',
+    idleTouch: 'Your operation, under the surface. Drag to look, tap to ping.',
     found: 'There. Three handoffs, one spreadsheet, nobody’s job.',
   },
 

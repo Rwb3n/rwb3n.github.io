@@ -134,7 +134,7 @@ const renderers = {
     return el;
   },
 
-  brief: ({ data }) => {
+  brief: ({ data }, ctx) => {
     const l = copy.brief.labels;
     const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: site.timeZone });
     return h('article', { class: 'b-brief', 'aria-label': copy.brief.blockTitle },
@@ -142,9 +142,12 @@ const renderers = {
         h('span', { class: 'micro' }, copy.brief.blockTitle),
         h('span', { class: 'micro' }, today),
       ),
-      h('dl', null,
-        [[l.journey, data.journey], [l.interest, data.interest], [l.depth, data.depth], [l.context, data.context], [l.questions, data.questions], [l.interactions, data.interactions]]
-          .map(([k, v], n) => h('div', { style: { '--i': n } }, h('dt', { class: 'micro' }, k), h('dd', null, v))),
+      h('div', { class: 'b-brief-body' },
+        h('dl', null,
+          [[l.journey, data.journey], [l.interest, data.interest], [l.depth, data.depth], [l.context, data.context], [l.questions, data.questions], [l.interactions, data.interactions]]
+            .map(([k, v], n) => h('div', { style: { '--i': n } }, h('dt', { class: 'micro' }, k), h('dd', null, v))),
+        ),
+        ctx?.route && h('figure', { class: 'b-brief-map' }, ctx.route(), h('figcaption', { class: 'micro' }, 'Your route')),
       ),
     );
   },

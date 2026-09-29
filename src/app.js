@@ -4,6 +4,8 @@ import { h, wait, reducedMotion } from './dom.js';
 import { copy, site } from './copy.js';
 import { renderBlock } from './blocks.js';
 import { splitWords } from './type.js';
+import { createMap } from './map.js';
+import { sfx } from './sound.js';
 import * as E from './engine.js';
 
 // Delays that make the system feel like it's thinking — short enough not to annoy.
@@ -34,6 +36,19 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
   let mode = 'landing';
   let current = 0;    // index of the turn in view
   let generation = 0; // bumps on reset, so in-flight answers stop writing
+
+  // Map ------------------------------------------------------------------------
+  const map = createMap(content, { onPick: (id) => navigate(id, null, { focus: true }) });
+  const mapCount = h('p', { class: 'map-count' });
+  const total = Object.keys(content.nodes).length;
+  el.depth.closest('.rail-block').before(
+    h('div', { class: 'rail-block rail-map' }, h('h2', { class: 'rail-heading' }, 'Map'), map.el, mapCount),
+  );
+  const countMap = () => {
+    const seen = new Set(map.route).size;
+    mapCount.textContent = `${seen} of ${total} explored`;
+  };
+  countMap();
 
   // Landing -------------------------------------------------------------------
 
@@ -105,6 +120,8 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     mode = 'landing';
     el.log.replaceChildren();
     el.trail.replaceChildren();
+    map.reset();
+    countMap();
     el.session.hidden = true;
     el.landing.hidden = false;
     el.landing.classList.remove('is-leaving', 'is-fixing');
@@ -173,6 +190,7 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     const ghost = h('div', { class: 'fly', 'aria-hidden': 'true', style: { left: `${end.left}px`, top: `${end.top}px`, width: `${hr.width}px` } }, fromEl, toEl);
     document.body.append(ghost);
     heading.style.visibility = 'hidden';
+    sfx('fly');
     const move = ghost.animate(
       [{ transform: `translate(${src.left - end.left}px, ${src.top - end.top}px)` }, { transform: 'none' }],
       { duration: FLY_MS, easing: EASE },
@@ -224,13 +242,14 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     if (gen !== generation) return;
     thinking.remove();
 
-    const ctx = { navigate: (target, label) => choose({ target, label }) };
+    const ctx = { navigate: (target, label) => choose({ target, label }), route: () => map.snapshot() };
     for (const block of blocks) {
       const node = renderBlock(block, ctx);
       if (!node) continue;
       node.classList.add('reveal');
       t.answer.append(node);
       await reveal(node);
+      sfx('tick');
       await wait(pause(block));
       if (gen !== generation) return;
     }
@@ -324,6 +343,8 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     let chips = E.withParentChip(content, node.chips || [], target, seen);
     chips = E.applyGravity(chips, session, content);
     const t = await openTurn(query || node.label, { label: node.label, quoted: !!query }, opts.from);
+    map.visit(target);
+    countMap();
     history.replaceState(null, '', target === content.root ? location.pathname : `#/${target}`);
     updateRail();
 
@@ -340,6 +361,8 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     if (!node || busy) return;
     session = { ...session, viewed: [...new Set([...session.viewed, target])] };
     const t = await openTurn(label || node.label, { label: node.label, aside: mode === 'session' }, opts.from);
+    map.visit(target);
+    countMap();
     updateRail();
     return respond(t, node.blocks, node.chips || [], THINK.expand, opts);
   }

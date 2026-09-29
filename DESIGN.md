@@ -69,6 +69,16 @@ Expo-out for arrivals, a cubic in-out for journeys, and a damped spring
 no boot, no flights, and the lens is parked, already on the fault. `?perf`
 records the lens's per-frame cost in `window.__lensFrames`.
 
+**The map.** In the session rail, every topic is a point in a constellation
+(a seeded force layout of the content graph, identical on every visit). Your
+route draws itself across it as you go; click any point to go there. The
+brief prints the same route.
+
+**Sound.** Synthesised with WebAudio, no files: a sonar ping with an echo, a
+two-note chime on lock, a noise sweep for the fix, a whoosh for a flying
+question, barely-there ticks as answers arrive. Off by default; one toggle,
+remembered.
+
 ## Components
 
 `src/blocks.js` renders the content blocks: `text`, `hero`, `callout`, `split`,

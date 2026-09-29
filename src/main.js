@@ -6,6 +6,7 @@ import { createApp } from './app.js';
 import { createLens } from './lens.js';
 import { splitWords, createXray } from './type.js';
 import { reducedMotion } from './dom.js';
+import { createSound, sfx } from './sound.js';
 
 const THEME_KEY = 'mu-theme';
 const html = document.documentElement;
@@ -26,6 +27,7 @@ toggle?.addEventListener('click', () => {
   const x = b.left + b.width / 2, y = b.top + b.height / 2;
   const rad = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
   html.classList.add('is-theming');
+  sfx('theme');
   const vt = document.startViewTransition(() => setTheme(next));
   vt.ready.then(() => {
     html.animate(
@@ -40,6 +42,13 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
   try { stored = localStorage.getItem(THEME_KEY); } catch { /* ignore */ }
   if (!stored) setTheme(e.matches ? 'dark' : 'light');
 });
+
+// Sound (opt-in) ----------------------------------------------------------------
+const soundBtn = document.querySelector('[data-sound]');
+if (soundBtn && (window.AudioContext || window.webkitAudioContext)) {
+  soundBtn.hidden = false;
+  createSound(soundBtn);
+}
 
 // London clock ----------------------------------------------------------------
 const clock = document.querySelector('[data-clock]');
@@ -99,7 +108,14 @@ document.querySelector('[data-entry]')?.addEventListener('pointermove', (e) => {
 // App ---------------------------------------------------------------------------
 loadContent()
   .then((content) => {
-    window.mindunder = createApp(content, document, { beforeLeave: () => lens?.fix() });
+    // The fix plays in full the first time in a session; after that, a quick reprise.
+    const seenFix = () => { try { return sessionStorage.getItem('mu-fixed') === '1'; } catch { return false; } };
+    const beforeLeave = () => {
+      const p = lens?.fix(seenFix() ? 420 : undefined);
+      try { sessionStorage.setItem('mu-fixed', '1'); } catch { /* ignore */ }
+      return p;
+    };
+    window.mindunder = createApp(content, document, { beforeLeave });
   })
   .catch((err) => {
     console.error('[content]', err);

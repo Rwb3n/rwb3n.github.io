@@ -16,6 +16,7 @@
 // phase the cost scales with the lens, not the screen.
 
 import { copy } from './copy.js';
+import { sfx } from './sound.js';
 
 const VOCAB = ['inbox', 'CRM', 'invoice', 'approval', 'spreadsheet', 'Monday report', 'PO', 'supplier', 'ERP', 'Slack', 'sign-off', 'reconcile', 'forecast', 'tender', 'CSV export', 'ticket', 'renewal', 're-key', 'shared drive', 'quote', 'chaser', 'dashboard', 'timesheet', 'contract'];
 const FAULT_NOTES = ['3 handoffs', '1 spreadsheet', '0 owners'];
@@ -421,6 +422,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
   function ping(x, y, accent) {
     if (reduce.matches || phase !== 'live') return;
     pings.push({ x, y, t0: performance.now(), accent, max: Math.hypot(Math.max(x, W - x), Math.max(y, H - y)) + 40 });
+    sfx(accent ? 'ping-accent' : 'ping');
     if (pings.length > 4) pings.shift();
   }
 
@@ -574,7 +576,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
 
   // Fix: the lens opens over everything and the tangle snaps onto its grid.
   function drawFix(now) {
-    const p = clamp01((now - fix.t0) / FIX_MS);  // clamped: rAF time can precede t0
+    const p = clamp01((now - fix.t0) / (fix.ms || FIX_MS));  // clamped: rAF time can precede t0
     const e = easeInOut(p);
     const u = easeOut(clamp01((p - 0.12) / 0.88));
     const cover = Math.hypot(Math.max(lens.x, W - lens.x), Math.max(lens.y, H - lens.y)) + 20;
@@ -685,7 +687,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     if (!onFrame) return;
     let xr = 0;
     if (phase === 'live') xr = R * Math.max(0, r);
-    else if (phase === 'fix') xr = fix.from * (1 - easeOut(clamp01((performance.now() - fix.t0) / (FIX_MS * 0.5))));
+    else if (phase === 'fix') xr = fix.from * (1 - easeOut(clamp01((performance.now() - fix.t0) / ((fix.ms || FIX_MS) * 0.5))));
     onFrame({ x: lens.x, y: lens.y, r: xr, found });
   }
 
@@ -697,6 +699,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     if (found === was) return;
     if (found) {
       foundT = now;
+      sfx('found');
       if (!reduce.matches) rv += 2.2;   // the lens flexes as it locks
       if (now - lastFoundPing > 5000) { lastFoundPing = now; ping(scene.fault.x, scene.fault.y, true); }
     }
@@ -788,10 +791,13 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     setYield(on) { rTarget = on ? 0.55 : 1; },
     get state() { return { phase, found, fault: scene && { x: scene.fault.x, y: scene.fault.y }, R, lens: { x: lens.x, y: lens.y } }; },
     // Resolves when the lens has covered the screen and the graph is straight.
-    fix() {
+    // ms: the first time it plays in full; after that it's a quick reprise.
+    fix(ms = FIX_MS) {
       if (!running || reduce.matches || phase !== 'live') return Promise.resolve();
       return new Promise((resolve) => {
         phase = 'fix';
+        fix.ms = ms;
+        sfx('fix');
         fix.t0 = performance.now();
         fix.from = R * Math.max(0.2, r);
         fix.done = resolve;
