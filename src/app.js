@@ -29,6 +29,7 @@ export function createApp(content, root = document) {
   let busy = false;
   let mode = 'landing';
   let current = 0;    // index of the turn in view
+  let generation = 0; // bumps on reset, so in-flight answers stop writing
 
   // Landing -------------------------------------------------------------------
 
@@ -83,6 +84,7 @@ export function createApp(content, root = document) {
   }
 
   function reset() {
+    generation++;
     session = E.newSession();
     turns = [];
     current = 0;
@@ -127,6 +129,7 @@ export function createApp(content, root = document) {
   }
 
   async function respond(t, blocks, chips, delay, { focus = false } = {}) {
+    const gen = generation;
     busy = true;
     el.ask.classList.add('is-busy');
     const thinking = h('p', { class: 'thinking' },
@@ -135,6 +138,7 @@ export function createApp(content, root = document) {
     );
     t.answer.append(thinking);
     await wait(delay);
+    if (gen !== generation) return;
     thinking.remove();
 
     const ctx = { navigate: (target, label) => choose({ target, label }) };
@@ -145,6 +149,7 @@ export function createApp(content, root = document) {
       t.answer.append(node);
       await reveal(node);
       await wait(pause(block));
+      if (gen !== generation) return;
     }
 
     if (chips?.length) t.answer.append(renderChips(chips));
@@ -250,7 +255,7 @@ export function createApp(content, root = document) {
     const node = content.nodes[target];
     if (!node || busy) return;
     session = { ...session, viewed: [...new Set([...session.viewed, target])] };
-    const t = await openTurn(label || node.label, { label: node.label, aside: true }, opts.from);
+    const t = await openTurn(label || node.label, { label: node.label, aside: mode === 'session' }, opts.from);
     updateRail();
     return respond(t, node.blocks, node.chips || [], THINK.expand, opts);
   }
@@ -301,23 +306,33 @@ export function createApp(content, root = document) {
 
   // Rail ------------------------------------------------------------------------
 
+  // The trail is rebuilt only when turns change; scrolling just moves the
+  // current marker, so keyboard focus on a trail button survives.
   function updateRail() {
     el.trail.replaceChildren(
-      ...turns.map((t, i) =>
+      ...turns.map((t) =>
         h('li', { class: 'trail-item' },
-          h('button', {
-            class: 'trail-link',
-            type: 'button',
-            'aria-current': i === current ? 'step' : null,
-            onclick: () => scrollToTurn(t.el),
-          }, t.label),
+          h('button', { class: 'trail-link', type: 'button', onclick: () => scrollToTurn(t.el) }, t.label),
         ),
       ),
     );
+    markCurrent();
     const level = E.gravityLevel(session);
     el.depth.dataset.level = String(turns.length ? level : -1);
-    el.depthLabel.textContent = turns.length ? copy.depth[level] : copy.depth[0];
-    el.trail.querySelector('[aria-current]')?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+    el.depthLabel.textContent = copy.depth[turns.length ? level : 0];
+  }
+
+  function markCurrent() {
+    const links = el.trail.querySelectorAll('.trail-link');
+    links.forEach((b, i) => (i === current ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current')));
+    // On narrow screens the trail is a horizontal strip: keep the marker in view
+    // by scrolling the strip itself, never the page.
+    const strip = el.trail.closest('.rail');
+    const cur = links[current];
+    if (strip && cur && strip.scrollWidth > strip.clientWidth) {
+      const left = cur.offsetLeft - strip.clientWidth / 2 + cur.offsetWidth / 2;
+      strip.scrollTo({ left: Math.max(0, left), behavior: reducedMotion() ? 'auto' : 'smooth' });
+    }
   }
 
   const turnObserver = 'IntersectionObserver' in window
@@ -325,7 +340,7 @@ export function createApp(content, root = document) {
         for (const e of entries) {
           if (!e.isIntersecting) continue;
           const i = turns.findIndex((t) => t.el === e.target);
-          if (i >= 0 && i !== current) { current = i; updateRail(); }
+          if (i >= 0 && i !== current) { current = i; markCurrent(); }
         }
       }, { rootMargin: '-30% 0px -60% 0px' })
     : null;
