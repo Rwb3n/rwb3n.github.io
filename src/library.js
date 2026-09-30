@@ -17,6 +17,12 @@ initPrefs(config.reading);
 
 let content = { nodes: {} };
 try { content = await loadContent(); } catch (err) { console.warn('[content]', err.message); }
+// Fixtures: test content that uses every block. Never loaded by the site.
+const fixtureIds = new Set();
+try {
+  const fx = await loadContent('fixtures');
+  for (const [id, n] of Object.entries(fx.nodes)) { fixtureIds.add(id); content.nodes[id] = n; }
+} catch (err) { console.warn('[fixtures]', err.message); }
 const nodes = Object.values(content.nodes);
 const used = usage(nodes);
 
@@ -257,7 +263,9 @@ function blockCard(type, spec) {
         ),
         h('h4', { class: 'micro lib-used-h' }, 'Used in'),
         spec.runtime ? h('p', { class: 'lib-doc' }, 'The visit summary, built by src/engine.js.')
-          : where.length ? h('ul', { class: 'lib-used' }, where.map((id) => h('li', null, h('a', { href: `/#/${id}` }, content.nodes[id]?.label || id))))
+          : where.length ? h('ul', { class: 'lib-used' }, where.map((id) => h('li', null, fixtureIds.has(id)
+            ? h('span', { class: 'lib-fixture', title: 'Test content, not on the site' }, content.nodes[id]?.label || id)
+            : h('a', { href: `/#/${id}` }, content.nodes[id]?.label || id))))
           : h('p', { class: 'lib-doc' }, 'Not used in any topic yet.'),
       ),
       h('div', null,
@@ -298,7 +306,7 @@ function composerSection() {
   const pick = h('select', { class: 'lib-select', id: 'compose-pick', onchange: () => {
     const n = content.nodes[pick.value];
     heading.textContent = n ? n.label : 'An example topic';
-    open.hidden = !n;
+    open.hidden = !n || fixtureIds.has(n.id);
     if (n) open.href = `/#/${n.id}`;
     ed.set(pretty(n ? n.blocks : SAMPLE));
   } },

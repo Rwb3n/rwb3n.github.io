@@ -1651,3 +1651,13 @@ html:not([data-motion='full']) .cmp-thumb { transition: none; }
   }
 }
 @keyframes page-in { from { opacity: 0.15; transform: translateY(18px); } }
+
+/* Section: a heading over a group of blocks. ------------------------------ */
+.b-section { display: grid; gap: var(--space-4); min-width: 0; }
+.b-section-head { display: grid; gap: var(--space-1); }
+.b-section-title { font: 400 var(--step-2)/1.2 var(--font-display); letter-spacing: var(--tracking-tight); text-wrap: balance; }
+.b-section .b-section .b-section-title { font-size: var(--step-1); }
+.b-section.is-raised { padding: var(--space-5); border: 1px solid var(--line); border-radius: var(--radius-2); background: var(--bg-raised); }
+.b-section.is-accent { padding-left: var(--space-5); border-left: 2px solid var(--accent-line); }
+.b-section.is-accent .b-section-head .micro { color: var(--accent); }
+@media (max-width: 720px) { .b-section.is-raised { padding: var(--space-4); } }

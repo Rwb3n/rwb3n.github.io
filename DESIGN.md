@@ -96,7 +96,17 @@ block's props (type, required, what it does) and an example. Topics in
 `content/nodes` are validated against it by `npm test`. The projects in the
 content are test content that exercises these parts.
 
-`src/blocks.js` renders the content blocks: `text`, `hero`, `callout`, `split`,
+Two blocks hold other blocks: `split` (two columns) and `section` (a heading
+over a group, `tone` plain / raised / accent). Sections nest, and each level
+takes the next heading level, so the outline stays correct in the
+conversation (h3 under the turn's h2) and on the one-page view.
+
+`content/graphs/fixtures.json` is test content, loaded by `/components/`
+and the tests, never by the site. It uses the blocks no real topic needs yet
+(`npm test` fails if any block is unused), so the site never shows invented
+facts to cover a component. Fixtures follow the same writing rules.
+
+`src/blocks.js` renders the content blocks: `text`, `hero`, `callout`, `section`, `split`,
 `metric`, `metricRow`, `stats`, `pills`, `badge`, `grid`, `layers`, `table`,
 `code`, `progress`, `flow`, `brief`, `compose`, `fact`, `facts`, `timeline`,
 and the two interactive blocks in `src/showpieces.js`:

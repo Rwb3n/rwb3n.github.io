@@ -25,6 +25,7 @@ content/
   site.json             offer, facts, landing text, features, reading
                         defaults, interface text overrides, writing rules
   graphs/default.json   which node files to load
+  graphs/fixtures.json  test content for /components/ and tests; not on the site
   nodes/*.json          topics: blocks + chips + intents (+ "audience")
 scripts/sync.mjs  writes site.json into index.html's sync regions
 tests/            node --test; tests/visual: Playwright screenshots

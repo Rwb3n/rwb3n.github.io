@@ -158,6 +158,21 @@ export const blocks = {
       right: [{ type: 'metric', value: '0', label: 'hours a week, after' }, { type: 'text', content: 'Example: the report is made by the system.' }] },
   },
 
+  section: {
+    category: 'structure',
+    doc: 'A heading over a group of blocks. Sections nest; each level down uses the next heading level (h3 in a conversation, one below the topic on the one-page view).',
+    props: {
+      title: str('The heading.', true),
+      kicker: str('A small label above the heading.'),
+      tone: oneOf(['plain', 'raised', 'accent'], '`raised` sits on a panel; `accent` has a signal rule, for the thing that matters. Default plain.'),
+      blocks: { type: 'blocks', doc: 'The blocks inside.', required: true },
+    },
+    example: { type: 'section', kicker: 'Example', title: 'Where the time goes', tone: 'raised', blocks: [
+      { type: 'text', content: 'A section groups blocks under one heading. Any block can go inside, including another section.' },
+      { type: 'metricRow', items: [{ value: '12', label: 'hours a week' }, { value: '3', label: 'systems' }] },
+    ] },
+  },
+
   // Diagrams --------------------------------------------------------------------
   flow: {
     category: 'diagrams',
@@ -318,13 +333,25 @@ function check(v, p, path) {
   }
 }
 
+// The blocks nested inside a block: every prop the catalogue types as `blocks`.
+export function childBlocks(block) {
+  const spec = blocks[block?.type];
+  if (!spec) return [];
+  return Object.entries(spec.props).filter(([, p]) => p.type === 'blocks').flatMap(([k]) => (Array.isArray(block[k]) ? block[k] : []));
+}
+
+// Every block in a list, depth first, nested ones included.
+export function* eachBlock(list) {
+  for (const b of list || []) { yield b; yield* eachBlock(childBlocks(b)); }
+}
+
 // Where each block type is used in the content graph: { type: [nodeId, …] }.
 export function usage(nodes) {
   const out = Object.fromEntries(blockTypes.map((t) => [t, new Set()]));
   const walk = (b, id) => {
     if (!b?.type) return;
     (out[b.type] ||= new Set()).add(id);
-    for (const c of [...(b.left || []), ...(b.right || [])]) walk(c, id);
+    for (const c of childBlocks(b)) walk(c, id);
   };
   for (const n of nodes) for (const b of n.blocks || []) walk(b, n.id);
   return Object.fromEntries(Object.entries(out).map(([k, v]) => [k, [...v].sort()]));

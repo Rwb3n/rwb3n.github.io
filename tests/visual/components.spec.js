@@ -1,5 +1,5 @@
 // One screenshot per part of /components/: foundations, interface pieces,
-// each block, the composer. Motion is Off and webfonts are blocked, so the
+// each block, the composer, each shown alone. Motion is Off and webfonts are blocked, so the
 // result does not depend on timing or on the network.
 
 import { test, expect } from '@playwright/test';
@@ -35,6 +35,16 @@ test('the page has no errors and no sideways scroll', async ({ page }) => {
 
 for (const id of parts) {
   test(id, async ({ page }) => {
+    // Show only this part (and its section heading), so its position, and so its
+    // sub-pixel rendering, does not depend on anything added elsewhere on the page.
+    await page.evaluate((id) => {
+      const el = document.getElementById(id);
+      const sec = el.closest('.lib-section');
+      document.querySelector('.lib-intro').hidden = true;
+      for (const s of document.querySelectorAll('.lib-section')) if (s !== sec) s.hidden = true;
+      if (el !== sec) for (const c of sec.querySelectorAll('.lib-card')) if (c !== el) c.hidden = true;
+      scrollTo(0, 0);
+    }, id);
     const el = page.locator(`#${id}`);
     await el.scrollIntoViewIfNeeded();
     await page.waitForTimeout(150); // flow diagrams draw after a resize observer fires
