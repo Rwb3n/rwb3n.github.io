@@ -1,0 +1,7 @@
+{
+  "$": "Test content for /components/ and the tests. The site loads graphs/default.json only.",
+  "id": "fixtures",
+  "version": 1,
+  "root": "fixture_order_to_invoice",
+  "nodes": ["fixtures"]
+}

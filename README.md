@@ -27,7 +27,7 @@ content/
   graphs/default.json   which node files to load
   nodes/*.json          topics: blocks + chips + intents (+ "audience")
 scripts/sync.mjs  writes site.json into index.html's sync regions
-tests/            node --test
+tests/            node --test; tests/visual: Playwright screenshots
 ```
 
 ## Change what the site says
@@ -51,7 +51,15 @@ Facts are `{ label, value, missing }`. With no `value`, the site shows the
 npm run dev      # python3 -m http.server 8000
 npm run sync     # regenerate index.html's static regions from site.json
 npm test         # sync check, engine, content graph, plain-language lint
+npm run test:visual        # screenshots of /components/ (Playwright, Chromium)
+npm run test:visual -- -u  # accept a deliberate change as the new baseline
 ```
+
+Screenshot tests capture every part of `/components/` in light, dark and
+phone width, with motion Off and webfonts blocked so runs are repeatable.
+Baselines are per platform (`tests/visual/__screenshots__/…-linux.png`); on
+another OS, run with `-u` once to create your own. `npm i` first; set
+`PW_CHROMIUM=/path/to/chrome` to use an installed browser.
 
 Deep links: `/#/<node-id>` opens straight into a node, e.g. `/#/method`.
 `/#/all` opens every topic on one page (also printable).
