@@ -4,13 +4,16 @@ Static site, no build step. GitHub Pages serves the repo root.
 
 ```
 index.html        shell + static landing (readable without JS)
-styles/           tokens.css (design tokens, themes) · main.css
+styles/           tokens.css (design tokens, themes) · main.css · library.css
+components/       /components/: the component library page
 src/
   main.js         boot: theme, clock, lens, content
   app.js          conversation controller (DOM)
   engine.js       routing, session, gravity, brief — pure, tested
   blocks.js       block renderers
   showpieces.js   interactive blocks: compare (before/after), estimate
+  catalog.js      component catalogue: every block's props, example, validator
+  library.js      the /components/ page
   flow.js         SVG flow diagrams
   lens.js         landing canvas
   copy.js         interface text (defaults; site.json overrides)
@@ -53,4 +56,10 @@ npm test         # sync check, engine, content graph, plain-language lint
 Deep links: `/#/<node-id>` opens straight into a node, e.g. `/#/method`.
 `/#/all` opens every topic on one page (also printable).
 
-See [DESIGN.md](DESIGN.md) for the design system.
+See [DESIGN.md](DESIGN.md) for the design system, and `/components/` for every
+part rendered live: tokens, interface pieces, each block with its props and
+where it is used, and a composer that builds a topic from JSON.
+
+Adding a block type: add the renderer in `src/blocks.js` and an entry in
+`src/catalog.js`. `npm test` fails if the two lists differ, if an example is
+invalid, or if any topic uses a block or prop the catalogue does not know.

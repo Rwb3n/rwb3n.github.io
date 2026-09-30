@@ -91,6 +91,11 @@ remembered.
 
 ## Components
 
+The library page is `/components/`. `src/catalog.js` is the contract: each
+block's props (type, required, what it does) and an example. Topics in
+`content/nodes` are validated against it by `npm test`. The projects in the
+content are test content that exercises these parts.
+
 `src/blocks.js` renders the content blocks: `text`, `hero`, `callout`, `split`,
 `metric`, `metricRow`, `stats`, `pills`, `badge`, `grid`, `layers`, `table`,
 `code`, `progress`, `flow`, `brief`, `compose`, `fact`, `facts`, `timeline`,
