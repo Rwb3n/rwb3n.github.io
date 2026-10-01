@@ -2,10 +2,14 @@
   "name": "mindunder.dev",
   "private": true,
   "type": "module",
-  "description": "mindunder.dev \u2014 static site, no build step. Serve the repo root.",
+  "description": "mindunder.dev — static site, no build step. Serve the repo root.",
   "scripts": {
     "dev": "python3 -m http.server 8000",
     "sync": "node scripts/sync.mjs",
-    "test": "node scripts/sync.mjs --check && node --test tests/*.test.js"
+    "test": "node scripts/sync.mjs --check && node --test tests/*.test.js",
+    "test:visual": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
   }
 }

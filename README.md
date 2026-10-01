@@ -4,13 +4,16 @@ Static site, no build step. GitHub Pages serves the repo root.
 
 ```
 index.html        shell + static landing (readable without JS)
-styles/           tokens.css (design tokens, themes) · main.css
+styles/           tokens.css (design tokens, themes) · main.css · library.css
+components/       /components/: the component library page
 src/
   main.js         boot: theme, clock, lens, content
   app.js          conversation controller (DOM)
   engine.js       routing, session, gravity, brief — pure, tested
   blocks.js       block renderers
   showpieces.js   interactive blocks: compare (before/after), estimate
+  catalog.js      component catalogue: every block's props, example, validator
+  library.js      the /components/ page
   flow.js         SVG flow diagrams
   lens.js         landing canvas
   copy.js         interface text (defaults; site.json overrides)
@@ -22,9 +25,10 @@ content/
   site.json             offer, facts, landing text, features, reading
                         defaults, interface text overrides, writing rules
   graphs/default.json   which node files to load
+  graphs/fixtures.json  test content for /components/ and tests; not on the site
   nodes/*.json          topics: blocks + chips + intents (+ "audience")
 scripts/sync.mjs  writes site.json into index.html's sync regions
-tests/            node --test
+tests/            node --test; tests/visual: Playwright screenshots
 ```
 
 ## Change what the site says
@@ -48,9 +52,23 @@ Facts are `{ label, value, missing }`. With no `value`, the site shows the
 npm run dev      # python3 -m http.server 8000
 npm run sync     # regenerate index.html's static regions from site.json
 npm test         # sync check, engine, content graph, plain-language lint
+npm run test:visual        # screenshots of /components/ (Playwright, Chromium)
+npm run test:visual -- -u  # accept a deliberate change as the new baseline
 ```
+
+Screenshot tests capture every part of `/components/` in light, dark and
+phone width, with motion Off and webfonts blocked so runs are repeatable.
+Baselines are per platform (`tests/visual/__screenshots__/…-linux.png`); on
+another OS, run with `-u` once to create your own. `npm i` first; set
+`PW_CHROMIUM=/path/to/chrome` to use an installed browser.
 
 Deep links: `/#/<node-id>` opens straight into a node, e.g. `/#/method`.
 `/#/all` opens every topic on one page (also printable).
 
-See [DESIGN.md](DESIGN.md) for the design system.
+See [DESIGN.md](DESIGN.md) for the design system, and `/components/` for every
+part rendered live: tokens, interface pieces, each block with its props and
+where it is used, and a composer that builds a topic from JSON.
+
+Adding a block type: add the renderer in `src/blocks.js` and an entry in
+`src/catalog.js`. `npm test` fails if the two lists differ, if an example is
+invalid, or if any topic uses a block or prop the catalogue does not know.

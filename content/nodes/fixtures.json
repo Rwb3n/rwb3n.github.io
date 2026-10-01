@@ -1,0 +1,35 @@
+[
+  {
+    "$": "Test content. Loaded by /components/ and the tests through graphs/fixtures.json, never by the site. It exists to use every block, including the ones no real topic needs yet. Everything here is an example, not a claim.",
+    "id": "fixture_order_to_invoice",
+    "label": "Fixture: from order to invoice",
+    "parent": null,
+    "intents": [],
+    "tags": ["fixture"],
+    "blocks": [
+      { "type": "hero", "title": "From order to invoice", "accentWord": "invoice", "subtitle": "Example project, not a client" },
+      { "type": "badge", "status": "Example only", "variant": "default" },
+      { "type": "section", "kicker": "Before", "title": "How the work is done today", "blocks": [
+        { "type": "text", "content": "In this example, a person copies each order from email into a spreadsheet, then into the invoice system." },
+        { "type": "split",
+          "left": [{ "type": "metric", "value": "12", "label": "hours a week of copying" }],
+          "right": [{ "type": "pills", "label": "Systems", "items": ["Email", "Spreadsheet", "Invoice system"] }] }
+      ]},
+      { "type": "section", "kicker": "After", "title": "What the system does", "tone": "raised", "blocks": [
+        { "type": "flow", "layout": "horizontal", "nodes": [{ "id": "e", "label": "Email" }, { "id": "s", "label": "System", "variant": "accent" }, { "id": "i", "label": "Invoice" }], "edges": [{ "from": "e", "to": "s", "label": "reads" }, { "from": "s", "to": "i", "label": "writes" }] },
+        { "type": "progress", "label": "Order types handled", "current": 3, "total": 5 }
+      ]},
+      { "type": "section", "title": "Example plan", "blocks": [
+        { "type": "timeline", "items": [
+          { "date": "Week 1", "event": "Call and written summary" },
+          { "date": "Week 2", "event": "First version runs next to the person", "detail": "A person checks every invoice." },
+          { "date": "Week 4", "event": "Runs alone for routine orders" }
+        ]}
+      ]},
+      { "type": "section", "title": "Facts from site.json", "tone": "accent", "blocks": [
+        { "type": "facts", "keys": ["firstStep", "cost", "reply", "location"] }
+      ]}
+    ],
+    "chips": []
+  }
+]

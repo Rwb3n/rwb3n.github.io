@@ -524,8 +524,9 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
       done.add(id);
       const H = level === 2 ? 'h2' : 'h3';
       const body = h('div', { class: 'page-body' });
+      const inner = { ...ctx, headingLevel: level + 1 };
       for (const b of node.blocks) {
-        const n = renderBlock(b, ctx);
+        const n = renderBlock(b, inner);
         if (n) { body.append(n); n.onReveal?.(); n.querySelectorAll('*').forEach((c) => c.onReveal?.()); }
       }
       return h('section', { class: `page-section is-l${level}`, id: `page-${id}`, 'aria-labelledby': `page-h-${id}` },
