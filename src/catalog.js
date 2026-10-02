@@ -44,7 +44,7 @@ export const blocks = {
     doc: 'A large serif heading. One word can be set in the accent colour.',
     props: {
       title: str('The heading.', true),
-      accentWord: str('A word in the title to set in italic accent.'),
+      accentWord: str('A word in the title to set in the accent colour.'),
       subtitle: str('A short line under the title, in mono.'),
     },
     example: { type: 'hero', title: 'Find the work that repeats', accentWord: 'repeats', subtitle: 'Example heading' },

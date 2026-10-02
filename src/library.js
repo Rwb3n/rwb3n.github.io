@@ -148,7 +148,7 @@ const TEXT_TOKENS = new Set(['--fg', '--fg-2', '--fg-3', '--accent']);
 const TYPE = [
   ['--step-display', 'display', 'Display', 'I find the work'],
   ['--step-4', 'display', 'Step 4', 'Questions and headings'],
-  ['--step-3', 'display', 'Step 3', 'Callouts'],
+  ['--step-3', 'voice', 'Voice', 'Then I build a system that does it.'],
   ['--step-2', 'sans', 'Step 2', 'Sub-headings'],
   ['--step-1', 'sans', 'Step 1', 'Body copy in answers'],
   ['--step-0', 'sans', 'Step 0', 'Interface text'],
@@ -184,7 +184,7 @@ function colourSection() {
 
 function typeSection() {
   return section('type', 'Type', 'Foundations',
-    h('p', { class: 'lib-p' }, 'Three voices, each with one job: Zodiak for display, Archivo for reading, JetBrains Mono for the system. All three load from Fontshare.'),
+    h('p', { class: 'lib-p' }, 'Two voices and a system. Supreme, heavy and tight, for every claim and heading, and at regular weight for reading. Sentient light italic for the spoken line: the promise under the headline, ledes and quotes. Azeret Mono for the system: indices, diagram nodes, code. All three load from Fontshare. Supreme and Sentient have no arrows; Azeret Mono is next in their stacks, so the browser draws → and ↓ from it.'),
     h('div', { class: 'lib-type' }, TYPE.map(([step, face, name, sample]) =>
       h('div', { class: 'lib-type-row' },
         h('span', { class: 'micro' }, name, h('br'), step),
@@ -197,7 +197,7 @@ function typeSection() {
 // A face "has" a character when the measured width does not change with the
 // fallback behind it: then the browser is drawing it from that face.
 const SITE_CHARS = '→↓·—–’‘“”£…−×©';
-const FACES = [['Display', '--font-display'], ['Text', '--font-sans'], ['System', '--font-mono']];
+const FACES = [['Display and text', '--font-sans'], ['Voice', '--font-voice'], ['System', '--font-mono']];
 
 // Candidate faces to compare, from Fontshare: ?fonts=slug:Family,slug:Family
 // e.g. /components/?fonts=satoshi:Satoshi,general-sans:General%20Sans#glyphs

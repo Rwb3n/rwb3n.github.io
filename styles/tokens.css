@@ -5,12 +5,17 @@
    ========================================================================== */
 
 :root {
-  /* Type families, all loaded from Fontshare (api.fontshare.com): Zodiak (ITF
-     Free Font License), Archivo and JetBrains Mono (SIL OFL). The text face
-     must contain every character the site uses (see /components/#glyphs). */
-  --font-display: 'Zodiak', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  --font-sans: 'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* Type families, all loaded from Fontshare (api.fontshare.com): Supreme and
+     Sentient (ITF Free Font License), Azeret Mono (SIL OFL). Two voices: the
+     claim is built in Supreme, the spoken line is set in Sentient italic.
+     Supreme and Sentient have no → or ↓; Azeret Mono is second in their stacks
+     so the browser draws the arrows from it (see /components/#glyphs). */
+  --font-display: 'Supreme', 'Azeret Mono', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Supreme', 'Azeret Mono', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-voice: 'Sentient', 'Azeret Mono', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-mono: 'Azeret Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --weight-display: 800;
+  --tracking-display: -0.045em;
 
   /* Type scale — a 1.25 minor-third ramp, fluid at the display end */
   --step--2: 0.6875rem;   /* 11px  micro labels */
@@ -23,7 +28,7 @@
   --step-display: clamp(2.4rem, 1rem + 4.2vw, 5.25rem);
 
   --tracking-micro: 0.14em;
-  --tracking-tight: -0.02em;
+  --tracking-tight: -0.03em;
 
   /* Space — 4px base */
   --space-1: 0.25rem;

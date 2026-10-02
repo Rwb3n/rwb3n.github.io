@@ -9,11 +9,11 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://api.fontshare.com" />
     <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
-    <!-- Fontshare: one stylesheet per family. Zodiak is under the ITF Free Font License, which does
-         not allow the files in a public repository, so it loads from Fontshare. -->
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=zodiak@400,401&amp;display=swap" />
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=archivo@300,400,500,600,700&amp;display=swap" />
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=jet-brains-mono@400,500,600&amp;display=swap" />
+    <!-- Fontshare: one stylesheet per family. Supreme and Sentient are under the ITF Free Font
+         License, which does not allow the files in a public repository, so they load from Fontshare. -->
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=supreme@1&amp;display=swap" />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=sentient@301&amp;display=swap" />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=azeret-mono@400,500,600&amp;display=swap" />
     <script>
       (function () {
         var t = null;
@@ -55,8 +55,8 @@
       .lens span { font: 400 10px/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
       main { position: relative; max-width: 44rem; }
       .code { font: 400 11px/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); margin-bottom: 1.5rem; }
-      h1 { font: 400 clamp(3rem, 1rem + 6vw, 6.5rem)/0.95 var(--font-display); letter-spacing: -0.02em; text-wrap: balance; }
-      em { font-style: italic; color: var(--accent); }
+      h1 { font: var(--weight-display) clamp(3rem, 1rem + 6vw, 6.5rem)/0.92 var(--font-display); letter-spacing: var(--tracking-display); text-wrap: balance; }
+      em { font-style: normal; color: var(--accent); }
       a {
         display: inline-flex;
         gap: 0.75rem;
