@@ -863,7 +863,7 @@ main { flex: 1; display: flex; flex-direction: column; }
 .b-layer {
   position: relative;
   display: grid;
-  grid-template-columns: 3rem 1fr;
+  grid-template-columns: minmax(3rem, max-content) 1fr;
   gap: 0 var(--space-4);
   padding: var(--space-4) 0;
   border-top: 1px solid var(--line);
@@ -1020,6 +1020,8 @@ main { flex: 1; display: flex; flex-direction: column; }
   transition: opacity 500ms var(--ease-out), transform 800ms var(--ease-out), clip-path 900ms var(--ease-out);
 }
 .b-text .w { opacity: 0; transform: translateY(0.35em); }
+/* The one-page view has no word-by-word reveal: its blocks rise as they scroll in. */
+.page .b-text .w { opacity: 1; transform: none; }
 .is-in .w, .b-text.is-in .w { opacity: 1; transform: none; transition: opacity 360ms var(--ease-out), transform 360ms var(--ease-out); transition-delay: calc(var(--i) * 14ms); }
 
 /* Noscript ---------------------------------------------------------------- */
@@ -1638,10 +1640,12 @@ html:not([data-motion='full']) .cmp-thumb { transition: none; }
    only when the visitor scrolls; full motion only; no effect where unsupported. */
 @supports (animation-timeline: view()) {
   @media screen {
-    html[data-motion='full'] .page-section > * {
+    /* Headings and single blocks only: a whole section can be thousands of
+       pixels tall and would stay half-faded long after it is on screen. */
+    html[data-motion='full'] :is(.page-heading, .page-body > *) {
       animation: page-in linear both;
       animation-timeline: view();
-      animation-range: entry 0% entry 25%;
+      animation-range: entry 0% entry 100%;
     }
   }
 }

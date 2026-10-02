@@ -15,7 +15,7 @@ export default defineConfig({
   reporter: [['list']],
   expect: { toHaveScreenshot: { maxDiffPixels: 0, threshold: 0.05, animations: 'disabled', caret: 'hide' } },
   use: { baseURL: 'http://localhost:8124', launchOptions },
-  webServer: { command: 'python3 -m http.server 8124', url: 'http://localhost:8124/components/', reuseExistingServer: true, stdout: 'ignore', stderr: 'ignore' },
+  webServer: { command: 'python3 -m http.server 8124', url: 'http://localhost:8124/', reuseExistingServer: true, stdout: 'ignore', stderr: 'ignore' },
   projects: [
     { name: 'light', use: { ...devices['Desktop Chrome'], viewport: { width: 1400, height: 900 }, colorScheme: 'light' } },
     { name: 'dark', use: { ...devices['Desktop Chrome'], viewport: { width: 1400, height: 900 }, colorScheme: 'dark' } },

@@ -154,8 +154,10 @@ and the two interactive blocks in `src/showpieces.js`:
   summary" puts the sentence into the visit summary and the booking email.
 
 The one-page view (`#/all`) uses scroll-driven animation (`animation-timeline:
-view()`): sections rise as they scroll into view, so they move only when the
-visitor scrolls.
+view()`): each heading and block rises as it scrolls into view, so it moves
+only when the visitor scrolls. Paragraphs are shown whole there (no
+word-by-word reveal). `tests/visual/site.spec.js` checks that every listed
+topic is on the page and that no paragraph is hidden.
 
 Flow diagrams (`src/flow.js`) are laid out by hand in SVG. They measure their
 labels, then choose a shape that fits: a horizontal flow folds to vertical, a
