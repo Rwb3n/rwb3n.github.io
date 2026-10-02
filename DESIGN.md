@@ -44,7 +44,9 @@ the screens are in `site.json` → `landing.steps` and `landing.cue`.
 Inside a topic, paragraphs sit close together (24px), and anything that is
 not a paragraph (a diagram, numbers, a list, a table, the before/after) gets
 extra space above and below (56px from text), so each one reads as its own
-thing. "Next topics" sits clearly apart from the answer. Facts are shown as
+thing. "Next topics" sits clearly apart from the answer and is quieter than
+it: no rules between rows, secondary text colour, as wide as the answer's
+text. Only the one action (booking) stays a filled button. Facts are shown as
 one list (`facts`), one per row at body size, not as separate paragraphs.
 The map in the side column is closed until "Map: N of 33 read" is chosen, on
 every screen size.
