@@ -1,8 +1,9 @@
 // Application controller: wires content, engine and DOM together.
 
 import { h, wait, reducedMotion, motionOff } from './dom.js';
-import { copy, site, config, factText } from './copy.js';
+import { copy, config } from './copy.js';
 import { renderBlock } from './blocks.js';
+import { turnShell, chips, onePage } from './layouts.js';
 import { splitWords } from './type.js';
 import { createMap } from './map.js';
 import { sfx } from './sound.js';
@@ -186,19 +187,12 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     const src = snapshot(from);
     spendChips();
     const n = turns.length + 1;
-    const q = h('div', { class: 'turn-q' },
-      h('span', { class: 'turn-index' }, h('b', null, `${copy.ui.questionIndex} ${n}`)),
-      h('h2', { class: `turn-question${quoted ? ' is-quoted' : ''}`, tabindex: '-1' }, question),
-      technical && h('p', { class: 'turn-tag' }, copy.ui.technical),
-    );
-    const answer = h('div', { class: 'turn-a' });
-    const turn = h('article', { class: `turn${aside ? ' is-aside' : ''}`, id: `turn-${n}` }, q, answer);
+    const { turn, answer, heading } = turnShell({ n, question, aside, quoted, technical });
     el.log.append(turn);
     turns.push({ el: turn, label: label || question });
     current = turns.length - 1;
     updateRail();
     turnObserver?.observe(turn);
-    const heading = q.querySelector('.turn-question');
     const target = turnScroll(turn);
     let landed;
     if (src) landed = fly(src, heading, target);
@@ -310,22 +304,10 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     return 180;
   }
 
-  function renderChips(chips) {
-    return h('nav', { class: 'chips', 'aria-label': copy.ui.next },
-      h('span', { class: 'chips-heading micro' }, copy.ui.next),
-      chips.map((chip, i) =>
-        h('button', {
-          class: `chip${chip.isEngagement ? ' is-engage' : ''}${chip.primary || chip.target === '_book' ? ' is-primary' : ''}`,
-          type: 'button',
-          style: { '--i': i },
-          onclick: (e) => choose(chip, { focus: true, from: e.currentTarget.querySelector('.chip-label') }),
-        },
-          h('span', { class: 'chip-label' }, chip.isEngagement && h('span', { class: 'pulse', 'aria-hidden': 'true' }), chip.label),
-          h('span', { class: 'chip-arrow', 'aria-hidden': 'true' }, chip.expand ? '+' : '→'),
-        ),
-      ),
-    );
+  function renderChips(list) {
+    return chips(list, (chip, e) => choose(chip, { focus: true, from: e.currentTarget.querySelector('.chip-label') }));
   }
+
 
   // Navigation ------------------------------------------------------------------
 
@@ -503,8 +485,6 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
 
   function showAll() {
     if (!el.page) return;
-    const byParent = {};
-    for (const [id, p] of Object.entries(content.parents)) (byParent[p] ||= []).push(id);
     const ctx = {
       navigate: (target) => {
         const a = el.page.querySelector(`#page-${CSS.escape(target)}`);
@@ -513,49 +493,7 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
       },
       addEstimate,
     };
-    const main = (config.onePage.sections || []).filter((id) => content.nodes[id]);
-    const extra = (config.onePage.appendix || []).filter((id) => content.nodes[id]);
-    const listed = new Set([...main, ...extra]);
-    const done = new Set();
-    // Each topic appears once: listed topics at their own place, others under their parent.
-    const section = (id, level) => {
-      const node = content.nodes[id];
-      if (!node || done.has(id) || (level === 3 && listed.has(id))) return null;
-      done.add(id);
-      const H = level === 2 ? 'h2' : 'h3';
-      const body = h('div', { class: 'page-body' });
-      const inner = { ...ctx, headingLevel: level + 1 };
-      for (const b of node.blocks) {
-        const n = renderBlock(b, inner);
-        if (n) { body.append(n); n.onReveal?.(); n.querySelectorAll('*').forEach((c) => c.onReveal?.()); }
-      }
-      return h('section', { class: `page-section is-l${level}`, id: `page-${id}`, 'aria-labelledby': `page-h-${id}` },
-        h(H, { class: 'page-heading', id: `page-h-${id}` }, node.label),
-        node.audience === 'technical' && h('p', { class: 'turn-tag' }, copy.ui.technical),
-        body,
-        level === 2 && (byParent[id] || []).map((c) => section(c, 3)),
-      );
-    };
-    const toc = (ids) => h('ol', { class: 'page-toc-list' }, ids.map((id) => h('li', null, h('a', { href: `#page-${id}`, onclick: (e) => { e.preventDefault(); ctx.navigate(id); } }, content.nodes[id].label))));
-    const factKeys = Object.keys(config.facts).filter((k) => factText(k) && !config.facts[k].link);
-
-    el.page.replaceChildren(
-      h('header', { class: 'page-head' },
-        h('h1', { class: 'page-title', id: 'page-title', tabindex: '-1' }, config.onePage.title || copy.ui.allLink),
-        config.onePage.intro && h('p', { class: 'page-intro' }, config.onePage.intro),
-        renderBlock({ type: 'facts', keys: factKeys }, ctx),
-        h('nav', { class: 'page-toc', 'aria-label': 'Contents' },
-          h('h2', { class: 'micro' }, 'Contents'), toc(main),
-          extra.length && h('h2', { class: 'micro' }, 'Technical appendix'), extra.length && toc(extra)),
-      ),
-      // replaceChildren does not flatten arrays or drop false: wrap lists in an element.
-      h('div', { class: 'page-main' }, main.map((id) => section(id, 2))),
-      ...(extra.length ? [h('div', { class: 'page-appendix' }, h('h2', { class: 'page-appendix-title' }, 'Technical appendix'), extra.map((id) => section(id, 2)))] : []),
-      h('footer', { class: 'page-foot' },
-        h('a', { class: 'btn btn-primary', href: `mailto:${site.email}` }, `Email ${site.email}`),
-        h('button', { class: 'btn btn-ghost', type: 'button', onclick: () => reset() }, copy.ui.backToStart),
-      ),
-    );
+    el.page.replaceChildren(...onePage({ content, ctx, onBack: () => reset() }));
     mode = 'page';
     el.landing.hidden = true;
     el.session.hidden = true;

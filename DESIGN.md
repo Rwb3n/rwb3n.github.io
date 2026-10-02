@@ -131,6 +131,20 @@ over a group, `tone` plain / raised / accent). Sections nest, and each level
 takes the next heading level, so the outline stays correct in the
 conversation (h3 under the turn's h2) and on the one-page view.
 
+Some blocks look different depending on their props: `grid` (two or three
+columns), `layers` (steps or labels), `flow` (horizontal, vertical,
+fan-out), `section` (plain, raised, accent), `badge` (default, active) and
+`fact` (published or not). Each has a `variantKey` and `variants` in the
+catalogue, and the library shows every variant. `npm test` fails if the
+content uses a look the library does not show.
+
+Pages are assembled by `src/layouts.js`: the conversation turn, "Next
+topics" and the one-page view. The site and the library both call it, so the
+library's "Page layouts" section is the real thing, drawn with fixture
+topics. A browser test (`tests/visual/site.spec.js`) checks that every class
+used on `/#/all` and in topic answers also appears on `/components/`. The
+side column and the landing are not covered.
+
 `content/graphs/fixtures.json` is test content, loaded by `/components/`
 and the tests, never by the site. It uses the blocks no real topic needs yet
 (`npm test` fails if any block is unused), so the site never shows invented

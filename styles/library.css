@@ -234,3 +234,14 @@
   .lib-seg { display: none; }
 }
 @media print { .lib-nav, .lib-json, .lib-tools, .bar { display: none; } .lib-layout { display: block; } }
+
+/* Variants: smaller examples under the editable one. */
+.lib-variant { display: grid; gap: var(--space-2); margin: 0; min-width: 0; }
+.lib-variant figcaption { font-size: var(--step--1); }
+.lib-variant figcaption b { font-weight: 500; }
+.lib-stage.is-variant { padding: var(--space-5) var(--space-4); }
+
+/* Layouts: the real page structures, inside a stage. */
+.lib-stage.is-layout { padding: var(--space-6) var(--space-5); }
+.lib .turn:last-child { min-height: 0; }
+.lib-page { width: 100%; padding: 0; }

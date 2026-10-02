@@ -5,8 +5,10 @@ import { applyConfig } from './copy.js';
 import { loadContent, loadSiteConfig } from './content.js';
 import { initPrefs, setPref, motion } from './prefs.js';
 import { renderBlock } from './blocks.js';
-import { h } from './dom.js';
+import { h, reducedMotion } from './dom.js';
 import { blocks, categories, primitives, validateBlocks, usage, typeLabel } from './catalog.js';
+import { turnShell, chips, onePage } from './layouts.js';
+import { splitWords } from './type.js';
 
 const $ = (sel) => document.querySelector(sel);
 const html = document.documentElement;
@@ -19,8 +21,9 @@ let content = { nodes: {} };
 try { content = await loadContent(); } catch (err) { console.warn('[content]', err.message); }
 // Fixtures: test content that uses every block. Never loaded by the site.
 const fixtureIds = new Set();
+let fx = { nodes: {}, parents: {} };
 try {
-  const fx = await loadContent('fixtures');
+  fx = await loadContent('fixtures');
   for (const [id, n] of Object.entries(fx.nodes)) { fixtureIds.add(id); content.nodes[id] = n; }
 } catch (err) { console.warn('[fixtures]', err.message); }
 const nodes = Object.values(content.nodes);
@@ -222,6 +225,16 @@ function primitivesSection() {
     }));
 }
 
+// Each variant is its own small example under the editable one, so every look
+// a block has is on the page (and in the screenshot tests).
+function variantStage(type, v) {
+  const st = h('div', { class: 'lib-stage is-variant' });
+  replays.push(() => mount(st, [v.example]));
+  return h('figure', { class: 'lib-variant', id: `block-${type}-${slug(v.name)}` },
+    h('figcaption', null, h('span', { class: 'micro' }, 'Variant'), ' ', h('b', null, v.name), v.note && h('span', { class: 'lib-doc' }, ' ', md(v.note))),
+    st);
+}
+
 function blockCard(type, spec) {
   const stage = h('div', { class: 'lib-stage' });
   const errors = h('ul', { class: 'lib-errors', hidden: true, role: 'status' });
@@ -249,6 +262,7 @@ function blockCard(type, spec) {
       h('button', { class: 'lib-mini', type: 'button', onclick: () => navigator.clipboard?.writeText(ed.area.value).then(() => toast('Copied the JSON.'), () => {}) }, 'Copy JSON'),
     ),
     stage,
+    (spec.variants || []).map((v) => variantStage(type, v)),
     h('div', { class: 'lib-split' },
       h('div', null,
         h('h4', { class: 'micro' }, 'Props'),
@@ -296,6 +310,45 @@ const SAMPLE = [
   { type: 'fact', key: 'firstStep' },
 ];
 
+// Page layouts: the same functions the site uses (src/layouts.js), on fixtures.
+function layoutsSection() {
+  const main = fx.nodes.fixture_order_to_invoice;
+  const turnStage = h('div', { class: 'lib-stage is-turn is-layout' });
+  const renderTurn = () => {
+    if (!main) return turnStage.replaceChildren(h('p', { class: 'lib-error' }, 'Fixtures did not load.'));
+    const { turn, answer, heading } = turnShell({ n: 1, question: main.label });
+    // As on the site: with motion on, the question's words rise into place.
+    if (!reducedMotion()) splitWords(heading);
+    const label = (c) => c.label || fx.nodes[c.target]?.label || c.target;
+    turnStage.replaceChildren(turn);
+    mount(answer, main.blocks);
+    answer.append(chips((main.chips || []).map((c) => ({ ...c, label: label(c) })), (c) => ctx.navigate(c.target)));
+  };
+  const pageStage = h('div', { class: 'lib-stage is-layout' });
+  const renderPage = () => {
+    const page = h('article', { class: 'page lib-page' });
+    page.replaceChildren(...onePage({
+      content: fx,
+      layout: { title: 'Example: everything on one page', intro: 'Built from the fixture topics. On the site this page holds every topic.', sections: ['fixture_order_to_invoice'], appendix: ['fixture_how_it_is_built'] },
+      ctx: { ...ctx, navigate: (id) => page.querySelector(`#page-${CSS.escape(id)}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
+      onBack: () => toast('On the site this goes back to the start.'),
+    }));
+    pageStage.replaceChildren(page);
+  };
+  replays.push(renderTurn, renderPage);
+  return section('layouts', 'Page layouts', 'Layouts',
+    h('p', { class: 'lib-p' }, 'How blocks are assembled into pages. Both are drawn by src/layouts.js, the same code the site uses, with fixture topics as content.'),
+    h('article', { class: 'lib-card', id: 'layout-turn' },
+      h('h3', { class: 'lib-h3' }, 'Conversation turn'),
+      h('p', { class: 'lib-doc' }, md('What a visitor sees after choosing a topic: the topic number, the question as a heading, the answer blocks, then `Next topics`. The side column (topics read, map, summary) is not shown here.')),
+      turnStage),
+    h('article', { class: 'lib-card', id: 'layout-page' },
+      h('h3', { class: 'lib-h3' }, 'One-page view'),
+      h('p', { class: 'lib-doc' }, md('`#/all`: key facts, contents, each topic with its sub-topics indented under it, then a technical appendix, then the email button.')),
+      pageStage),
+  );
+}
+
 function composerSection() {
   const stage = h('div', { class: 'lib-stage is-turn' });
   const heading = h('h3', { class: 'turn-question' }, 'An example topic');
@@ -332,6 +385,7 @@ const all = [
   colourSection(), typeSection(), spaceSection(), motionSection(),
   primitivesSection(),
   ...blocksSections(),
+  layoutsSection(),
   composerSection(),
 ];
 $('[data-sections]').replaceChildren(...all);
@@ -350,6 +404,7 @@ const navGroups = [
   ['Foundations', [['colour', 'Colour'], ['type', 'Type'], ['space', 'Space and shape'], ['motion', 'Motion']]],
   ['Primitives', primitives.map((p) => [`prim-${slug(p.name)}`, p.name])],
   ...categories.map((c) => [c.label, Object.entries(blocks).filter(([, s]) => s.category === c.id).map(([t]) => [`block-${t}`, t, true])]),
+  ['Layouts', [['layout-turn', 'Conversation turn'], ['layout-page', 'One-page view']]],
   ['Composer', [['compose', 'Compose a topic']]],
 ];
 $('[data-nav]').replaceChildren(...navGroups.map(([label, items]) => h('div', { class: 'lib-nav-group' },
