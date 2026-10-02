@@ -1762,3 +1762,15 @@ html:not([data-motion='full']) .cmp-thumb { transition: none; }
   .b-metric-row > div + div { padding-left: var(--space-3); }
   .b-metric-row .b-metric-value { font-size: var(--step-3); }
 }
+
+/* Next topics: offered, not shouting. No rules between rows, secondary text
+   colour, close together, as wide as the answer's text. The one action
+   (is-primary) stays a filled button. */
+.chips { max-width: var(--measure); border-bottom: 0; }
+.chips-heading { margin-bottom: var(--space-1); }
+.chip { padding: 0.5rem 0; color: var(--fg-2); border-top: 0; }
+.chip:hover, .chip:focus-visible { color: var(--fg); }
+.chip:hover .chip-label { text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 0.2em; }
+.chip::after { display: none; }
+.chip.is-engage::before { display: none; }
+.chip.is-engage { color: var(--accent); }
