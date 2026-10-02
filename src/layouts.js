@@ -4,8 +4,10 @@
 //   turnShell   one conversation turn: index, question heading, answer area
 //   chips       "Next topics" under an answer
 //   onePage     the one-page view (#/all): facts, contents, topics, appendix
+//   createRail  the side column: topics read, map, progress, summary, email
 
-import { h } from './dom.js';
+import { h, reducedMotion } from './dom.js';
+import { createMap } from './map.js';
 import { renderBlock } from './blocks.js';
 import { copy, config, site, factText } from './copy.js';
 
@@ -88,4 +90,76 @@ export function onePage({ content, layout = config.onePage, ctx, onBack }) {
       h('button', { class: 'btn btn-ghost', type: 'button', onclick: () => onBack?.() }, copy.ui.backToStart),
     ),
   ];
+}
+
+// The side column of a conversation. Narrow screens show it as a strip, with
+// the map in a panel that opens from a button.
+//   setTrail(labels, current, onPick)  the topics read, current one marked
+//   setDepth(level)                    the progress meter (-1 for none yet)
+//   count()                            refresh "N of M read" after map.visit()
+export function createRail(content, { onPick, onBrief, onAll, features = config.features } = {}) {
+  const trail = h('ol', { class: 'trail', 'data-trail': '' });
+  const depthLabel = h('p', { class: 'depth-label', 'data-depth-label': '' });
+  const depth = h('div', { class: 'depth', 'data-depth': '' },
+    h('div', { class: 'depth-track', 'aria-hidden': 'true' }, h('i'), h('i'), h('i'), h('i')),
+    depthLabel,
+  );
+  const map = createMap(content, { onPick: (id) => { setMapOpen(false); onPick?.(id); } });
+  const mapCount = h('p', { class: 'map-count' });
+  const total = Object.keys(content.nodes).length;
+  const mapToggle = h('button', { class: 'rail-map-toggle', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'rail-map' });
+  const brief = h('button', { class: 'rail-brief', type: 'button', 'data-brief': '', onclick: () => onBrief?.() }, 'See a summary of your visit ', h('span', { 'aria-hidden': 'true' }, '→'));
+  const mapBlock = h('div', { class: 'rail-block rail-map', id: 'rail-map' }, h('h2', { class: 'rail-heading' }, 'Map'), map.el, mapCount);
+  const depthBlock = h('div', { class: 'rail-block' }, h('h2', { class: 'rail-heading' }, 'Progress'), depth);
+  const el = h('aside', { class: 'rail', 'aria-label': 'Session' },
+    h('div', { class: 'rail-block' }, h('h2', { class: 'rail-heading' }, 'Topics you read'), trail, mapToggle),
+    mapBlock,
+    depthBlock,
+    h('div', { class: 'rail-block rail-actions' },
+      brief,
+      h('a', { class: 'rail-mail', href: `mailto:${site.email}` }, site.email),
+      h('a', { class: 'rail-mail', href: '#/all', onclick: (e) => { e.preventDefault(); onAll?.(); } }, copy.ui.allLink),
+    ),
+  );
+
+  function setMapOpen(open) {
+    el.classList.toggle('is-map-open', open);
+    mapToggle.setAttribute('aria-expanded', String(open));
+  }
+  mapToggle.addEventListener('click', (e) => { e.stopPropagation(); setMapOpen(!el.classList.contains('is-map-open')); });
+  document.addEventListener('click', (e) => { if (!e.target.closest?.('.rail-map, .rail-map-toggle')) setMapOpen(false); });
+
+  function count() {
+    const seen = new Set(map.route).size;
+    mapCount.textContent = `${seen} of ${total} topics read`;
+    mapToggle.textContent = `Map: ${seen} of ${total} read`;
+  }
+  count();
+
+  function setTrail(labels, current, onItem) {
+    trail.replaceChildren(...labels.map((label, i) =>
+      h('li', { class: 'trail-item' },
+        h('button', { class: 'trail-link', type: 'button', onclick: () => onItem?.(i) }, label))));
+    markCurrent(current);
+  }
+  function markCurrent(current) {
+    const links = trail.querySelectorAll('.trail-link');
+    links.forEach((b, i) => (i === current ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current')));
+    // On narrow screens the trail is a horizontal strip: keep the marker in view
+    // by scrolling the strip itself, never the page.
+    const cur = links[current];
+    if (cur && trail.scrollWidth > trail.clientWidth) {
+      const left = cur.offsetLeft - trail.clientWidth / 2 + cur.offsetWidth / 2;
+      trail.scrollTo({ left: Math.max(0, left), behavior: reducedMotion() ? 'auto' : 'smooth' });
+    }
+  }
+  function setDepth(level) {
+    depth.dataset.level = String(level);
+    depthLabel.textContent = copy.depth[Math.max(0, level)];
+  }
+
+  if (!features.map) { mapBlock.hidden = true; mapToggle.hidden = true; }
+  if (!features.depthMeter) depthBlock.hidden = true;
+
+  return { el, trail, depth, depthLabel, brief, map, setMapOpen, count, setTrail, markCurrent, setDepth };
 }

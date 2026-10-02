@@ -7,7 +7,9 @@ import { initPrefs, setPref, motion } from './prefs.js';
 import { renderBlock } from './blocks.js';
 import { h, reducedMotion } from './dom.js';
 import { blocks, categories, primitives, validateBlocks, usage, typeLabel } from './catalog.js';
-import { turnShell, chips, onePage } from './layouts.js';
+import { turnShell, chips, onePage, createRail } from './layouts.js';
+import { enhanceLanding } from './landing.js';
+import { renderRegions } from './static.js';
 import { splitWords } from './type.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -86,7 +88,11 @@ function mount(stage, list) {
 }
 
 const replays = [];
-function replayAll() { for (const r of replays) r(); }
+const afterMount = [];   // run once the page is in the document (things that measure layout)
+function replayAll() {
+  for (const r of replays) r();
+  requestAnimationFrame(() => { while (afterMount.length) afterMount.shift()(); });
+}
 
 // An editor: JSON in a textarea, validated and re-rendered as you type.
 function editor({ value, stage, errors, onValid, asList = false }) {
@@ -320,10 +326,48 @@ function layoutsSection() {
     // As on the site: with motion on, the question's words rise into place.
     if (!reducedMotion()) splitWords(heading);
     const label = (c) => c.label || fx.nodes[c.target]?.label || c.target;
-    turnStage.replaceChildren(turn);
+    // The side column, as on the site, after one topic. The progress meter is
+    // switched off on the site (site.json features); it is shown here.
+    const rail = createRail(content, {
+      onPick: (id) => ctx.navigate(id),
+      onBrief: () => toast('On the site this shows a summary of the visit.'),
+      onAll: () => toast('On the site this opens the one-page view.'),
+      features: { map: true, depthMeter: true },
+    });
+    rail.map.visit(main.id);
+    rail.count();
+    rail.setTrail([main.label], 0);
+    rail.setDepth(0);
+    const log = h('div', { class: 'log' }, turn);
+    turnStage.replaceChildren(h('div', { class: 'session lib-session' }, rail.el, log));
     mount(answer, main.blocks);
     answer.append(chips((main.chips || []).map((c) => ({ ...c, label: label(c) })), (c) => ctx.navigate(c.target)));
   };
+  // The landing, from the same generator as index.html, enhanced by the same code.
+  const landingStage = h('div', { class: 'lib-stage is-layout is-landing-demo' });
+  let landingLens = null;
+  const renderLanding = () => {
+    const r = renderRegions(config, content);
+    landingStage.innerHTML = `<section class="landing" data-landing aria-label="Example of the landing">
+      <div class="landing-hero" data-landing-hero>
+        <canvas class="lens" data-lens aria-hidden="true"></canvas>
+        <div class="landing-inner">${r.landing.join('\n')}</div>
+        <figure class="lens-caption" data-lens-caption aria-hidden="true">${r.caption.join('')}</figure>
+      </div>
+      <div class="landing-steps">${r.steps.join('\n')}</div>
+    </section>`;
+    // One h1 per page: the library's own title.
+    const h1 = landingStage.querySelector('h1');
+    if (h1) h1.outerHTML = h1.outerHTML.replace(/^<h1/, '<p role="heading" aria-level="2"').replace(/h1>$/, 'p>');
+    landingLens?.pause?.();
+    afterMount.push(() => { landingLens = enhanceLanding(landingStage); });
+  };
+  landingStage.addEventListener('click', (e) => {
+    const a = e.target.closest('a');
+    if (!a) return;
+    e.preventDefault();
+    toast(`On the site this opens “${a.textContent.replace('→', '').trim()}”.`);
+  });
   const pageStage = h('div', { class: 'lib-stage is-layout' });
   const renderPage = () => {
     const page = h('article', { class: 'page lib-page' });
@@ -335,12 +379,16 @@ function layoutsSection() {
     }));
     pageStage.replaceChildren(page);
   };
-  replays.push(renderTurn, renderPage);
+  replays.push(renderLanding, renderTurn, renderPage);
   return section('layouts', 'Page layouts', 'Layouts',
     h('p', { class: 'lib-p' }, 'How blocks are assembled into pages. Both are drawn by src/layouts.js, the same code the site uses, with fixture topics as content.'),
+    h('article', { class: 'lib-card', id: 'layout-landing' },
+      h('h3', { class: 'lib-h3' }, 'Landing'),
+      h('p', { class: 'lib-doc' }, md('The first page: the headline with the lens, then one screen each for the examples, the first step and where to start. The markup comes from `src/static.js` (the same text as `index.html`), the movement from `src/landing.js`. The headline screen is full height, as on the site; the three screens after it are shortened. Links here do not navigate.')),
+      landingStage),
     h('article', { class: 'lib-card', id: 'layout-turn' },
-      h('h3', { class: 'lib-h3' }, 'Conversation turn'),
-      h('p', { class: 'lib-doc' }, md('What a visitor sees after choosing a topic: the topic number, the question as a heading, the answer blocks, then `Next topics`. The side column (topics read, map, summary) is not shown here.')),
+      h('h3', { class: 'lib-h3' }, 'Conversation'),
+      h('p', { class: 'lib-doc' }, md('After a topic is chosen: the side column (topics read, the map, progress, the summary button) and the turn (the topic number, the question as a heading, the answer blocks, then `Next topics`). On narrow screens the side column becomes a strip at the top, with the map behind a button.')),
       turnStage),
     h('article', { class: 'lib-card', id: 'layout-page' },
       h('h3', { class: 'lib-h3' }, 'One-page view'),
@@ -404,7 +452,7 @@ const navGroups = [
   ['Foundations', [['colour', 'Colour'], ['type', 'Type'], ['space', 'Space and shape'], ['motion', 'Motion']]],
   ['Primitives', primitives.map((p) => [`prim-${slug(p.name)}`, p.name])],
   ...categories.map((c) => [c.label, Object.entries(blocks).filter(([, s]) => s.category === c.id).map(([t]) => [`block-${t}`, t, true])]),
-  ['Layouts', [['layout-turn', 'Conversation turn'], ['layout-page', 'One-page view']]],
+  ['Layouts', [['layout-landing', 'Landing'], ['layout-turn', 'Conversation'], ['layout-page', 'One-page view']]],
   ['Composer', [['compose', 'Compose a topic']]],
 ];
 $('[data-nav]').replaceChildren(...navGroups.map(([label, items]) => h('div', { class: 'lib-nav-group' },

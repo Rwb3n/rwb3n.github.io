@@ -26,9 +26,9 @@ test('the one-page view shows every listed topic, and no stray text', async ({ p
 });
 
 // Everything the site's pages are made of is shown in the component library:
-// every class used in the one-page view and in topic answers also appears on
-// /components. The side column and the landing are not covered.
-test('the component library covers every class used on /all and in topics', async ({ page }) => {
+// every class used on the landing, in the one-page view, in topic answers and
+// in the side column also appears on /components.
+test('the component library covers every class used on the site', async ({ page }) => {
   const classes = async (selector) => page.evaluate((sel) => {
     const out = new Set();
     for (const root of document.querySelectorAll(sel)) for (const el of [root, ...root.querySelectorAll('*')]) {
@@ -38,6 +38,10 @@ test('the component library covers every class used on /all and in topics', asyn
     return [...out];
   }, selector);
   const used = new Map();
+  await page.goto('/');
+  await page.waitForTimeout(1500);
+  for (const c of await classes('.landing')) used.set(c, '/');
+  await page.goto('about:blank');
   await page.goto('/#/all');
   await page.waitForSelector('.page-section');
   for (const c of await classes('.page')) used.set(c, '/#/all');
@@ -45,10 +49,11 @@ test('the component library covers every class used on /all and in topics', asyn
     await page.goto('about:blank');
     await page.goto(`/#/${id}`);
     await page.waitForSelector('.turn .chips', { timeout: 15000 });
-    for (const c of await classes('.turn')) if (!used.has(c)) used.set(c, `/#/${id}`);
+    for (const c of await classes('.turn, .rail')) if (!used.has(c)) used.set(c, `/#/${id}`);
   }
   await page.goto('/components/');
   await page.waitForSelector('#layout-page .page-section');
+  await page.waitForSelector('#layout-landing .xray');
   const lib = new Set(await classes('.lib-main'));
   const missing = [...used].filter(([c]) => !lib.has(c)).map(([c, where]) => `${c} (${where})`);
   expect(missing).toEqual([]);

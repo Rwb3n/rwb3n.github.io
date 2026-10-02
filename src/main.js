@@ -6,8 +6,7 @@ import { loadContent, loadSiteConfig } from './content.js';
 import { initPrefs } from './prefs.js';
 import { createSettings } from './settings.js';
 import { createApp } from './app.js';
-import { createLens } from './lens.js';
-import { splitWords, createXray } from './type.js';
+import { enhanceLanding } from './landing.js';
 import { reducedMotion } from './dom.js';
 import { createSound, sfx } from './sound.js';
 
@@ -83,32 +82,16 @@ const onScroll = () => html.classList.toggle('is-scrolled', window.scrollY > 4);
 addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
-// Landing type ------------------------------------------------------------------
-const display = document.querySelector('.landing .display');
-if (display && !reducedMotion()) splitWords(display);
+// Landing: rising words, the lens and its x-ray, the entry spotlight ------------
 // Text size changes the layout the lens measured.
 document.addEventListener('mu:prefs', (e) => { if (e.detail.key === 'text') dispatchEvent(new Event('resize')); });
-
-// Lens + x-ray -------------------------------------------------------------------
-let lens = null;
 const lensCanvas = document.querySelector('[data-lens]');
-const copyEl = document.querySelector('[data-copy]');
-if (lensCanvas) {
-  try {
-    const xray = copyEl ? createXray(copyEl, lensCanvas) : null;
-    lens = createLens(lensCanvas, document.querySelector('[data-lens-caption]'), { onFrame: (s) => xray?.update(s) });
-    window.mindunderLens = lens; // read-only state for debugging
-    document.addEventListener('mu:session', () => lens.pause());
-    document.addEventListener('mu:landing', () => lens.resume());
-    document.addEventListener('mu:theme', () => lens.refresh());
-    // Over the things you click, the lens steps aside.
-    for (const el of document.querySelectorAll('.landing .entry, .ask')) {
-      el.addEventListener('pointerenter', () => lens.setYield(true));
-      el.addEventListener('pointerleave', () => lens.setYield(false));
-    }
-  } catch (err) {
-    console.warn('[lens]', err);
-  }
+const lens = enhanceLanding(document, { yieldOver: [...document.querySelectorAll('.ask')] });
+if (lens) {
+  window.mindunderLens = lens; // read-only state for debugging
+  document.addEventListener('mu:session', () => lens.pause());
+  document.addEventListener('mu:landing', () => lens.resume());
+  document.addEventListener('mu:theme', () => lens.refresh());
 }
 
 // While the headline screen is in view, the ask bar waits below it. Pressing
@@ -119,14 +102,6 @@ if (hero && 'IntersectionObserver' in window) {
   addEventListener('keydown', (e) => { if (e.key === '/') document.body.classList.remove('is-hero'); }, { capture: true });
   document.querySelector('[data-ask]')?.addEventListener('focusin', () => document.body.classList.remove('is-hero'));
 }
-
-// Entry rows: the spotlight follows the pointer.
-document.querySelector('[data-entry]')?.addEventListener('pointermove', (e) => {
-  const row = e.target.closest('.entry-item');
-  if (!row) return;
-  const b = row.getBoundingClientRect();
-  row.style.setProperty('--mx', `${e.clientX - b.left}px`);
-});
 
 // App ---------------------------------------------------------------------------
 loadContent()
