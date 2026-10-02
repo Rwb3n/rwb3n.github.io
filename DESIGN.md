@@ -58,8 +58,14 @@ every screen size.
 | Role | Face | Used for |
 | --- | --- | --- |
 | Display | Zodiak (+ italic) | headline, questions, callouts, big numbers |
-| Text | Switzer | body copy, chips, anything read at length |
+| Text | Archivo | body copy, chips, anything read at length |
 | System | JetBrains Mono | labels, indices, diagram nodes, the command bar |
+
+All three load from Fontshare. Each face must contain every character it is
+used for; `/components/#glyphs` checks this in the browser, and
+`?fonts=slug:Family` adds candidates to compare. Switzer was tried for text
+and dropped: it has no → or ↓, which the site uses 45 times. Zodiak has no
+arrows either, but no display text uses them.
 
 Minor-third ramp (`--step--2` … `--step-4`), fluid at the display end, and a
 hero step (`--step-display`) that runs from 48px to 124px.

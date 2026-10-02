@@ -5,10 +5,11 @@
    ========================================================================== */
 
 :root {
-  /* Type families: Zodiak and Switzer (ITF Free Font License) and JetBrains
-     Mono (SIL OFL), all loaded from Fontshare (api.fontshare.com). */
+  /* Type families, all loaded from Fontshare (api.fontshare.com): Zodiak (ITF
+     Free Font License), Archivo and JetBrains Mono (SIL OFL). The text face
+     must contain every character the site uses (see /components/#glyphs). */
   --font-display: 'Zodiak', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  --font-sans: 'Switzer', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   /* Type scale — a 1.25 minor-third ramp, fluid at the display end */
