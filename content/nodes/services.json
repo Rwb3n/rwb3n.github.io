@@ -342,10 +342,7 @@
           { "label": "5", "title": "It runs, and you decide", "detail": "The system does the routine work. You make the decisions that need judgement." }
         ]
       },
-      { "type": "fact", "key": "firstStep" },
-      { "type": "fact", "key": "cost" },
-      { "type": "fact", "key": "timeline" },
-      { "type": "fact", "key": "handover" }
+      { "type": "facts", "keys": ["firstStep", "cost", "timeline", "handover"] }
     ],
     "chips": [{ "target": "contact" }, { "target": "cost" }, { "target": "trust_ladder" }]
   },
@@ -356,9 +353,7 @@
     "intents": ["cost", "costs", "price", "prices", "pricing", "fee", "fees", "quote", "budget", "how much", "charge", "rates"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "fact", "key": "cost" },
-      { "type": "fact", "key": "timeline" },
-      { "type": "text", "content": "The first step is a free 30-minute call. After the call you get a one-page written summary." }
+      { "type": "facts", "keys": ["cost", "firstStep", "timeline"] }
     ],
     "chips": [{ "target": "estimate" }, { "label": "Book the free 30-minute call", "target": "_book" }, { "target": "process" }]
   },

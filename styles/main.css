@@ -1726,3 +1726,39 @@ html:not([data-motion='full']) .cmp-thumb { transition: none; }
   .land-step .offer dd { font-size: var(--step-1); }
   .land-step:last-child { padding-bottom: calc(3.25rem + var(--space-8)); }
 }
+
+/* ==========================================================================
+   Room to read: topics and the one-page view.
+   Paragraphs sit close together; anything that is not a paragraph (a
+   diagram, numbers, a list, a table) gets extra space above and below,
+   so each one reads as its own thing.
+   ========================================================================== */
+.turn { gap: var(--space-6); }
+.turn-a, .page-body { gap: var(--space-6); }
+.turn-a > :not(.b-text, .b-callout, .b-fact, .scan, .chips),
+.page-body > :not(.b-text, .b-callout, .b-fact) { margin-block: var(--space-3); }
+.b-text + .b-text { margin-top: calc(var(--space-3) * -1); }
+.chips { margin-top: var(--space-6); }
+.page-section { gap: var(--space-6); }
+.page-section.is-l2 { padding-top: var(--space-7); }
+
+/* Facts as a list: same size as body text, one per row, with room. */
+.b-facts { grid-template-columns: 1fr; max-width: var(--measure); }
+.b-facts > div { gap: var(--space-2); padding: var(--space-4) 0; }
+.b-facts dd { font-size: var(--step-1); line-height: 1.5; color: var(--fg); }
+
+/* The map is there when asked for, not beside every answer. */
+.rail-map { display: none; }
+.rail.is-map-open .rail-map { display: block; }
+.rail-map-toggle { display: inline-flex; justify-self: start; margin-top: var(--space-4); }
+.rail-map-toggle:hover { color: var(--fg); border-color: var(--fg-3); }
+
+@media (max-width: 720px) {
+  .turn-a, .page-body { gap: var(--space-5); }
+  .rail-map-toggle { margin-top: 0; }
+  /* Three numbers fit on one row on a phone. */
+  .b-metric-row { grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr)); }
+  .b-metric-row > div { padding-right: var(--space-2); }
+  .b-metric-row > div + div { padding-left: var(--space-3); }
+  .b-metric-row .b-metric-value { font-size: var(--step-3); }
+}
