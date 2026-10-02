@@ -15,7 +15,7 @@ const parts = [
 ];
 
 test.beforeEach(async ({ page }) => {
-  await page.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
+  await page.route(/fonts\.(googleapis|gstatic)\.com|fontshare\.com/, (r) => r.abort());
   await page.addInitScript(() => localStorage.setItem('mu-reading', JSON.stringify({ motion: 'off' })));
   await page.goto('/components/');
   await page.waitForSelector('.lib-card');

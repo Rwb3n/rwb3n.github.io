@@ -184,7 +184,7 @@ function colourSection() {
 
 function typeSection() {
   return section('type', 'Type', 'Foundations',
-    h('p', { class: 'lib-p' }, 'Three voices, each with one job: Instrument Serif for display, Geist for reading, Geist Mono for the system.'),
+    h('p', { class: 'lib-p' }, 'Three voices, each with one job: Zodiak for display, Switzer for reading, JetBrains Mono for the system. All three load from Fontshare.'),
     h('div', { class: 'lib-type' }, TYPE.map(([step, face, name, sample]) =>
       h('div', { class: 'lib-type-row' },
         h('span', { class: 'micro' }, name, h('br'), step),

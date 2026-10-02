@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 const site = JSON.parse(readFileSync(new URL('../../content/site.json', import.meta.url), 'utf8'));
 
 test.beforeEach(async ({ page }) => {
-  await page.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
+  await page.route(/fonts\.(googleapis|gstatic)\.com|fontshare\.com/, (r) => r.abort());
 });
 
 test('the one-page view shows every listed topic, and no stray text', async ({ page }) => {
@@ -57,4 +57,27 @@ test('the component library covers every class used on the site', async ({ page 
   const lib = new Set(await classes('.lib-main'));
   const missing = [...used].filter(([c]) => !lib.has(c)).map(([c, where]) => `${c} (${where})`);
   expect(missing).toEqual([]);
+});
+
+// Diagram boxes are sized from the mono font's measured width; every label
+// must fit inside its box, whatever font is in use.
+test('every diagram label fits inside its box', async ({ page }) => {
+  const check = async () => page.evaluate(() => {
+    const bad = [];
+    for (const g of document.querySelectorAll('.fl-node')) {
+      const rect = g.querySelector('rect');
+      if (!rect) continue;
+      const rw = rect.getBBox().width;
+      for (const t of g.querySelectorAll('text')) if (t.getBBox().width > rw - 8) bad.push(t.textContent);
+    }
+    return { count: document.querySelectorAll('.fl-node text').length, bad };
+  });
+  await page.goto('/#/all');
+  await page.waitForSelector('.page-section .fl-node');
+  const all = await check();
+  await page.goto('/components/');
+  await page.waitForSelector('#block-flow .fl-node');
+  const lib = await check();
+  expect(all.count + lib.count).toBeGreaterThan(40);
+  expect([...all.bad, ...lib.bad]).toEqual([]);
 });

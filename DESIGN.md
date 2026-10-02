@@ -57,9 +57,9 @@ every screen size.
 
 | Role | Face | Used for |
 | --- | --- | --- |
-| Display | Instrument Serif (+ italic) | headline, questions, callouts, big numbers |
-| Text | Geist | body copy, chips, anything read at length |
-| System | Geist Mono | labels, indices, diagram nodes, the command bar |
+| Display | Zodiak (+ italic) | headline, questions, callouts, big numbers |
+| Text | Switzer | body copy, chips, anything read at length |
+| System | JetBrains Mono | labels, indices, diagram nodes, the command bar |
 
 Minor-third ramp (`--step--2` … `--step-4`), fluid at the display end, and a
 hero step (`--step-display`) that runs from 48px to 124px.
