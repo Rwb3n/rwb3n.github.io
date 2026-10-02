@@ -14,25 +14,25 @@ a { color: inherit; }
 .t-arrow { font-family: var(--t-mono); font-weight: 400; }
 .t-eyebrow { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; font: 400 11px/1 var(--t-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); }
 .t-eyebrow span { width: 2.5rem; height: 1px; background: currentColor; }
-.t-display { max-width: 18ch; font-family: var(--t-display); font-weight: var(--t-dw); font-size: calc(clamp(2.6rem, 1rem + 5.2vw, 6.4rem) * var(--t-scale)); line-height: 0.98; letter-spacing: var(--t-track); text-wrap: balance; }
+.t-display { max-width: 18ch; font-family: var(--t-display); font-weight: var(--t-dw); font-size: calc(clamp(2.6rem, 1rem + 5.2vw, 6.4rem) * var(--t-scale, 1)); line-height: 0.98; letter-spacing: var(--t-track); text-wrap: balance; }
 .t-display em { font-family: var(--t-accent); font-weight: var(--t-aw); font-style: italic; color: var(--accent); letter-spacing: -0.01em; }
 .t-cue { display: inline-flex; gap: 0.5rem; margin-top: 2.5rem; font-size: 0.85rem; color: var(--fg-2); text-decoration: none; border-bottom: 1px solid var(--line-2); }
 
 .t-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: clamp(2.5rem, 5vw, 4.5rem) clamp(2rem, 5vw, 5rem); margin-top: clamp(3rem, 7vw, 6rem); }
-.t-grid section { display: grid; gap: 1rem; align-content: start; }
+.t-grid section { min-width: 0; display: grid; gap: 1rem; align-content: start; }
 .t-micro { font: 400 11px/1 var(--t-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
-.t-lede { font-family: var(--t-display); font-weight: var(--t-dw); font-size: calc(clamp(1.7rem, 1rem + 1.8vw, 2.6rem) * var(--t-scale)); line-height: 1.12; letter-spacing: var(--t-track); text-wrap: balance; }
-.t-q { font-family: var(--t-display); font-weight: var(--t-dw); font-size: calc(clamp(1.9rem, 1.2rem + 1.6vw, 2.8rem) * var(--t-scale)); line-height: 1.05; letter-spacing: var(--t-track); }
+.t-lede { font-family: var(--t-display); font-weight: var(--t-dw); font-size: calc(clamp(1.7rem, 1rem + 1.8vw, 2.6rem) * var(--t-scale, 1)); line-height: 1.12; letter-spacing: var(--t-track); text-wrap: balance; }
+.t-q { font-family: var(--t-display); font-weight: var(--t-dw); font-size: calc(clamp(1.9rem, 1.2rem + 1.6vw, 2.8rem) * var(--t-scale, 1)); line-height: 1.05; letter-spacing: var(--t-track); }
 .t-body { font-size: 1.125rem; line-height: 1.6; max-width: 36rem; }
 .t-steps { list-style: none; display: grid; border-top: 1px solid var(--line); }
 .t-steps li { display: grid; grid-template-columns: 2.2rem 1fr; gap: 0.15rem 1rem; padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
 .t-steps b { font-weight: 500; } .t-steps li > span:last-child { grid-column: 2; font-size: 0.85rem; color: var(--fg-2); }
 .t-num { grid-row: span 2; justify-self: start; padding: 0.1rem 0.45rem; font: 400 11px/1.5 var(--t-mono); border: 1px solid var(--line-2); border-radius: 999px; color: var(--fg-2); }
-.t-figs { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line-2); }
+.t-figs { container-type: inline-size; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line-2); }
 .t-figs > div { padding: 1rem 1rem 0 0; } .t-figs > div + div { padding-left: 1rem; border-left: 1px solid var(--line); }
-.t-figs b { display: block; font-family: var(--t-figures); font-weight: var(--t-fw); font-size: clamp(2rem, 1.2rem + 2.4vw, 3.4rem); line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.t-figs b { display: block; font-family: var(--t-figures); font-weight: var(--t-fw); font-size: min(clamp(2rem, 1.2rem + 2.4vw, 3.4rem), 9cqi); line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .t-figs span { display: block; margin-top: 0.5rem; font-size: 0.8rem; line-height: 1.4; color: var(--fg-2); }
-.t-callout { padding-left: 1.2rem; border-left: 2px solid var(--accent); font-family: var(--t-accent); font-style: italic; font-weight: var(--t-aw); font-size: 1.6rem; line-height: 1.25; }
+.t-callout { padding-left: 1.2rem; border-left: 2px solid var(--accent); font-family: var(--t-quote, var(--t-accent)); font-style: italic; font-weight: var(--t-qw, var(--t-aw)); font-size: 1.6rem; line-height: 1.25; }
 .t-chips { list-style: none; display: grid; max-width: 30rem; }
 .t-chips li { display: flex; justify-content: space-between; padding: 0.5rem 0; color: var(--fg-2); }
 .t-btn { justify-self: start; display: inline-flex; gap: 0.6rem; padding: 0.75rem 1.1rem; border-radius: 4px; background: var(--accent); color: var(--on-accent); font-weight: 500; }
@@ -41,3 +41,47 @@ a { color: inherit; }
 .t-node .is-accent { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .t-node .t-arrow { color: var(--fg-3); }
 .t-legible { font-size: 1.4rem; color: var(--fg-2); }
+
+/* 1 · X-ray: thin surface, heavy underneath, seen through a lens. */
+.t-xray .t-stage { position: relative; --x: 30%; --y: 30%; --r: clamp(3.5rem, 9vw, 7.5rem); cursor: crosshair; }
+.t-xray .t-display { max-width: 24ch; font-size: clamp(1.9rem, 0.8rem + 3.9vw, 4.9rem); line-height: 1.04; }
+.t-xray .t-display em { font-style: normal; color: inherit; letter-spacing: inherit; }
+.t-xray .t-under { position: absolute; inset: 0; margin: 0; font-weight: 800; color: var(--fg); background: var(--bg); clip-path: circle(var(--r) at var(--x) var(--y)); pointer-events: none; }
+.t-xray .t-under em { color: var(--accent); }
+.t-xray .t-ring { position: absolute; left: var(--x); top: var(--y); width: calc(var(--r) * 2); height: calc(var(--r) * 2); translate: -50% -50%; border: 1px solid var(--accent-line); border-radius: 50%; pointer-events: none; }
+.t-xray .t-ring::after { content: ''; position: absolute; left: 50%; top: 100%; width: 1px; height: 1.6rem; background: var(--accent-line); }
+.t-xray .t-lede, .t-xray .t-q { font-weight: 300; letter-spacing: -0.04em; }
+.t-xray .t-lede { font-size: clamp(1.25rem, 0.9rem + 1.1vw, 1.8rem); line-height: 1.3; }
+.t-xray .t-micro, .t-xray .t-eyebrow { font-weight: 500; }
+.t-xray .t-figs b { font-size: min(clamp(2.2rem, 1.2rem + 3vw, 4.2rem), 9cqi); letter-spacing: -0.07em; }
+.t-xray .t-figs b::first-letter { color: var(--accent); }
+.t-xray .t-steps b { font-weight: 600; }
+
+/* 2 · Poster: fitted condensed capitals, then a quiet italic. */
+.t-poster .t-hero { margin-inline: calc(-1 * clamp(1rem, 4vw, 4rem)); padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 4rem) clamp(2rem, 5vw, 4rem); background: var(--fg); color: var(--bg); }
+.t-poster .t-eyebrow, .t-poster .t-cue { color: color-mix(in srgb, var(--bg) 70%, var(--fg)); }
+.t-poster .t-cue { border-color: currentColor; }
+.t-poster .t-display { max-width: none; font-size: 1rem; line-height: 0.86; letter-spacing: 0; text-transform: uppercase; text-wrap: nowrap; }
+.t-poster .t-line { display: block; width: max-content; white-space: nowrap; }
+.t-poster .t-display em { font-family: var(--t-display); font-weight: 400; font-style: normal; color: var(--accent); }
+.t-poster .t-then { display: block; margin-top: 0.5em; font: italic 300 clamp(1.6rem, 0.9rem + 2.6vw, 3.6rem)/1.08 var(--t-accent); letter-spacing: -0.02em; text-transform: none; text-wrap: balance; }
+.t-poster .t-q, .t-poster .t-lede { text-transform: uppercase; line-height: 0.92; }
+.t-poster .t-q { font-size: clamp(2.6rem, 1.6rem + 2.6vw, 4rem); }
+.t-poster .t-lede { font: italic 300 clamp(1.5rem, 1rem + 1.4vw, 2.2rem)/1.2 var(--t-accent); text-transform: none; letter-spacing: -0.015em; }
+.t-poster .t-figs { border-top-width: 6px; border-top-color: var(--fg); }
+.t-poster .t-figs b { font-size: min(clamp(3.4rem, 2rem + 4.6vw, 6rem), 9cqi); letter-spacing: 0; line-height: 0.9; }
+.t-poster .t-btn { border-radius: 0; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+.t-poster .t-callout { border-left-width: 6px; }
+
+/* 3 · Theatre: one tall face, weight as the only emphasis. */
+.t-theatre .t-display { max-width: 15ch; font-size: clamp(3.2rem, 1rem + 7.6vw, 9rem); line-height: 0.9; }
+.t-theatre .t-display em { font-style: normal; font-family: var(--t-display); font-weight: 700; letter-spacing: var(--t-track); }
+.t-theatre .t-lede { font-size: clamp(2rem, 1rem + 2.6vw, 3.4rem); line-height: 1; }
+.t-theatre .t-q { font-weight: 600; font-size: clamp(2.8rem, 1.4rem + 2.6vw, 4.2rem); line-height: 0.95; }
+.t-theatre .t-body { font-size: 1.15rem; line-height: 1.62; }
+.t-theatre .t-body::first-letter { float: left; margin: 0.06em 0.08em 0 0; font: 700 3.6em/0.8 var(--t-display); color: var(--accent); }
+.t-theatre .t-steps b { font-weight: 500; }
+.t-theatre .t-figs b { font-size: min(clamp(3.6rem, 2rem + 5vw, 6.6rem), 9cqi); letter-spacing: -0.01em; line-height: 0.85; }
+.t-theatre .t-callout { font-style: normal; font-size: 2.6rem; line-height: 1; border: 0; padding: 0; }
+.t-theatre .t-callout::before { content: ''; display: block; width: 3rem; height: 3px; margin-bottom: 1rem; background: var(--accent); }
+.t-missing { font: 400 12px/1.4 var(--t-mono); color: var(--accent); }
