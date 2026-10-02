@@ -252,3 +252,9 @@
 .lib-stage.is-landing-demo { padding: 0; overflow: hidden; }
 .lib-stage.is-landing-demo .land-step { min-height: 0; padding: var(--space-8) 0; }
 .lib-stage.is-landing-demo .land-step:last-child { padding-bottom: var(--space-8); }
+
+/* Glyph coverage */
+.lib-glyph-fig { display: grid; gap: var(--space-2); margin: var(--space-5) 0 0; }
+.lib-glyphs td:last-child { font-family: inherit; white-space: normal; }
+.lib-glyph { display: inline-block; min-width: 1.5em; font-size: var(--step-1); }
+.lib-miss { color: var(--accent); }
