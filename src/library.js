@@ -189,7 +189,54 @@ function typeSection() {
       h('div', { class: 'lib-type-row' },
         h('span', { class: 'micro' }, name, h('br'), step),
         h('span', { class: `lib-type-sample is-${face}`, style: { fontSize: `var(${step})` } }, sample),
-      ))));
+      ))),
+    glyphCoverage());
+}
+
+// Every character the site uses beyond plain ASCII, checked against each face.
+// A face "has" a character when the measured width does not change with the
+// fallback behind it: then the browser is drawing it from that face.
+const SITE_CHARS = '→↓·—–’‘“”£…−×©';
+const FACES = [['Display', '--font-display'], ['Text', '--font-sans'], ['System', '--font-mono']];
+
+function glyphCoverage() {
+  const body = h('tbody');
+  const table = h('table', { class: 'b-table lib-glyphs', 'data-glyphs': 'pending' },
+    h('thead', null, h('tr', null, h('th', { scope: 'col' }, 'Character'), FACES.map(([name, v]) => h('th', { scope: 'col' }, name, h('br'), h('span', { class: 'lib-val' }, primaryFamily(v)))))),
+    body);
+  const run = async () => {
+    const ctx = document.createElement('canvas').getContext('2d');
+    const status = {};
+    for (const [, v] of FACES) {
+      const fam = primaryFamily(v);
+      try { await document.fonts.load(`64px "${fam}"`, SITE_CHARS); } catch { /* blocked or offline */ }
+      status[v] = [...document.fonts].some((f) => f.family.replace(/"/g, '') === fam && f.status === 'loaded');
+    }
+    const has = (fam, ch) => {
+      const w = (fb) => { ctx.font = `64px "${fam}", ${fb}`; return ctx.measureText(ch).width; };
+      const a = w('monospace'), b = w('serif'), c = w('cursive');
+      return a === b && b === c;
+    };
+    const missing = [];
+    body.replaceChildren(...[...SITE_CHARS].map((ch) => h('tr', null,
+      h('td', null, h('span', { class: 'lib-glyph' }, ch), ' ', h('span', { class: 'lib-val' }, `U+${ch.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}`)),
+      FACES.map(([, v]) => {
+        const fam = primaryFamily(v);
+        if (!status[v]) return h('td', { class: 'lib-val' }, 'font not loaded');
+        const ok = has(fam, ch);
+        if (!ok) missing.push(`${fam} ${ch}`);
+        return h('td', { class: ok ? null : 'lib-miss' }, h('span', { style: { fontFamily: `var(${v})` } }, ch), ' ', ok ? 'yes' : 'missing: falls back');
+      }))));
+    table.dataset.glyphs = Object.values(status).every(Boolean) ? (missing.length ? `missing: ${missing.join(', ')}` : 'all present') : 'fonts not loaded';
+  };
+  afterMount.push(run);
+  return h('figure', { class: 'lib-glyph-fig', id: 'glyphs' },
+    h('figcaption', { class: 'lib-doc' }, 'Characters the site uses beyond plain ASCII. "Missing" means the browser draws that character from a fallback font.'),
+    h('div', { class: 'b-table-wrap' }, table));
+}
+
+function primaryFamily(v) {
+  return cssVar(v).split(',')[0].trim().replace(/^['"]|['"]$/g, '');
 }
 
 function spaceSection() {
