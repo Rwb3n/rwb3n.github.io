@@ -22,7 +22,11 @@ import { motion } from './prefs.js';
 
 const VOCAB = ['inbox', 'CRM', 'invoice', 'approval', 'spreadsheet', 'Monday report', 'PO', 'supplier', 'ERP', 'Slack', 'sign-off', 'reconcile', 'forecast', 'tender', 'CSV export', 'ticket', 'renewal', 're-key', 'shared drive', 'quote', 'chaser', 'dashboard', 'timesheet', 'contract'];
 
-const BOOT_MS = 1500;
+const BOOT_MS = 1000;
+// One thing at a time: the headline rises first (about 1.4 s, styles/main.css),
+// then the dots ripple out and the lens opens. Keep the whole sequence under
+// 5 s (WCAG 2.2.2): wait + boot + search legs + lock is about 4.5 s.
+const BOOT_WAIT = 1100;
 const FIX_MS = 950;
 const PING_SPEED = 1500; // px/s
 
@@ -56,7 +60,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
   let raf = 0, running = false, visible = true, paused = false;
 
   let phase = motion() === 'full' ? 'boot' : 'live';
-  let bootT0 = performance.now();
+  let bootT0 = performance.now() + BOOT_WAIT;
   let r = motion() === 'full' ? 0 : 1, rv = 0;   // drawn radius as a fraction of R, and its velocity
   let rTarget = 1;                          // < 1 while the pointer is over something clickable
   let last = performance.now();
@@ -649,7 +653,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     while (picks.length < 4) picks.push({ x: f.x + (picks.length % 2 ? -1 : 1) * R * 0.5, y: f.y + R * 0.3 });
     const home = { x: f.x, y: f.y, fault: true };
     // One pass: a look somewhere else, then straight to the fault.
-    auto.legs = [{ ...picks[0], move: 900 }, { ...home, move: 1200 }];
+    auto.legs = [{ ...picks[0], move: 600 }, { ...home, move: 900 }];
     // Re-planned on resize and when fonts land: keep the demonstration's clock.
     if (!auto.t0) { auto.i = 0; auto.t0 = performance.now(); auto.from = { x: lens.x, y: lens.y }; }
   }
