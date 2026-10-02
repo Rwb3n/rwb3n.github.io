@@ -7,8 +7,22 @@
 
 import { h, s, reducedMotion } from './dom.js';
 
-const CH = 6.6;      // Geist Mono advance at 11px
-const CH_SM = 5.75;  // … at 9.5px
+// Character width of the mono face (--font-mono) at 11px and 9.5px. Measured,
+// not assumed, so the diagrams fit whatever mono font the tokens name. Until
+// the web font arrives this measures the fallback; diagrams redraw on arrival.
+let CH = 6.6, CH_SM = 5.75, measuredWith = '';
+function measureMono() {
+  const fonts = document.fonts;
+  const state = fonts ? `${fonts.status}:${fonts.size}` : 'none';
+  if (state === measuredWith) return;
+  measuredWith = state;
+  const family = getComputedStyle(document.documentElement).getPropertyValue('--font-mono').trim();
+  const ctx = document.createElement('canvas').getContext('2d');
+  if (!ctx || !family) return;
+  ctx.font = `400 11px ${family}`;
+  const w = ctx.measureText('0123456789abcdefghij').width / 20;
+  if (w > 0) { CH = w; CH_SM = w * (9.5 / 11); }
+}
 const PAD_X = 14;
 const NODE_H = 34;
 const NODE_H_SUB = 48;
@@ -30,8 +44,9 @@ export function renderFlow(block) {
   let lastKey = '';
 
   const draw = (width) => {
+    measureMono();
     const plan = layout(block, width);
-    const key = plan.kind + ':' + Math.round(plan.width);
+    const key = plan.kind + ':' + Math.round(plan.width) + ':' + CH.toFixed(2);
     if (key === lastKey) return;
     lastKey = key;
     canvas.replaceChildren(paint(block, plan, aria));
@@ -70,6 +85,8 @@ export function renderFlow(block) {
     draw(entry.contentRect.width);
   });
   ro.observe(canvas);
+  // The mono web font may arrive after the first draw: measure again and redraw.
+  document.fonts?.ready.then(() => { if (canvas.isConnected) draw(canvas.getBoundingClientRect().width); });
   wrap.drawIn = () => {
     wanted = true;
     if (canvas.firstChild) settle();

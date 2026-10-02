@@ -5,10 +5,11 @@
    ========================================================================== */
 
 :root {
-  /* Type families */
-  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* Type families: Zodiak and Switzer (ITF Free Font License) and JetBrains
+     Mono (SIL OFL), all loaded from Fontshare (api.fontshare.com). */
+  --font-display: 'Zodiak', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-sans: 'Switzer', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   /* Type scale — a 1.25 minor-third ramp, fluid at the display end */
   --step--2: 0.6875rem;   /* 11px  micro labels */
