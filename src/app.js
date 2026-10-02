@@ -3,9 +3,8 @@
 import { h, wait, reducedMotion, motionOff } from './dom.js';
 import { copy, config } from './copy.js';
 import { renderBlock } from './blocks.js';
-import { turnShell, chips, onePage } from './layouts.js';
+import { turnShell, chips, onePage, createRail } from './layouts.js';
 import { splitWords } from './type.js';
-import { createMap } from './map.js';
 import { sfx } from './sound.js';
 import * as E from './engine.js';
 
@@ -22,10 +21,6 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     landing: $('[data-landing]'),
     session: $('[data-session]'),
     log: $('[data-log]'),
-    trail: $('[data-trail]'),
-    depth: $('[data-depth]'),
-    depthLabel: $('[data-depth-label]'),
-    brief: $('[data-brief]'),
     ask: $('[data-ask]'),
     input: $('[data-ask-input]'),
     entry: $('[data-entry]'),
@@ -39,37 +34,21 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
   let current = 0;    // index of the turn in view
   let generation = 0; // bumps on reset, so in-flight answers stop writing
 
-  // Map ------------------------------------------------------------------------
-  const map = createMap(content, { onPick: (id) => { setMapOpen(false); navigate(id, null, { focus: true }); } });
-  const mapCount = h('p', { class: 'map-count' });
-  const total = Object.keys(content.nodes).length;
-  el.depth.closest('.rail-block').before(
-    h('div', { class: 'rail-block rail-map', id: 'rail-map' }, h('h2', { class: 'rail-heading' }, 'Map'), map.el, mapCount),
-  );
-  // On narrow screens the rail is a strip; the map opens from a button at its end.
-  const railEl = el.trail.closest('.rail');
-  const mapToggle = h('button', { class: 'rail-map-toggle', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'rail-map' });
-  const setMapOpen = (open) => {
-    railEl.classList.toggle('is-map-open', open);
-    mapToggle.setAttribute('aria-expanded', String(open));
-  };
-  mapToggle.addEventListener('click', (e) => { e.stopPropagation(); setMapOpen(!railEl.classList.contains('is-map-open')); });
-  document.addEventListener('click', (e) => { if (!e.target.closest?.('.rail-map, .rail-map-toggle')) setMapOpen(false); });
-  el.trail.after(mapToggle);
-  const countMap = () => {
-    const seen = new Set(map.route).size;
-    mapCount.textContent = `${seen} of ${total} topics read`;
-    mapToggle.textContent = `Map: ${seen} of ${total} read`;
-  };
-  countMap();
+  // Side column (trail, depth and brief are filled in from it below) ---------------
+  const rail = createRail(content, {
+    onPick: (id) => navigate(id, null, { focus: true }),
+    onBrief: () => navigate('_show_brief', null, { focus: true }),
+    onAll: () => showAll(),
+  });
+  $('[data-rail]').replaceWith(rail.el);
+  Object.assign(el, { trail: rail.trail, depth: rail.depth, depthLabel: rail.depthLabel, brief: rail.brief });
+  const { map } = rail;
+  const countMap = rail.count;
 
   el.input.placeholder = copy.ui.placeholder;
 
   // Features switched in content/site.json.
-  if (!config.features.map) { el.trail.closest('.rail').querySelector('.rail-map').hidden = true; mapToggle.hidden = true; }
-  if (!config.features.depthMeter) el.depth.closest('.rail-block').hidden = true;
   if (config.features.freeText === false) el.ask.hidden = true;
-  el.brief.closest('.rail-block').append(h('a', { class: 'rail-mail', href: '#/all', onclick: (e) => { e.preventDefault(); showAll(); } }, copy.ui.allLink));
 
   // Chips without a label use the title of the topic they open, so a button
   // always says where it goes.
@@ -442,31 +421,12 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
   }
 
   function updateRail() {
-    el.trail.replaceChildren(
-      ...turns.map((t) =>
-        h('li', { class: 'trail-item' },
-          h('button', { class: 'trail-link', type: 'button', onclick: () => scrollToTurn(t.el) }, t.label),
-        ),
-      ),
-    );
-    markCurrent();
+    rail.setTrail(turns.map((t) => t.label), current, (i) => scrollToTurn(turns[i].el));
     const level = E.gravityLevel(session);
-    el.depth.dataset.level = String(turns.length ? level : -1);
-    el.depthLabel.textContent = copy.depth[turns.length ? level : 0];
+    rail.setDepth(turns.length ? level : -1);
   }
 
-  function markCurrent() {
-    const links = el.trail.querySelectorAll('.trail-link');
-    links.forEach((b, i) => (i === current ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current')));
-    // On narrow screens the trail is a horizontal strip: keep the marker in view
-    // by scrolling the strip itself, never the page.
-    const strip = el.trail;
-    const cur = links[current];
-    if (strip && cur && strip.scrollWidth > strip.clientWidth) {
-      const left = cur.offsetLeft - strip.clientWidth / 2 + cur.offsetWidth / 2;
-      strip.scrollTo({ left: Math.max(0, left), behavior: reducedMotion() ? 'auto' : 'smooth' });
-    }
-  }
+  const markCurrent = () => rail.markCurrent(current);
 
   const turnObserver = 'IntersectionObserver' in window
     ? new IntersectionObserver((entries) => {
@@ -510,7 +470,6 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
 
   el.ask.addEventListener('submit', (e) => { e.preventDefault(); ask(el.input.value); });
   el.input.addEventListener('input', () => el.ask.classList.toggle('has-value', el.input.value.trim().length > 0));
-  el.brief.addEventListener('click', () => navigate('_show_brief', null, { focus: true }));
 
   document.addEventListener('keydown', (e) => {
     const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName);

@@ -14,7 +14,8 @@ src/
   showpieces.js   interactive blocks: compare (before/after), estimate
   catalog.js      component catalogue: every block's props, example, validator
   library.js      the /components/ page
-  layouts.js      page layouts: conversation turn, next topics, one-page view
+  layouts.js      page layouts: side column, conversation turn, next topics, one-page view
+  landing.js      the landing's movement: rising words, lens, x-ray (main.js and the library)
   flow.js         SVG flow diagrams
   lens.js         landing canvas
   copy.js         interface text (defaults; site.json overrides)

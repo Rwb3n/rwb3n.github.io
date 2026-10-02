@@ -138,12 +138,16 @@ fan-out), `section` (plain, raised, accent), `badge` (default, active) and
 catalogue, and the library shows every variant. `npm test` fails if the
 content uses a look the library does not show.
 
-Pages are assembled by `src/layouts.js`: the conversation turn, "Next
-topics" and the one-page view. The site and the library both call it, so the
-library's "Page layouts" section is the real thing, drawn with fixture
-topics. A browser test (`tests/visual/site.spec.js`) checks that every class
-used on `/#/all` and in topic answers also appears on `/components/`. The
-side column and the landing are not covered.
+Pages are assembled by shared code, so the library's "Page layouts" section
+is the real thing:
+- `src/layouts.js`: the side column (`createRail`), the conversation turn,
+  "Next topics" and the one-page view, drawn with fixture topics.
+- `src/static.js` + `src/landing.js`: the landing's markup (the same
+  generator that writes `index.html`) and its movement (words, lens, x-ray).
+
+A browser test (`tests/visual/site.spec.js`) checks that every class used on
+the landing, in the one-page view, in topic answers and in the side column
+also appears on `/components/`.
 
 `content/graphs/fixtures.json` is test content, loaded by `/components/`
 and the tests, never by the site. It uses the blocks no real topic needs yet

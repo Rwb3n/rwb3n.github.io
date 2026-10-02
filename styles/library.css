@@ -245,3 +245,10 @@
 .lib-stage.is-layout { padding: var(--space-6) var(--space-5); }
 .lib .turn:last-child { min-height: 0; }
 .lib-page { width: 100%; padding: 0; }
+
+/* Layouts: the session grid and the landing, inside a stage. */
+.lib-session { padding: 0; animation: none; }
+.lib .lib-session .rail { top: calc(var(--bar-h) + var(--space-4)); }
+.lib-stage.is-landing-demo { padding: 0; overflow: hidden; }
+.lib-stage.is-landing-demo .land-step { min-height: 0; padding: var(--space-8) 0; }
+.lib-stage.is-landing-demo .land-step:last-child { padding-bottom: var(--space-8); }
