@@ -86,7 +86,7 @@ Expo-out for arrivals, a cubic in-out for journeys, and a damped spring
 
 | Moment | What moves |
 | --- | --- |
-| Boot | The dot field ripples out from the word *find*; headline words rise through masks; the lens irises open; one sonar ping. |
+| Boot | One thing at a time. Headline words rise through masks (done by about 1.4 s); then the dot field ripples out from the word *find* and the lens irises open; one sonar ping. |
 | Search | The lens follows the pointer (autopilot when idle); dots bulge off its rim; click anywhere to ping. |
 | X-ray | Under the lens, the copy becomes outlines with measured cap height, x-height, baseline and descender. |
 | Found | Magnetic pull, spring kick, ticks lock to the diagonals, crosshair, annotation draws and types in. |
@@ -99,7 +99,7 @@ Motion has three settings, chosen in **Reading settings**:
 
 | Setting | What moves |
 | --- | --- |
-| Full (default) | Everything above, with one rule: anything that starts by itself is over within 5 seconds (WCAG 2.2.2 Pause, Stop, Hide). The boot plays, the lens makes one pass to the fault and locks, then the canvas stops drawing. After that, things move only when the visitor moves, scrolls or clicks. When the pointer rests, the lens glides back to the fault once. Measured: the last autonomous frame is at about 4 s. |
+| Full (default) | Everything above, with one rule: anything that starts by itself is over within 5 seconds (WCAG 2.2.2 Pause, Stop, Hide). The boot plays, the lens makes one pass to the fault and locks, then the canvas stops drawing. After that, things move only when the visitor moves, scrolls or clicks. When the pointer rests, the lens glides back to the fault once. Sequence: headline (0–1.4 s), dots and lens (1.1–2.1 s), one look elsewhere then the fault (found at about 3.1 s). Measured in Chromium at 390, 1440 and 1920px: the last autonomous frame is at 4.1–4.4 s. The budget is in `src/lens.js` (`BOOT_WAIT`, `BOOT_MS`, the two search legs). |
 | Calm | Nothing starts by itself. The lens is parked on the fault and moves only while the visitor moves it. Short fades and scrolls (≤ 300 ms). |
 | Off | Nothing moves. Scrolls jump. |
 
