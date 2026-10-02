@@ -10,6 +10,7 @@ const parts = [
   'colour', 'type', 'space', 'motion',
   ...primitives.map((p) => `prim-${slug(p.name)}`),
   ...Object.keys(blocks).map((t) => `block-${t}`),
+  'layout-turn', 'layout-page',
   'compose',
 ];
 

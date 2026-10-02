@@ -30,6 +30,41 @@
         { "type": "facts", "keys": ["firstStep", "cost", "reply", "location"] }
       ]}
     ],
-    "chips": []
+    "chips": [
+      { "target": "fixture_invoice_checks" },
+      { "target": "fixture_how_it_is_built" }
+    ]
+  },
+  {
+    "$": "A sub-topic: on the one-page view it sits under its parent, indented.",
+    "id": "fixture_invoice_checks",
+    "label": "Fixture: how invoices are checked",
+    "parent": "fixture_order_to_invoice",
+    "intents": [],
+    "tags": ["fixture"],
+    "blocks": [
+      { "type": "text", "content": "In this example, the system checks each invoice against the order before it is sent." },
+      { "type": "layers", "items": [
+        { "label": "Check 1", "title": "The customer exists", "detail": "This check is an example." },
+        { "label": "Check 2", "title": "The prices match the order" },
+        { "label": "Check 3", "title": "A person approves anything unusual" }
+      ]}
+    ],
+    "chips": [{ "target": "fixture_order_to_invoice" }]
+  },
+  {
+    "$": "A technical topic: marked for developers, and shown in the appendix of the one-page view.",
+    "id": "fixture_how_it_is_built",
+    "label": "Fixture: how it is built",
+    "parent": null,
+    "audience": "technical",
+    "intents": [],
+    "tags": ["fixture"],
+    "blocks": [
+      { "type": "text", "content": "This example system has three parts. Each part runs on a timetable." },
+      { "type": "table", "headers": ["Part", "Runs", "Time"], "rows": [["Read orders", "Every hour", "2 min"], ["Check invoices", "Every hour", "1 min"], ["Send invoices", "Every day", "5 min"]] },
+      { "type": "code", "language": "timetable", "content": "every hour   read orders, check invoices\nevery day    send invoices" }
+    ],
+    "chips": [{ "target": "fixture_order_to_invoice" }]
   }
 ]

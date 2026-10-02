@@ -109,6 +109,8 @@ export const blocks = {
     doc: 'A status line. `active` adds a pulse (runs twice, then stops).',
     props: { status: str('The text.', true), variant: oneOf(['default', 'active'], 'Default is quiet; active is live state.') },
     example: { type: 'badge', status: 'Taking new work', variant: 'active' },
+    variantKey: (b) => b.variant || 'default',
+    variants: [{ name: 'Default', example: { type: 'badge', status: 'Based in London, UK', variant: 'default' } }],
   },
   grid: {
     category: 'structure',
@@ -126,6 +128,13 @@ export const blocks = {
       { title: 'Project B', status: 'Research', description: 'An example project that is still being tested.', target: 'projects' },
       { title: 'Project C', status: 'In daily use', description: 'An example tool used every day.', target: 'projects' },
     ] },
+    variantKey: (b) => `cols-${b.items.length % 3 === 0 ? 3 : 2}`,
+    variants: [{ name: 'Two columns', note: 'Any number of cards that is not a multiple of three.', example: { type: 'grid', items: [
+      { title: 'Problem A', description: 'An example problem, in one sentence.', target: 'signals' },
+      { title: 'Problem B', description: 'Another example problem.', target: 'signals' },
+      { title: 'Problem C', description: 'A third example problem.', target: 'signals' },
+      { title: 'Problem D', description: '“A description that starts with a quote mark is set in serif.”', target: 'signals' },
+    ] } }],
   },
   layers: {
     category: 'structure',
@@ -136,6 +145,12 @@ export const blocks = {
       { label: '2', title: 'A one-page summary', detail: 'Where time is lost, in writing.' },
       { label: '3', title: 'A fixed price', detail: 'Only if you want to go ahead.' },
     ] },
+    variantKey: (b) => (b.items.every((i) => /^\d+$/.test(i.label)) ? 'steps' : 'labels'),
+    variants: [{ name: 'Labels', note: 'Any label that is not a number: a stack, not steps. The first label is in the accent colour.', example: { type: 'layers', items: [
+      { label: 'Layer 2', title: 'Rules for decisions', detail: 'Example only.' },
+      { label: 'Layer 1', title: 'Core services' },
+      { label: 'Layer 0', title: 'Outside services' },
+    ] } }],
   },
   timeline: {
     category: 'structure',
@@ -171,6 +186,11 @@ export const blocks = {
       { type: 'text', content: 'A section groups blocks under one heading. Any block can go inside, including another section.' },
       { type: 'metricRow', items: [{ value: '12', label: 'hours a week' }, { value: '3', label: 'systems' }] },
     ] },
+    variantKey: (b) => b.tone || 'plain',
+    variants: [
+      { name: 'Plain', example: { type: 'section', title: 'A plain section', blocks: [{ type: 'text', content: 'No panel and no rule. The heading alone groups the blocks.' }] } },
+      { name: 'Accent', example: { type: 'section', kicker: 'The thing that matters', title: 'An accent section', tone: 'accent', blocks: [{ type: 'text', content: 'A signal rule on the left. Use it once per topic at most.' }] } },
+    ],
   },
 
   // Diagrams --------------------------------------------------------------------
@@ -188,6 +208,16 @@ export const blocks = {
       nodes: [{ id: 'a', label: 'Order arrives' }, { id: 'b', label: 'Checked', sublabel: 'by the system', variant: 'accent' }, { id: 'c', label: 'Approved' }, { id: 'd', label: 'Invoiced' }],
       edges: [{ from: 'a', to: 'b' }, { from: 'b', to: 'c', label: 'flags' }, { from: 'c', to: 'd' }],
       loop: { from: 'd', to: 'a', label: 'next order' } },
+    variantKey: (b) => b.layout || 'horizontal',
+    variants: [
+      { name: 'Vertical', note: 'Boxes stacked top to bottom. Horizontal flows also fold to this when they do not fit.', example: { type: 'flow', layout: 'vertical',
+        nodes: [{ id: 'w', label: 'Watch' }, { id: 'r', label: 'Record' }, { id: 'c', label: 'Check results', variant: 'accent' }],
+        edges: [{ from: 'w', to: 'r', label: 'events' }, { from: 'r', to: 'c', label: 'decisions' }],
+        loop: { from: 'c', to: 'w', label: 'feedback' } } },
+      { name: 'Fan-out', note: 'The first box points to every other box. Folds to a trunk when it does not fit.', example: { type: 'flow', layout: 'fanout', title: 'Example areas',
+        nodes: [{ id: 'core', label: 'Core', variant: 'accent' }, { id: 'a', label: 'Data' }, { id: 'b', label: 'Operations' }, { id: 'c', label: 'Sales', variant: 'muted' }],
+        edges: [{ from: 'core', to: 'a' }, { from: 'core', to: 'b' }, { from: 'core', to: 'c', label: 'later' }] } },
+    ],
   },
 
   // Interactive ---------------------------------------------------------------
@@ -246,6 +276,9 @@ export const blocks = {
     doc: 'One fact from site.json. With no value it shows the "missing" sentence, with a rule; with neither it renders nothing.',
     props: { key: str('A key of site.json → facts.', true), label: { type: 'boolean', doc: 'Show the label. Default true.' } },
     example: { type: 'fact', key: 'reply' },
+    // Needs the site's facts: a fact with no value shows its "missing" sentence.
+    variantKey: (b, facts = {}) => (facts[b.key]?.value != null ? 'value' : 'missing'),
+    variants: [{ name: 'Not published', note: 'The fact has no value yet, so its "missing" sentence is shown, with a rule.', example: { type: 'fact', key: 'cost' } }],
   },
   facts: {
     category: 'facts',
@@ -289,6 +322,36 @@ export const primitives = [
   { name: 'Ask bar', doc: 'The free-text input. Fixed to the bottom of the real page; shown here in place.', html:
     '<form class="ask is-static" onsubmit="return false" aria-label="Example ask bar">\n  <label class="ask-prompt" for="ex-ask">Ask</label>\n  <input class="ask-input" id="ex-ask" type="text" placeholder="Type a question" />\n  <kbd class="ask-hint" aria-hidden="true">/</kbd>\n  <button class="ask-send" type="submit" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg></button>\n</form>' },
 ];
+
+// Variants ----------------------------------------------------------------------
+// A block type with `variantKey(block, facts)` has looks that differ by props
+// (a layout, a tone, a column count). Each look the content uses must be shown
+// by the example or one of `variants` (checked by tests/catalog.test.js).
+
+export function variantsOf(type) {
+  const spec = blocks[type];
+  return [{ name: 'Default', example: spec.example }, ...(spec.variants || [])];
+}
+
+export function shownVariants(type, facts) {
+  const spec = blocks[type];
+  if (!spec.variantKey) return [];
+  return [...new Set(variantsOf(type).map((v) => spec.variantKey(v.example, facts)))];
+}
+
+// Every variant key used in the content: { type: { key: [nodeId, …] } }.
+export function usedVariants(nodes, facts) {
+  const out = {};
+  for (const n of nodes) {
+    for (const b of eachBlock(n.blocks)) {
+      const spec = blocks[b.type];
+      if (!spec?.variantKey) continue;
+      const k = spec.variantKey(b, facts);
+      ((out[b.type] ||= {})[k] ||= []).push(n.id);
+    }
+  }
+  return out;
+}
 
 // Validation --------------------------------------------------------------------
 

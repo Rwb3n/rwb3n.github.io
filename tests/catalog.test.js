@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { blocks, blockTypes, validateBlock, validateBlocks, usage, eachBlock } from '../src/catalog.js';
+import { blocks, blockTypes, validateBlock, validateBlocks, usage, eachBlock, variantsOf, shownVariants, usedVariants } from '../src/catalog.js';
 import { nodeStrings, lintStrings } from '../src/lint.js';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
@@ -22,8 +22,26 @@ test('every renderer has a catalogue entry, and every entry a renderer', () => {
   assert.deepEqual([...blockTypes].sort(), rendererKeys());
 });
 
-test('every catalogue example is valid', () => {
-  for (const [type, spec] of Object.entries(blocks)) assert.deepEqual(validateBlock(spec.example, type), [], type);
+test('every catalogue example and variant is valid', () => {
+  for (const type of blockTypes) for (const v of variantsOf(type)) assert.deepEqual(validateBlock(v.example, `${type}/${v.name}`), [], `${type}/${v.name}`);
+});
+
+test('every look the content uses is shown in the library', () => {
+  const used = usedVariants([...nodes, ...fixtures], site.facts);
+  const missing = [];
+  for (const [type, keys] of Object.entries(used)) {
+    const shown = new Set(shownVariants(type, site.facts));
+    for (const [k, ids] of Object.entries(keys)) if (!shown.has(k)) missing.push(`${type}: "${k}" (used in ${ids.join(', ')})`);
+  }
+  assert.deepEqual(missing, []);
+});
+
+test('variants of a type each show a different look', () => {
+  for (const type of blockTypes) {
+    if (!blocks[type].variantKey) continue;
+    const keys = variantsOf(type).map((v) => blocks[type].variantKey(v.example, site.facts));
+    assert.equal(new Set(keys).size, keys.length, `${type}: ${keys.join(', ')}`);
+  }
 });
 
 test('every block in every topic is valid against the catalogue', () => {

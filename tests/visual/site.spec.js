@@ -24,3 +24,32 @@ test('the one-page view shows every listed topic, and no stray text', async ({ p
   expect(invisible).toEqual([]);
   expect(errors).toEqual([]);
 });
+
+// Everything the site's pages are made of is shown in the component library:
+// every class used in the one-page view and in topic answers also appears on
+// /components. The side column and the landing are not covered.
+test('the component library covers every class used on /all and in topics', async ({ page }) => {
+  const classes = async (selector) => page.evaluate((sel) => {
+    const out = new Set();
+    for (const root of document.querySelectorAll(sel)) for (const el of [root, ...root.querySelectorAll('*')]) {
+      const c = typeof el.className === 'string' ? el.className : el.className?.baseVal || '';
+      c.split(/\s+/).filter(Boolean).forEach((x) => out.add(x));
+    }
+    return [...out];
+  }, selector);
+  const used = new Map();
+  await page.goto('/#/all');
+  await page.waitForSelector('.page-section');
+  for (const c of await classes('.page')) used.set(c, '/#/all');
+  for (const id of ['method', 'signals', 'process', 'callsheet_domains', 'callsheet_graduation', 'estimate']) {
+    await page.goto('about:blank');
+    await page.goto(`/#/${id}`);
+    await page.waitForSelector('.turn .chips', { timeout: 15000 });
+    for (const c of await classes('.turn')) if (!used.has(c)) used.set(c, `/#/${id}`);
+  }
+  await page.goto('/components/');
+  await page.waitForSelector('#layout-page .page-section');
+  const lib = new Set(await classes('.lib-main'));
+  const missing = [...used].filter(([c]) => !lib.has(c)).map(([c, where]) => `${c} (${where})`);
+  expect(missing).toEqual([]);
+});
