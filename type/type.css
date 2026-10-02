@@ -42,46 +42,55 @@ a { color: inherit; }
 .t-node .t-arrow { color: var(--fg-3); }
 .t-legible { font-size: 1.4rem; color: var(--fg-2); }
 
-/* 1 · X-ray: thin surface, heavy underneath, seen through a lens. */
-.t-xray .t-stage { position: relative; --x: 30%; --y: 30%; --r: clamp(3.5rem, 9vw, 7.5rem); cursor: crosshair; }
-.t-xray .t-display { max-width: 26ch; font-size: clamp(1.9rem, 0.6rem + 4.6vw, 5.8rem); line-height: 1.04; }
-.t-xray .t-display em { font-style: normal; color: inherit; letter-spacing: inherit; }
-.t-xray .t-under { position: absolute; inset: 0; margin: 0; font-weight: 800; color: var(--fg); background: var(--bg); clip-path: circle(var(--r) at var(--x) var(--y)); pointer-events: none; }
-.t-xray .t-under em { color: var(--accent); font-weight: 800; }
-.t-xray .t-ring { position: absolute; left: var(--x); top: var(--y); width: calc(var(--r) * 2); height: calc(var(--r) * 2); translate: -50% -50%; border: 1px solid var(--accent-line); border-radius: 50%; pointer-events: none; }
-.t-xray .t-ring::after { content: ''; position: absolute; left: 50%; top: 100%; width: 1px; height: 1.6rem; background: var(--accent-line); }
-.t-xray .t-lede, .t-xray .t-q { font-weight: 300; letter-spacing: -0.04em; }
-.t-xray .t-lede { font-size: clamp(1.25rem, 0.9rem + 1.1vw, 1.8rem); line-height: 1.3; }
-.t-xray .t-micro, .t-xray .t-eyebrow { font-weight: 500; }
-.t-xray .t-figs b { font-size: min(clamp(2.2rem, 1.2rem + 3vw, 4.2rem), 9cqi); letter-spacing: -0.07em; }
-.t-xray .t-figs b::first-letter { color: var(--accent); }
-.t-xray .t-steps b { font-weight: 600; }
-
-/* 2 · Poster: fitted condensed capitals, then a quiet italic. */
-.t-poster .t-hero { margin-inline: calc(-1 * clamp(1rem, 4vw, 4rem)); padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 4rem) clamp(2rem, 5vw, 4rem); background: var(--fg); color: var(--bg); }
-.t-poster .t-eyebrow, .t-poster .t-cue { color: color-mix(in srgb, var(--bg) 70%, var(--fg)); }
-.t-poster .t-cue { border-color: currentColor; }
-.t-poster .t-display { max-width: none; font-size: 1rem; line-height: 0.86; letter-spacing: 0; text-transform: uppercase; text-wrap: nowrap; }
-.t-poster .t-line { display: block; width: max-content; white-space: nowrap; }
-.t-poster .t-display em { font-family: var(--t-display); font-weight: 400; font-style: normal; color: var(--accent); }
-.t-poster .t-then { display: block; margin-top: 0.5em; font: italic 300 clamp(1.6rem, 0.9rem + 2.6vw, 3.6rem)/1.08 var(--t-accent); letter-spacing: -0.02em; text-transform: none; text-wrap: balance; }
-.t-poster .t-q, .t-poster .t-lede { text-transform: uppercase; line-height: 0.92; }
-.t-poster .t-q { font-size: clamp(2.6rem, 1.6rem + 2.6vw, 4rem); }
-.t-poster .t-lede { font: italic 300 clamp(1.5rem, 1rem + 1.4vw, 2.2rem)/1.2 var(--t-accent); text-transform: none; letter-spacing: -0.015em; }
-.t-poster .t-figs { border-top-width: 6px; border-top-color: var(--fg); }
-.t-poster .t-figs b { font-size: min(clamp(3.4rem, 2rem + 4.6vw, 6rem), 9cqi); letter-spacing: 0; line-height: 0.9; }
-.t-poster .t-btn { border-radius: 0; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
-.t-poster .t-callout { border-left-width: 6px; }
-
-/* 3 · Theatre: one tall face, weight as the only emphasis. */
-.t-theatre .t-display { max-width: 15ch; font-size: clamp(3.2rem, 1rem + 7.6vw, 9rem); line-height: 0.9; }
-.t-theatre .t-display em { font-style: normal; font-family: var(--t-display); font-weight: 700; letter-spacing: var(--t-track); }
-.t-theatre .t-lede { font-size: clamp(2rem, 1rem + 2.6vw, 3.4rem); line-height: 1; }
-.t-theatre .t-q { font-weight: 600; font-size: clamp(2.8rem, 1.4rem + 2.6vw, 4.2rem); line-height: 0.95; }
-.t-theatre .t-body { font-size: 1.15rem; line-height: 1.62; }
-.t-theatre .t-body::first-letter { float: left; margin: 0.06em 0.08em 0 0; font: 700 3.6em/0.8 var(--t-display); color: var(--accent); }
-.t-theatre .t-steps b { font-weight: 500; }
-.t-theatre .t-figs b { font-size: min(clamp(3.6rem, 2rem + 5vw, 6.6rem), 9cqi); letter-spacing: -0.01em; line-height: 0.85; }
-.t-theatre .t-callout { font-style: normal; font-size: 2.6rem; line-height: 1; border: 0; padding: 0; }
-.t-theatre .t-callout::before { content: ''; display: block; width: 3rem; height: 3px; margin-bottom: 1rem; background: var(--accent); }
 .t-missing { font: 400 12px/1.4 var(--t-mono); color: var(--accent); }
+
+/* Shared by the Supreme boards: labels in the lettering face, caps and tracked. */
+.t-solo .t-micro, .t-solo .t-eyebrow, .t-writer .t-micro, .t-writer .t-eyebrow { font-family: var(--t-text); font-weight: 600; font-size: 11.5px; letter-spacing: 0.16em; }
+
+/* 1 · Supreme alone */
+.t-solo .t-display { max-width: 17ch; font-size: clamp(2.8rem, 0.8rem + 6.6vw, 8rem); line-height: 0.9; }
+.t-solo .t-display em { font-style: italic; letter-spacing: -0.05em; }
+.t-solo .t-lede { font-weight: 300; font-size: clamp(1.6rem, 1rem + 1.6vw, 2.4rem); line-height: 1.12; }
+.t-solo .t-q { font-weight: 750; }
+.t-solo .t-figs { border-top: 0; }
+.t-solo .t-figs b { font-size: min(clamp(3.4rem, 2rem + 4vw, 6rem), 9cqi); letter-spacing: -0.06em; line-height: 0.9; }
+.t-solo .t-figs > div + div { border-left: 0; }
+.t-solo .t-callout { border: 0; padding: 0; font-family: var(--t-text); font-weight: 200; font-size: 2.2rem; line-height: 1.08; letter-spacing: -0.035em; }
+.t-solo .t-btn { border-radius: 0; font-weight: 650; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; }
+.t-solo .t-steps b { font-weight: 650; }
+
+/* 2 · Engineer and writer */
+.t-writer .t-display { max-width: 15ch; font-size: clamp(2.6rem, 0.9rem + 5.4vw, 6.8rem); line-height: 0.92; }
+.t-writer .t-display em { font-style: normal; color: var(--accent); letter-spacing: inherit; }
+.t-writer .t-then { display: block; max-width: 22ch; margin-top: 0.35em; font: italic 300 0.52em/1.12 var(--t-voice); letter-spacing: -0.015em; color: var(--fg-2); }
+.t-writer .t-lede { font: italic 300 clamp(1.5rem, 1rem + 1.4vw, 2.2rem)/1.2 var(--t-voice); letter-spacing: -0.01em; }
+.t-writer .t-q { font-weight: 800; }
+.t-writer .t-figs b { font-size: min(clamp(2.6rem, 1.6rem + 3vw, 4.6rem), 9cqi); letter-spacing: -0.05em; }
+.t-writer .t-callout { font-size: 1.9rem; }
+.t-writer .t-steps b { font-weight: 700; }
+.t-writer .t-btn { font-weight: 700; }
+
+/* 3 · Drawing office */
+.t-drawing .t-hero { position: relative; padding: clamp(1.5rem, 4vw, 3.5rem); border: 1px solid var(--fg-3);
+  background-image: linear-gradient(color-mix(in srgb, var(--line) 70%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--line) 70%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px; background-position: -1px -1px; }
+.t-drawing .t-display { max-width: 19ch; font-size: clamp(2.5rem, 0.8rem + 5vw, 6.2rem); line-height: 0.96; }
+.t-drawing .t-display em { position: relative; font-style: normal; color: inherit; letter-spacing: inherit; text-decoration: underline 0.06em var(--accent); text-underline-offset: 0.12em; }
+.t-mark { display: inline-grid; place-items: center; width: 1.7em; height: 1.7em; border: 1px solid var(--accent); border-radius: 50%; font: 500 11px/1 var(--t-mono); color: var(--accent); letter-spacing: 0; vertical-align: middle; }
+.t-display .t-mark { position: absolute; top: -0.05em; right: -0.42em; width: 2em; height: 2em; font-size: max(10px, 0.12em); background: var(--bg); }
+.t-note { display: flex; gap: 0.6rem; align-items: center; margin-top: 1.6rem; font: 400 12px/1.4 var(--t-mono); color: var(--fg-2); }
+.t-drawing .t-cue { margin-top: 1rem; }
+.t-block { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 2rem; border: 1px solid var(--fg-3); background: var(--bg); font-family: var(--t-mono); }
+.t-block div { padding: 0.45rem 0.6rem; border-right: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); }
+.t-block dt { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.t-block dd { margin-top: 0.2rem; font-size: 11.5px; }
+@media (min-width: 60rem) { .t-block { position: absolute; right: -1px; bottom: -1px; width: 22rem; margin: 0; } .t-drawing .t-hero { padding-bottom: 6rem; } }
+.t-drawing .t-lede { font-weight: 300; }
+.t-drawing .t-q { font-weight: 600; }
+.t-drawing .t-num { border-radius: 0; }
+.t-drawing .t-figs { border-top: 0; }
+.t-drawing .t-figs > div::before { content: ''; display: block; height: 9px; margin-bottom: 0.7rem; border-inline: 1px solid var(--fg-3); background: linear-gradient(var(--fg-3), var(--fg-3)) center / 100% 1px no-repeat; }
+.t-drawing .t-figs > div + div { border-left: 0; }
+.t-drawing .t-figs b { font-size: min(clamp(2.6rem, 1.6rem + 3vw, 4.6rem), 9cqi); }
+.t-drawing .t-callout { font-family: var(--t-text); font-style: normal; font-weight: 300; border-left-style: dashed; }
+.t-drawing .t-btn { border-radius: 0; }
