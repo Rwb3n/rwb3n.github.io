@@ -199,18 +199,31 @@ function typeSection() {
 const SITE_CHARS = '→↓·—–’‘“”£…−×©';
 const FACES = [['Display', '--font-display'], ['Text', '--font-sans'], ['System', '--font-mono']];
 
+// Candidate faces to compare, from Fontshare: ?fonts=slug:Family,slug:Family
+// e.g. /components/?fonts=satoshi:Satoshi,general-sans:General%20Sans#glyphs
+const CANDIDATES = (new URLSearchParams(location.search).get('fonts') || '')
+  .split(',').map((x) => x.split(':')).filter(([slug, fam]) => /^[a-z0-9-]+$/.test(slug || '') && fam)
+  .map(([slug, fam]) => {
+    document.head.append(h('link', { rel: 'stylesheet', href: `https://api.fontshare.com/v2/css?f[]=${slug}@400&display=swap` }));
+    return [`Candidate`, null, fam.trim()];
+  });
+
 function glyphCoverage() {
   const body = h('tbody');
   const table = h('table', { class: 'b-table lib-glyphs', 'data-glyphs': 'pending' },
-    h('thead', null, h('tr', null, h('th', { scope: 'col' }, 'Character'), FACES.map(([name, v]) => h('th', { scope: 'col' }, name, h('br'), h('span', { class: 'lib-val' }, primaryFamily(v)))))),
+    h('thead', null, h('tr', null, h('th', { scope: 'col' }, 'Character'), [...FACES, ...CANDIDATES].map(([name, v, fam]) => h('th', { scope: 'col' }, name, h('br'), h('span', { class: 'lib-val' }, fam || primaryFamily(v)))))),
     body);
   const run = async () => {
     const ctx = document.createElement('canvas').getContext('2d');
     const status = {};
-    for (const [, v] of FACES) {
-      const fam = primaryFamily(v);
+    const all = [...FACES, ...CANDIDATES];
+    const famOf = ([, v, fam]) => fam || primaryFamily(v);
+    // Candidate stylesheets arrive after this runs; wait for their faces to register.
+    if (CANDIDATES.length) await new Promise((r) => setTimeout(r, 1500));
+    for (const f of all) {
+      const fam = famOf(f);
       try { await document.fonts.load(`64px "${fam}"`, SITE_CHARS); } catch { /* blocked or offline */ }
-      status[v] = [...document.fonts].some((f) => f.family.replace(/"/g, '') === fam && f.status === 'loaded');
+      status[fam] = [...document.fonts].some((x) => x.family.replace(/"/g, '') === fam && x.status === 'loaded');
     }
     const has = (fam, ch) => {
       const w = (fb) => { ctx.font = `64px "${fam}", ${fb}`; return ctx.measureText(ch).width; };
@@ -220,14 +233,14 @@ function glyphCoverage() {
     const missing = [];
     body.replaceChildren(...[...SITE_CHARS].map((ch) => h('tr', null,
       h('td', null, h('span', { class: 'lib-glyph' }, ch), ' ', h('span', { class: 'lib-val' }, `U+${ch.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}`)),
-      FACES.map(([, v]) => {
-        const fam = primaryFamily(v);
-        if (!status[v]) return h('td', { class: 'lib-val' }, 'font not loaded');
+      all.map((f) => {
+        const fam = famOf(f);
+        if (!status[fam]) return h('td', { class: 'lib-val' }, 'font not loaded');
         const ok = has(fam, ch);
         if (!ok) missing.push(`${fam} ${ch}`);
-        return h('td', { class: ok ? null : 'lib-miss' }, h('span', { style: { fontFamily: `var(${v})` } }, ch), ' ', ok ? 'yes' : 'missing: falls back');
+        return h('td', { class: ok ? null : 'lib-miss' }, h('span', { style: { fontFamily: `"${fam}", serif` } }, ch), ' ', ok ? 'yes' : 'missing');
       }))));
-    table.dataset.glyphs = Object.values(status).every(Boolean) ? (missing.length ? `missing: ${missing.join(', ')}` : 'all present') : 'fonts not loaded';
+    table.dataset.glyphs = Object.values(status).every(Boolean) ? (missing.length ? `missing: ${missing.join(', ')}` : 'all present') : `not loaded: ${Object.keys(status).filter((k) => !status[k]).join(', ')}`;
   };
   afterMount.push(run);
   return h('figure', { class: 'lib-glyph-fig', id: 'glyphs' },
