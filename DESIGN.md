@@ -53,19 +53,25 @@ every screen size.
 
 ## System
 
-**Type.** Three voices, each with one job.
+**Type.** Two voices and a system. The claim is built; the promise is spoken.
 
 | Role | Face | Used for |
 | --- | --- | --- |
-| Display | Zodiak (+ italic) | headline, questions, callouts, big numbers |
-| Text | Archivo | body copy, chips, anything read at length |
-| System | JetBrains Mono | labels, indices, diagram nodes, the command bar |
+| Display and text | Supreme (variable, 100–800) | headline and headings at 750–800, tight; body copy, chips and labels at regular and 600 |
+| Voice | Sentient light italic | the promise under the headline, the ledes on the landing, callouts and quotes |
+| System | Azeret Mono | indices, diagram nodes, code, table figures, the command bar |
 
-All three load from Fontshare. Each face must contain every character it is
-used for; `/components/#glyphs` checks this in the browser, and
-`?fonts=slug:Family` adds candidates to compare. Switzer was tried for text
-and dropped: it has no → or ↓, which the site uses 45 times. Zodiak has no
-arrows either, but no display text uses them.
+All three load from Fontshare; Supreme and Sentient are ITF Free Font License,
+so they can't live in this repository. The voice face appears only where a
+person is talking; everything else is Supreme. Emphasis inside a headline is
+colour, never italic.
+
+Supreme and Sentient have no → or ↓. Azeret Mono is second in both stacks, so
+the browser draws the arrows from it, wherever they appear, with no markup.
+`/components/#glyphs` checks each face in the browser, and `?fonts=slug:Family`
+adds candidates to compare. Supreme has no fixed-width figures, so columns of
+numbers belong in the mono face. Its capital I and lowercase l are close; IDs
+and codes go in mono too. The directions that led here are on `/type/`.
 
 Minor-third ramp (`--step--2` … `--step-4`), fluid at the display end, and a
 hero step (`--step-display`) that runs from 48px to 124px.

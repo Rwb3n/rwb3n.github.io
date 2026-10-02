@@ -82,7 +82,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
   function readColors() {
     const cs = getComputedStyle(document.documentElement);
     const v = (n) => cs.getPropertyValue(n).trim();
-    colors = { fg: v('--fg'), fg2: v('--fg-2'), fg3: v('--fg-3'), line: v('--line-2'), accent: v('--accent'), dot: v('--dot'), bg: v('--bg'), mono: v('--font-mono') || 'monospace', display: v('--font-display') || 'serif' };
+    colors = { fg: v('--fg'), fg2: v('--fg-2'), fg3: v('--fg-3'), line: v('--line-2'), accent: v('--accent'), dot: v('--dot'), bg: v('--bg'), mono: v('--font-mono') || 'monospace', voice: v('--font-voice') || 'serif' };
   }
 
   function resize() {
@@ -547,7 +547,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     ctx.fillRect(x1 + 12, y1 - 16, plateW, plateH);
     ctx.globalAlpha = 1;
     mark(x1 + 12, y1 - 16, plateW, plateH);
-    ctx.font = `italic 22px ${colors.display}`;
+    ctx.font = `italic 300 22px ${colors.voice}`;
     ctx.fillStyle = colors.accent;
     halo(typed(copy.lens.note || '', 0.28), x1 + 18, y1 + 6);
     ctx.font = `10px ${colors.mono}`;
