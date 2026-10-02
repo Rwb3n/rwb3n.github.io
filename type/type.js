@@ -6,15 +6,15 @@ const boards = [
   { id: 'current', name: 'Current', idea: 'What is live now. Calm, safe, readable.',
     vars: { display: "'Zodiak'", dw: 400, accent: "'Zodiak'", aw: 400, text: "'Archivo'", mono: "'JetBrains Mono'", figures: "'Zodiak'", fw: 400, track: '-0.02em' },
     faces: 'Zodiak · Archivo · JetBrains Mono' },
-  { id: 'xray', name: '1 · X-ray', idea: 'The site is about looking under the surface, so the type does it. The headline is set hairline-thin; move the pointer over it and a lens shows the same words in heavy weight underneath. This only works because the face is monospaced: every weight has the same width, so the two layers line up letter for letter. The same trick could drive the real landing lens.',
-    vars: { display: "'Azeret Mono'", dw: 200, accent: "'Azeret Mono'", aw: 200, text: "'Switzer'", mono: "'Azeret Mono'", figures: "'Azeret Mono'", fw: 200, track: '-0.06em', quote: "'Erode'", qw: 300 },
-    faces: 'Azeret Mono variable 200 → 800 · Switzer · Erode italic', enhance: xray },
-  { id: 'poster', name: '2 · Poster', idea: 'Say it like a sign on a workshop wall. The claim in ultra-condensed capitals, each line pulled to the full width; then the promise underneath in a light, gentle italic. Loud and quiet in one breath.',
-    vars: { display: "'Tanker'", dw: 400, accent: "'Sentient'", aw: 300, text: "'Supreme'", mono: "'JetBrains Mono'", figures: "'Tanker'", fw: 400, track: '0', quote: "'Sentient'", qw: 300 },
-    faces: 'Tanker · Sentient light italic · Supreme · JetBrains Mono', enhance: poster },
-  { id: 'theatre', name: '3 · Theatre', idea: 'One tall, high-contrast face, and weight is the only emphasis: the words that matter step forward in heavy, the rest stay light. The text is a serif, so long reading feels like a letter rather than a product page.',
-    vars: { display: "'Melodrama'", dw: 300, accent: "'Melodrama'", aw: 700, text: "'Sentient'", mono: "'Azeret Mono'", figures: "'Melodrama'", fw: 700, track: '-0.01em', quote: "'Melodrama'", qw: 500 },
-    faces: 'Melodrama variable 300 / 700 · Sentient · Azeret Mono', enhance: theatre },
+  { id: 'solo', name: '1 · Supreme alone', idea: 'One family does everything. Supreme is lettering engineers have used for a century: straight sides, even strokes. Hierarchy comes only from weight, from hairline to extra bold, and from the slanted cut for the word that matters.',
+    vars: { display: "'Supreme'", dw: 150, accent: "'Supreme'", aw: 800, text: "'Supreme'", mono: "'JetBrains Mono'", figures: "'Supreme'", fw: 100, track: '-0.045em' },
+    faces: 'Supreme variable 100 → 800 + slanted · JetBrains Mono for code' },
+  { id: 'writer', name: '2 · Engineer and writer', idea: 'Two voices. The claim is built: Supreme, heavy and tight. The promise is spoken: a light italic serif, like a note in the margin. Text and labels stay in Supreme, so the serif only appears where a person is talking.',
+    vars: { display: "'Supreme'", dw: 800, accent: "'Supreme'", aw: 800, text: "'Supreme'", mono: "'Azeret Mono'", figures: "'Supreme'", fw: 800, track: '-0.05em', quote: "'Sentient'", qw: 300, voice: "'Sentient'" },
+    faces: 'Supreme 400 / 800 · Sentient light italic · Azeret Mono', enhance: writer },
+  { id: 'drawing', name: '3 · Drawing office', idea: 'The page as an engineering drawing: squared paper, a title block in the corner, the important word marked with a callout, figures given dimension lines. Supreme is the lettering; the notes are in a monospace, as a drafter would write them.',
+    vars: { display: "'Supreme'", dw: 250, accent: "'Supreme'", aw: 700, text: "'Supreme'", mono: "'Azeret Mono'", figures: "'Supreme'", fw: 300, track: '-0.04em' },
+    faces: 'Supreme 250 / 700 · Azeret Mono for notes', enhance: drawing },
 ];
 
 const HEAD = 'I <em>find</em> the work your team repeats by hand. Then I build a system that does it.';
@@ -49,49 +49,17 @@ const sample = `
     </section>
   </div>`;
 
-// X-ray: a heavy copy of the headline sits exactly under the thin one and shows
-// through a circular lens. Monospace keeps both layers on the same grid.
-function xray(board) {
-  const stage = board.querySelector('.t-stage');
-  const under = stage.querySelector('.t-display').cloneNode(true);
-  under.classList.add('t-under');
-  under.setAttribute('aria-hidden', 'true');
-  stage.append(under);
-  const ring = Object.assign(document.createElement('span'), { className: 't-ring' });
-  ring.setAttribute('aria-hidden', 'true');
-  stage.append(ring);
-  const set = (x, y) => { stage.style.setProperty('--x', `${x}px`); stage.style.setProperty('--y', `${y}px`); };
-  const park = () => {
-    const s = stage.getBoundingClientRect(), w = stage.querySelector('.t-display em').getBoundingClientRect();
-    set(w.left - s.left + w.width / 2, w.top - s.top + w.height / 2);
-  };
-  stage.addEventListener('pointermove', (e) => { const s = stage.getBoundingClientRect(); set(e.clientX - s.left, e.clientY - s.top); });
-  stage.addEventListener('pointerleave', park);
-  document.fonts.ready.then(park);
-  addEventListener('resize', park);
-  park();
+// Engineer and writer: the claim and the promise in two voices.
+function writer(board) {
+  board.querySelector('.t-display').innerHTML = 'I <em>find</em> the work your team repeats by hand. <span class="t-then">Then I build a system that does it.</span>';
 }
 
-// Poster: the claim in fixed lines, each scaled to fill the width.
-function poster(board) {
-  const h = board.querySelector('.t-display');
-  h.innerHTML = ['I <em>find</em> the work', 'your team repeats', 'by hand.'].map((l) => `<span class="t-line">${l}</span>`).join('')
-    + '<span class="t-then">Then I build a system that does it.</span>';
-  const fit = () => {
-    const w = h.clientWidth;
-    for (const l of h.querySelectorAll('.t-line')) {
-      l.style.fontSize = '100px';
-      l.style.fontSize = `${Math.floor((100 * w) / l.scrollWidth * 10) / 10}px`;
-    }
-  };
-  document.fonts.ready.then(fit);
-  addEventListener('resize', fit);
-  fit();
-}
-
-// Theatre: the words that matter step forward in weight.
-function theatre(board) {
-  board.querySelector('.t-display').innerHTML = 'I <em>find</em> the work your team repeats by hand. Then I <em>build a system</em> that does it.';
+// Drawing office: a title block in the corner and a callout on the key word.
+function drawing(board) {
+  const hero = board.querySelector('.t-hero');
+  hero.querySelector('.t-display em').insertAdjacentHTML('beforeend', '<span class="t-mark" aria-hidden="true">A</span>');
+  hero.querySelector('.t-cue').insertAdjacentHTML('beforebegin', '<p class="t-note"><span class="t-mark">A</span> The repeated work. Found in step 2, by watching how the work really happens.</p>');
+  hero.insertAdjacentHTML('beforeend', `<dl class="t-block">${[['Drawing', 'Business process automation'], ['Sheet', '1 of 5'], ['Place', 'London'], ['Scale', '1 : 1']].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>`);
 }
 
 const main = document.querySelector('[data-boards]');
