@@ -81,3 +81,19 @@ test('every diagram label fits inside its box', async ({ page }) => {
   expect(all.count + lib.count).toBeGreaterThan(40);
   expect([...all.bad, ...lib.bad]).toEqual([]);
 });
+
+// Scroll reveals must not hide content that has not been scrolled to yet:
+// full-page captures, previews and archives never scroll.
+test('nothing below the fold is hidden before scrolling, with full motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  for (const [url, sel] of [['/', '.land-step > *'], ['/#/all', '.page-heading, .page-body > *']]) {
+    await page.goto('about:blank');
+    await page.goto(url);
+    await page.waitForSelector(sel);
+    expect(await page.evaluate(() => document.documentElement.dataset.motion)).toBe('full');
+    const hidden = await page.evaluate((sel) => [...document.querySelectorAll(sel)]
+      .filter((e) => e.getBoundingClientRect().top > innerHeight && +getComputedStyle(e).opacity < 1)
+      .map((e) => e.className || e.tagName), sel);
+    expect(hidden, url).toEqual([]);
+  }
+});

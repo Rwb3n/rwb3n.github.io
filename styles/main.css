@@ -1649,7 +1649,7 @@ html:not([data-motion='full']) .cmp-thumb { transition: none; }
     /* Headings and single blocks only: a whole section can be thousands of
        pixels tall and would stay half-faded long after it is on screen. */
     html[data-motion='full'] :is(.page-heading, .page-body > *) {
-      animation: page-in linear both;
+      animation: page-in linear forwards;
       animation-timeline: view();
       animation-range: entry 0% entry 100%;
     }
@@ -1723,10 +1723,13 @@ html:not([data-motion='full']) .cmp-thumb { transition: none; }
 .is-landing .ask { transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out), visibility 0s linear 0s, border-color var(--dur-2); }
 .is-landing.is-hero .ask { transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out), visibility 0s linear var(--dur-2); }
 
-/* Each screen rises once, as it scrolls into view (only when the visitor scrolls). */
+/* Each screen rises once, as it scrolls into view (only when the visitor scrolls).
+   No backwards fill: before it enters, a screen keeps its normal, visible style.
+   It is below the fold then, so readers never see that; full-page captures and
+   anything else that does not scroll get the whole page. */
 @supports (animation-timeline: view()) {
   html[data-motion='full'] .land-step > * {
-    animation: rise linear both;
+    animation: rise linear forwards;
     animation-timeline: view();
     animation-range: entry 0% entry 100%;
   }
