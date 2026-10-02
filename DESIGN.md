@@ -39,6 +39,16 @@ in Full motion. If a link is chosen below the headline screen, the lens
 "fix" is skipped, because it would play off screen. Headings and text for
 the screens are in `site.json` → `landing.steps` and `landing.cue`.
 
+## Topics: room to read
+
+Inside a topic, paragraphs sit close together (24px), and anything that is
+not a paragraph (a diagram, numbers, a list, a table, the before/after) gets
+extra space above and below (56px from text), so each one reads as its own
+thing. "Next topics" sits clearly apart from the answer. Facts are shown as
+one list (`facts`), one per row at body size, not as separate paragraphs.
+The map in the side column is closed until "Map: N of 33 read" is chosen, on
+every screen size.
+
 ## System
 
 **Type.** Three voices, each with one job.
