@@ -548,8 +548,9 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
           h('h2', { class: 'micro' }, 'Contents'), toc(main),
           extra.length && h('h2', { class: 'micro' }, 'Technical appendix'), extra.length && toc(extra)),
       ),
-      main.map((id) => section(id, 2)),
-      extra.length && h('div', { class: 'page-appendix' }, h('h2', { class: 'page-appendix-title' }, 'Technical appendix'), extra.map((id) => section(id, 2))),
+      // replaceChildren does not flatten arrays or drop false: wrap lists in an element.
+      h('div', { class: 'page-main' }, main.map((id) => section(id, 2))),
+      ...(extra.length ? [h('div', { class: 'page-appendix' }, h('h2', { class: 'page-appendix-title' }, 'Technical appendix'), extra.map((id) => section(id, 2)))] : []),
       h('footer', { class: 'page-foot' },
         h('a', { class: 'btn btn-primary', href: `mailto:${site.email}` }, `Email ${site.email}`),
         h('button', { class: 'btn btn-ghost', type: 'button', onclick: () => reset() }, copy.ui.backToStart),
