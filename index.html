@@ -104,41 +104,58 @@
     <main id="main">
       <!-- Landing. Static markup: readable without JS and by crawlers; the script enhances it. -->
       <section class="landing" data-landing aria-labelledby="landing-title">
-        <canvas class="lens" data-lens aria-hidden="true"></canvas>
+        <div class="landing-hero" data-landing-hero>
+          <canvas class="lens" data-lens aria-hidden="true"></canvas>
 
-        <div class="landing-inner">
-          <!-- sync:landing -->
-          <div class="copy" data-copy>
-            <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Business process automation · London</p>
-            <h1 class="display" id="landing-title">
-              <span class="display-line">I <em class="is-accent">find</em> the work your team repeats by hand.</span>
-              <span class="display-line">Then I build a system that does it.</span>
-            </h1>
-            <p class="lede">For example: copying data between systems, chasing approvals by email, or making the same report every week. I work alone, from London.</p>
+          <div class="landing-inner">
+            <!-- sync:landing -->
+            <div class="copy" data-copy>
+              <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Business process automation · London</p>
+              <h1 class="display" id="landing-title">
+                <span class="display-line">I <em class="is-accent">find</em> the work your team repeats by hand.</span>
+                <span class="display-line">Then I build a system that does it.</span>
+              </h1>
+            </div>
+            <a class="land-cue" href="#land-examples">Below: examples, the first step, and where to start <span aria-hidden="true">↓</span></a>
+            <!-- /sync:landing -->
           </div>
-          <dl class="offer">
-            <div class="offer-item"><dt>First step</dt><dd>A free 30-minute call. Afterwards you get a one-page written summary of where time is lost. You keep it whether or not we work together.</dd></div>
-            <div class="offer-item"><dt>Cost</dt><dd>Prices are not published on this site yet. The first call is free. You can ask for a price by email.</dd></div>
-            <div class="offer-item"><dt>Reply time</dt><dd>The same day</dd></div>
-          </dl>
-          <nav class="entry" aria-label="Start here" data-entry>
-            <a class="entry-item" href="#/method" data-target="method"><span class="entry-index">01</span><span class="entry-label">What I do</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-            <a class="entry-item" href="#/signals" data-target="signals"><span class="entry-index">02</span><span class="entry-label">Problems I solve</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-            <a class="entry-item" href="#/proof" data-target="proof"><span class="entry-index">03</span><span class="entry-label">Proof from systems I run</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-            <a class="entry-item" href="#/process" data-target="process"><span class="entry-index">04</span><span class="entry-label">How we start</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-          </nav>
-          <div class="entry-more">
-            <a class="entry-tool" href="#/estimate" data-target="estimate"><span class="entry-tool-label">Work out what repeated work costs you</span><span class="entry-tool-note">Type three numbers. It takes about one minute.</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-            <p class="entry-all"><a href="#/all" data-all-link>Read everything on one page <span aria-hidden="true">→</span></a></p>
-          </div>
-          <!-- /sync:landing -->
+
+          <figure class="lens-caption" data-lens-caption aria-hidden="true">
+            <!-- sync:caption -->
+            <span class="lens-caption-text" data-lens-caption-text>Illustration: a business process drawn as a network. Move your pointer to look underneath it. Click to scan the whole picture.</span>
+            <!-- /sync:caption -->
+          </figure>
         </div>
 
-        <figure class="lens-caption" data-lens-caption aria-hidden="true">
-          <!-- sync:caption -->
-          <span class="lens-caption-text" data-lens-caption-text>Illustration: a business process drawn as a network. Move your pointer to look underneath it. Click to scan the whole picture.</span>
-          <!-- /sync:caption -->
-        </figure>
+        <div class="landing-steps">
+          <!-- sync:steps -->
+          <section class="land-step" id="land-examples" aria-labelledby="land-examples-h">
+            <h2 class="land-step-head" id="land-examples-h">What this looks like</h2>
+            <p class="lede">For example: copying data between systems, chasing approvals by email, or making the same report every week. I work alone, from London.</p>
+          </section>
+          <section class="land-step" id="land-offer" aria-labelledby="land-offer-h">
+            <h2 class="land-step-head" id="land-offer-h">Before we work together</h2>
+            <dl class="offer">
+              <div class="offer-item"><dt>First step</dt><dd>A free 30-minute call. Afterwards you get a one-page written summary of where time is lost. You keep it whether or not we work together.</dd></div>
+              <div class="offer-item"><dt>Cost</dt><dd>Prices are not published on this site yet. The first call is free. You can ask for a price by email.</dd></div>
+              <div class="offer-item"><dt>Reply time</dt><dd>The same day</dd></div>
+            </dl>
+          </section>
+          <section class="land-step" id="land-start" aria-labelledby="land-start-h">
+            <h2 class="land-step-head" id="land-start-h">Where to start</h2>
+            <nav class="entry" aria-label="Start here" data-entry>
+              <a class="entry-item" href="#/method" data-target="method"><span class="entry-index">01</span><span class="entry-label">What I do</span><span class="entry-arrow" aria-hidden="true">→</span></a>
+              <a class="entry-item" href="#/signals" data-target="signals"><span class="entry-index">02</span><span class="entry-label">Problems I solve</span><span class="entry-arrow" aria-hidden="true">→</span></a>
+              <a class="entry-item" href="#/proof" data-target="proof"><span class="entry-index">03</span><span class="entry-label">Proof from systems I run</span><span class="entry-arrow" aria-hidden="true">→</span></a>
+              <a class="entry-item" href="#/process" data-target="process"><span class="entry-index">04</span><span class="entry-label">How we start</span><span class="entry-arrow" aria-hidden="true">→</span></a>
+            </nav>
+            <div class="entry-more">
+              <a class="entry-tool" href="#/estimate" data-target="estimate"><span class="entry-tool-label">Work out what repeated work costs you</span><span class="entry-tool-note">Type three numbers. It takes about one minute.</span><span class="entry-arrow" aria-hidden="true">→</span></a>
+              <p class="entry-all"><a href="#/all" data-all-link>Read everything on one page <span aria-hidden="true">→</span></a></p>
+            </div>
+          </section>
+          <!-- /sync:steps -->
+        </div>
       </section>
 
       <!-- Session. Rendered by the script once a question is asked. -->

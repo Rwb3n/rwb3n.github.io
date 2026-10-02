@@ -871,7 +871,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
 
 const TAU = Math.PI * 2;
 const PERF = /[?&]perf\b/.test(location.search); // ?perf records frame times in window.__lensFrames
-const OBSTACLES = '.landing .eyebrow, .landing .display-line, .landing .lede, .landing .offer-item, .landing .entry-item, .landing .entry-all, .landing .entry-tool, .lens-caption, .ask';
+const OBSTACLES = '.landing .eyebrow, .landing .display-line, .landing .land-cue, .lens-caption';
 const TEXTY = '.eyebrow, .display-line, .lede';
 const union = (rs) => {
   const l = Math.min(...rs.map((r) => r.left)), tp = Math.min(...rs.map((r) => r.top));

@@ -275,15 +275,16 @@ main { flex: 1; display: flex; flex-direction: column; }
 .foot-link:hover { color: var(--accent); border-color: var(--accent); }
 
 /* Landing ---------------------------------------------------------------- */
-.landing {
+.landing { transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out); }
+/* Screen one: the headline and the lens, nothing else. */
+.landing-hero {
   position: relative;
   isolation: isolate;
   min-height: calc(100svh - var(--bar-h));
   display: grid;
   align-items: end;
-  padding: var(--space-8) var(--gutter) calc(3.25rem + var(--space-8));
+  padding: var(--space-8) var(--gutter) var(--space-9);
   overflow: hidden;
-  transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out);
 }
 .landing.is-leaving { opacity: 0; transform: translateY(-24px); pointer-events: none; }
 
@@ -421,22 +422,15 @@ main { flex: 1; display: flex; flex-direction: column; }
 /* Landing intro cascade — only when JS is present */
 .js .landing .eyebrow,
 .js .landing .display-line,
-.js .landing .lede,
-.js .landing .entry-item,
 .js .landing .lens-caption,
-.js .landing .entry-more {
+.js .landing .land-cue {
   animation: rise var(--dur-4) var(--ease-out) backwards;
 }
-.js .landing .entry-more { animation-delay: 940ms; }
 .js .landing .eyebrow { animation-delay: 80ms; }
 .js .landing .display-line:nth-child(1) { animation-delay: 160ms; }
 .js .landing .display-line:nth-child(2) { animation-delay: 300ms; }
-.js .landing .lede { animation-delay: 520ms; }
-.js .landing .entry-item:nth-child(1) { animation-delay: 680ms; }
-.js .landing .entry-item:nth-child(2) { animation-delay: 740ms; }
-.js .landing .entry-item:nth-child(3) { animation-delay: 800ms; }
-.js .landing .entry-item:nth-child(4) { animation-delay: 860ms; }
 .js .landing .lens-caption { animation-delay: 1200ms; }
+.js .landing .land-cue { animation-delay: 1600ms; }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 
 /* Word masks: each word rises out of its own clip. */
@@ -1030,7 +1024,7 @@ main { flex: 1; display: flex; flex-direction: column; }
 
 /* Noscript ---------------------------------------------------------------- */
 html:not(.js) :is(.ask, .bar-status, .theme-toggle, .lens-caption) { display: none; }
-html:not(.js) .landing { padding-bottom: var(--space-8); }
+html:not(.js) .landing-steps { padding-bottom: var(--space-8); }
 .noscript { display: grid; gap: var(--space-4); max-width: var(--measure); margin: 0 auto; padding: var(--space-7) var(--gutter); font-size: var(--step-1); }
 .noscript a { color: var(--accent); border-bottom: 1px solid currentColor; }
 
@@ -1081,7 +1075,7 @@ html:not(.js) .landing { padding-bottom: var(--space-8); }
   :root { --bar-h: 3.25rem; }
   .bar-status { display: none; }
   .bar { grid-template-columns: 1fr auto; }
-  .landing { padding-top: var(--space-6); padding-bottom: calc(3.25rem + var(--space-7)); align-items: end; }
+  .landing-hero { padding-top: var(--space-6); padding-bottom: var(--space-7); align-items: end; }
   .display { line-height: 0.98; }
   .lede { font-size: var(--step-1); }
   .entry { grid-template-columns: 1fr; margin-top: var(--space-6); }
@@ -1260,8 +1254,8 @@ html[data-text='large'] { font-size: 118.75%; }
 
 /* Calm and off: nothing moves by itself. No entrance animations, no loops,
    no staggered reveals, no drawn-in diagrams. Content is simply there. */
-html:not([data-motion='full']) .js .landing :is(.eyebrow, .display-line, .lede, .entry-item, .lens-caption, .offer, .entry-all, .entry-more),
-html:not([data-motion='full']).js .landing :is(.eyebrow, .display-line, .lede, .entry-item, .lens-caption, .offer, .entry-all, .entry-more) { animation: none; }
+html:not([data-motion='full']) .js .landing :is(.eyebrow, .display-line, .lede, .entry-item, .lens-caption, .offer, .entry-all, .entry-more, .land-cue),
+html:not([data-motion='full']).js .landing :is(.eyebrow, .display-line, .lede, .entry-item, .lens-caption, .offer, .entry-all, .entry-more, .land-cue) { animation: none; }
 html:not([data-motion='full']) :is(.pulse, .pulse::after, .scan-track i, .chip, .b-card, .b-layer, .b-pill, .b-brief dl > div, .b-progress-track i, .thinking-dots i) { animation: none !important; }
 html:not([data-motion='full']) .pulse::after { animation: none !important; opacity: 0; }
 html:not([data-motion='full']) :is(.b-brief::after, .is-in .b-brief::after) { content: none; }
@@ -1341,7 +1335,6 @@ html[data-motion='off'] *, html[data-motion='off'] *::before, html[data-motion='
 .offer-item { padding-top: var(--space-3); border-top: 1px solid var(--line-2); background: color-mix(in srgb, var(--bg) 75%, transparent); }
 .offer dt { font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: var(--tracking-micro); text-transform: uppercase; color: var(--fg-2); }
 .offer dd { margin: var(--space-1) 0 0; font-size: var(--step-0); line-height: 1.5; color: var(--fg); }
-.js .landing .offer { animation: rise var(--dur-4) var(--ease-out) 600ms backwards; }
 .entry-more {
   display: flex;
   flex-wrap: wrap;
@@ -1439,7 +1432,7 @@ html[data-motion='off'] *, html[data-motion='off'] *::before, html[data-motion='
 @media (max-width: 720px) {
   .lens-caption { position: relative; top: auto; left: auto; right: auto; grid-row: 2; margin-top: var(--space-5); max-width: none; }
   /* Room under the caption for the illustration itself. */
-  .landing { padding-bottom: calc(3.25rem + 15rem); }
+  .landing-hero { padding-bottom: 15rem; }
 }
 
 
@@ -1663,3 +1656,73 @@ html:not([data-motion='full']) .cmp-thumb { transition: none; }
 .b-section.is-accent { padding-left: var(--space-5); border-left: 2px solid var(--accent-line); }
 .b-section.is-accent .b-section-head .micro { color: var(--accent); }
 @media (max-width: 720px) { .b-section.is-raised { padding: var(--space-4); } }
+
+/* Landing, screens two to four: one idea each, with room around it. ------- */
+.land-cue {
+  justify-self: start;
+  display: inline-flex;
+  gap: var(--space-2);
+  margin-top: var(--space-7);
+  padding-bottom: 2px;
+  font-size: var(--step--1);
+  color: var(--fg-2);
+  border-bottom: 1px solid var(--line-2);
+  pointer-events: auto;
+}
+.land-cue:hover { color: var(--accent); border-color: var(--accent); }
+.landing-steps { padding: 0 var(--gutter); }
+.land-step { max-width: 78rem; margin: 0 auto; }
+.land-step {
+  min-height: 70svh;
+  display: grid;
+  align-content: center;
+  gap: var(--space-6);
+  padding: var(--space-9) 0;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: var(--bar-h);
+}
+.land-step-head {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 400;
+  letter-spacing: var(--tracking-micro);
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.land-step .lede {
+  max-width: 40rem;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  line-height: 1.08;
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg);
+  text-wrap: balance;
+}
+.land-step .offer { margin: 0; max-width: 40rem; grid-template-columns: 1fr; gap: var(--space-6); }
+.land-step .offer-item { background: none; padding-top: var(--space-4); }
+.land-step .offer dd { margin-top: var(--space-2); font-size: var(--step-2); line-height: 1.35; text-wrap: pretty; }
+.land-step .entry { margin-top: 0; }
+.land-step .entry-more { margin-top: var(--space-4); }
+.land-step:last-child { padding-bottom: calc(3.25rem + var(--space-9)); }
+
+/* The ask bar waits until the reader has left the headline screen. */
+.is-landing.is-hero .ask { opacity: 0; transform: translate(-50%, 1rem); visibility: hidden; pointer-events: none; }
+.is-landing .ask { transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out), visibility 0s linear 0s, border-color var(--dur-2); }
+.is-landing.is-hero .ask { transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out), visibility 0s linear var(--dur-2); }
+
+/* Each screen rises once, as it scrolls into view (only when the visitor scrolls). */
+@supports (animation-timeline: view()) {
+  html[data-motion='full'] .land-step > * {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  .land-step { min-height: 0; padding: var(--space-8) 0; gap: var(--space-5); }
+  .land-step .lede { font-size: var(--step-3); }
+  .land-step .offer dd { font-size: var(--step-1); }
+  .land-step:last-child { padding-bottom: calc(3.25rem + var(--space-8)); }
+}

@@ -1,9 +1,7 @@
 {
   "$comment": "Site configuration. Everything a visitor reads outside the topic files lives here. Leave a value as null if it is not decided yet: the site will not invent it. Run `npm run sync` after editing, then `npm test`.",
-
   "brand": "mindunder.dev",
   "timeZone": "Europe/London",
-
   "person": {
     "name": "Ruben",
     "fullName": null,
@@ -11,12 +9,10 @@
     "location": "London, UK",
     "links": []
   },
-
   "meta": {
     "title": "mindunder.dev: business process automation in London",
     "description": "I find the work your team repeats by hand. Then I build a system that does it. The first step is a free 30-minute call. Based in London."
   },
-
   "facts": {
     "what": {
       "label": "What I do",
@@ -66,44 +62,75 @@
       "link": true
     }
   },
-
   "landing": {
     "eyebrow": "Business process automation · London",
-    "headline": ["I find the work your team repeats by hand.", "Then I build a system that does it."],
+    "headline": [
+      "I find the work your team repeats by hand.",
+      "Then I build a system that does it."
+    ],
     "accent": "find",
     "lede": "For example: copying data between systems, chasing approvals by email, or making the same report every week. I work alone, from London.",
-    "facts": ["firstStep", "cost", "reply"],
+    "facts": [
+      "firstStep",
+      "cost",
+      "reply"
+    ],
     "allLink": "Read everything on one page",
-    "tool": { "target": "estimate", "label": "Work out what repeated work costs you", "note": "Type three numbers. It takes about one minute." },
+    "tool": {
+      "target": "estimate",
+      "label": "Work out what repeated work costs you",
+      "note": "Type three numbers. It takes about one minute."
+    },
     "lens": {
       "idle": "Illustration: a business process drawn as a network. Move your pointer to look underneath it. Click to scan the whole picture.",
       "idleTouch": "Illustration: a business process drawn as a network. Move your finger across it to look underneath. Tap to scan the whole picture.",
       "found": "Illustration: the circled point is a bottleneck, a place where work waits for a person.",
       "note": "bottleneck",
-      "noteLines": ["example only", "work waits here"]
+      "noteLines": [
+        "example only",
+        "work waits here"
+      ]
+    },
+    "cue": "Below: examples, the first step, and where to start",
+    "steps": {
+      "$": "Headings for the three screens under the headline. Each screen holds one idea.",
+      "examples": "What this looks like",
+      "offer": "Before we work together",
+      "start": "Where to start"
     }
   },
-
   "onePage": {
     "title": "Everything on one page",
     "intro": "This page has the main topics in order. Technical details about my own projects are at the end.",
-    "sections": ["method", "signals", "trust_ladder", "proof", "process", "cost", "ruben", "contact"],
-    "appendix": ["projects", "callsheet", "callsheet_zero_ops", "haios", "behold"]
+    "sections": [
+      "method",
+      "signals",
+      "trust_ladder",
+      "proof",
+      "process",
+      "cost",
+      "ruben",
+      "contact"
+    ],
+    "appendix": [
+      "projects",
+      "callsheet",
+      "callsheet_zero_ops",
+      "haios",
+      "behold"
+    ]
   },
-
   "reading": {
     "motion": "full",
     "text": "standard",
     "sound": false
   },
-
   "features": {
     "map": true,
     "depthMeter": false,
     "freeText": true,
     "sound": true
   },
-
   "copy": {
     "ui": {
       "placeholder": "Type a question, for example: What does it cost?",
@@ -116,29 +143,97 @@
       "backToStart": "Back to the start"
     }
   },
-
   "language": {
     "maxSentenceWords": 25,
     "minSentenceWords": 3,
-    "maxGrade": { "business": 9, "technical": 12 },
-    "knownAcronyms": ["UK", "AI", "TV", "PDF"],
+    "maxGrade": {
+      "business": 9,
+      "technical": 12
+    },
+    "knownAcronyms": [
+      "UK",
+      "AI",
+      "TV",
+      "PDF"
+    ],
     "banned": [
-      "sound familiar", "you know something", "can't see where", "can’t see where",
-      "drag", "dragging", "heavy", "skunkworks", "upstream", "headcount",
-      "hands on the wheel", "breathes", "metabolism", "meatspace", "substrate",
-      "bus factor", "blindside", "coffee meeting", "holiday test", "monday ritual",
-      "on probation", "graduate", "graduated", "graduation", "ceremony", "ceremonies",
-      "orphan", "boring", "tuesday morning", "daily driver", "descendant",
-      "the lab", "zero ops", "compounding", "system of systems", "deployment detail",
-      "glorified", "under the surface", "earn trust", "earns trust", "earn its trust", "earned",
-      "shipped", "ping", "compiling", "at the end of the day", "low-hanging", "game changer",
-      "leverage", "synergy", "seamless", "cutting-edge", "next-level", "no-brainer",
-      "ahead of the curve", "moves the needle", "deep dive", "circle back", "touch base",
-      "secret sauce", "magic", "just works", "the drag"
+      "sound familiar",
+      "you know something",
+      "can't see where",
+      "can’t see where",
+      "drag",
+      "dragging",
+      "heavy",
+      "skunkworks",
+      "upstream",
+      "headcount",
+      "hands on the wheel",
+      "breathes",
+      "metabolism",
+      "meatspace",
+      "substrate",
+      "bus factor",
+      "blindside",
+      "coffee meeting",
+      "holiday test",
+      "monday ritual",
+      "on probation",
+      "graduate",
+      "graduated",
+      "graduation",
+      "ceremony",
+      "ceremonies",
+      "orphan",
+      "boring",
+      "tuesday morning",
+      "daily driver",
+      "descendant",
+      "the lab",
+      "zero ops",
+      "compounding",
+      "system of systems",
+      "deployment detail",
+      "glorified",
+      "under the surface",
+      "earn trust",
+      "earns trust",
+      "earn its trust",
+      "earned",
+      "shipped",
+      "ping",
+      "compiling",
+      "at the end of the day",
+      "low-hanging",
+      "game changer",
+      "leverage",
+      "synergy",
+      "seamless",
+      "cutting-edge",
+      "next-level",
+      "no-brainer",
+      "ahead of the curve",
+      "moves the needle",
+      "deep dive",
+      "circle back",
+      "touch base",
+      "secret sauce",
+      "magic",
+      "just works",
+      "the drag"
     ],
     "bannedBusiness": [
-      "orchestration", "orchestrated", "cadence", "declassification", "stateless",
-      "platform-agnostic", "tRPC", "Drizzle", "event bus", "consumer", "consumers", "invariants"
+      "orchestration",
+      "orchestrated",
+      "cadence",
+      "declassification",
+      "stateless",
+      "platform-agnostic",
+      "tRPC",
+      "Drizzle",
+      "event bus",
+      "consumer",
+      "consumers",
+      "invariants"
     ]
   }
 }

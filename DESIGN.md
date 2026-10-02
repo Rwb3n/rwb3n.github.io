@@ -21,6 +21,24 @@ answers in structured blocks — diagrams, metrics, tables — and offers the ne
 questions. The deeper they go, the closer the "how would this work in my
 business?" prompt moves to the top.
 
+## Landing: one idea per screen
+
+The landing used to hold everything on one screen: headline, examples, three
+facts, six links, the lens and the ask bar, about 200 words at once. Now it is
+a sequence, read by scrolling:
+
+1. The headline and the lens. Nothing else, apart from one line saying what
+   is below.
+2. What this looks like: the examples, large.
+3. Before we work together: first step, cost, reply time.
+4. Where to start: the topics, the cost estimate, the one-page view.
+
+The ask bar stays hidden while the headline screen is in view (pressing "/"
+brings it back). Each later screen rises once as it scrolls into view, only
+in Full motion. If a link is chosen below the headline screen, the lens
+"fix" is skipped, because it would play off screen. Headings and text for
+the screens are in `site.json` → `landing.steps` and `landing.cue`.
+
 ## System
 
 **Type.** Three voices, each with one job.
@@ -139,7 +157,7 @@ and W3C COGA ("Making content usable for people with cognitive and learning
 disabilities").
 
 - The offer, first step, price status and reply time are on the landing, in
-  a definition list, before any interaction.
+  a definition list, readable by scrolling: no click, no JavaScript needed.
 - Literal words only: no idioms, metaphors or in-jokes. Banned phrases are
   listed in `site.json` → `language` and checked by `npm test`.
 - Short sentences (≤ 25 words), statements not questions, reading grade ≤ 9.

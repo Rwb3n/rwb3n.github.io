@@ -111,6 +111,15 @@ if (lensCanvas) {
   }
 }
 
+// While the headline screen is in view, the ask bar waits below it. Pressing
+// "/" (the ask shortcut) brings it back straight away.
+const hero = document.querySelector('[data-landing-hero]');
+if (hero && 'IntersectionObserver' in window) {
+  new IntersectionObserver(([e]) => document.body.classList.toggle('is-hero', e.intersectionRatio > 0.6), { threshold: [0, 0.6, 1] }).observe(hero);
+  addEventListener('keydown', (e) => { if (e.key === '/') document.body.classList.remove('is-hero'); }, { capture: true });
+  document.querySelector('[data-ask]')?.addEventListener('focusin', () => document.body.classList.remove('is-hero'));
+}
+
 // Entry rows: the spotlight follows the pointer.
 document.querySelector('[data-entry]')?.addEventListener('pointermove', (e) => {
   const row = e.target.closest('.entry-item');
@@ -125,6 +134,8 @@ loadContent()
     // The fix plays in full the first time in a session; after that, a quick reprise.
     const seenFix = () => { try { return sessionStorage.getItem('mu-fixed') === '1'; } catch { return false; } };
     const beforeLeave = () => {
+      // The fix plays over the headline screen; if the visitor has scrolled past it, skip it.
+      if (lensCanvas && lensCanvas.getBoundingClientRect().bottom < innerHeight * 0.4) return;
       const p = lens?.fix(seenFix() ? 420 : undefined);
       try { sessionStorage.setItem('mu-fixed', '1'); } catch { /* ignore */ }
       return p;
