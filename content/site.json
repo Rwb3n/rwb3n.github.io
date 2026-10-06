@@ -25,8 +25,8 @@
   },
   "landing": {
     "eyebrow": "Business process automation — London",
-    "headline": ["I find the work", "your team repeats.", "Then I automate it."],
-    "accent": "automate",
+    "headline": ["I find the work your team repeats.", "Then I automate it."],
+    "accent": "find",
     "lede": "Copying between systems. Chasing approvals. The same report every Monday. I work alone, from London.",
     "facts": ["firstStep", "cost", "reply"],
     "allLink": "Everything on one page",
@@ -37,6 +37,13 @@
       "found": "Bottleneck: work waiting for a person.",
       "note": "bottleneck",
       "noteLines": ["example"]
+    },
+    "cue": "Below: examples, price, where to start",
+    "steps": {
+      "$": "Headings for the three screens under the headline. Each screen holds one idea.",
+      "examples": "What it looks like",
+      "offer": "Before we start",
+      "start": "Where to start"
     }
   },
   "onePage": {

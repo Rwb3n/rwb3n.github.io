@@ -1,0 +1,96 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--fg); font-family: system-ui, sans-serif; }
+a { color: inherit; }
+.t-top { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: center; padding: 0.8rem clamp(1rem, 3vw, 2.5rem); background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); font: 400 12px/1.4 ui-monospace, monospace; color: var(--fg-2); }
+.t-brand { text-decoration: none; color: var(--fg); } .t-brand span { color: var(--fg-3); }
+.t-top nav { display: flex; gap: 1rem; margin-left: auto; } .t-top nav a { color: var(--fg-2); }
+
+.t-board { padding: clamp(2rem, 6vw, 6rem) clamp(1rem, 4vw, 4rem); border-bottom: 1px solid var(--line-2); font-family: var(--t-text); font-feature-settings: 'ss01'; }
+.t-head { display: grid; gap: 0.6rem; max-width: 46rem; margin-bottom: clamp(2.5rem, 6vw, 5rem); padding-bottom: 1.5rem; border-bottom: 1px solid var(--line); }
+.t-head h1 { font: 500 13px/1 var(--t-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.t-head p { font-size: 1.05rem; line-height: 1.5; color: var(--fg-2); }
+.t-faces { font: 400 12px/1.4 var(--t-mono) !important; color: var(--fg-3) !important; }
+
+.t-arrow { font-family: var(--t-mono); font-weight: 400; }
+.t-eyebrow { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; font: 400 11px/1 var(--t-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); }
+.t-eyebrow span { width: 2.5rem; height: 1px; background: currentColor; }
+.t-display { max-width: 18ch; font-family: var(--t-display); font-weight: var(--t-dw); font-size: calc(clamp(2.6rem, 1rem + 5.2vw, 6.4rem) * var(--t-scale, 1)); line-height: 0.98; letter-spacing: var(--t-track); text-wrap: balance; }
+.t-display em { font-family: var(--t-accent); font-weight: var(--t-aw); font-style: italic; color: var(--accent); letter-spacing: -0.01em; }
+.t-cue { display: inline-flex; gap: 0.5rem; margin-top: 2.5rem; font-size: 0.85rem; color: var(--fg-2); text-decoration: none; border-bottom: 1px solid var(--line-2); }
+
+.t-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: clamp(2.5rem, 5vw, 4.5rem) clamp(2rem, 5vw, 5rem); margin-top: clamp(3rem, 7vw, 6rem); }
+.t-grid section { min-width: 0; display: grid; gap: 1rem; align-content: start; }
+.t-micro { font: 400 11px/1 var(--t-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.t-lede { font-family: var(--t-display); font-weight: var(--t-dw); font-size: calc(clamp(1.7rem, 1rem + 1.8vw, 2.6rem) * var(--t-scale, 1)); line-height: 1.12; letter-spacing: var(--t-track); text-wrap: balance; }
+.t-q { font-family: var(--t-display); font-weight: var(--t-dw); font-size: calc(clamp(1.9rem, 1.2rem + 1.6vw, 2.8rem) * var(--t-scale, 1)); line-height: 1.05; letter-spacing: var(--t-track); }
+.t-body { font-size: 1.125rem; line-height: 1.6; max-width: 36rem; }
+.t-steps { list-style: none; display: grid; border-top: 1px solid var(--line); }
+.t-steps li { display: grid; grid-template-columns: 2.2rem 1fr; gap: 0.15rem 1rem; padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
+.t-steps b { font-weight: 500; } .t-steps li > span:last-child { grid-column: 2; font-size: 0.85rem; color: var(--fg-2); }
+.t-num { grid-row: span 2; justify-self: start; padding: 0.1rem 0.45rem; font: 400 11px/1.5 var(--t-mono); border: 1px solid var(--line-2); border-radius: 999px; color: var(--fg-2); }
+.t-figs { container-type: inline-size; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line-2); }
+.t-figs > div { padding: 1rem 1rem 0 0; } .t-figs > div + div { padding-left: 1rem; border-left: 1px solid var(--line); }
+.t-figs b { display: block; font-family: var(--t-figures); font-weight: var(--t-fw); font-size: min(clamp(2rem, 1.2rem + 2.4vw, 3.4rem), 9cqi); line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.t-figs span { display: block; margin-top: 0.5rem; font-size: 0.8rem; line-height: 1.4; color: var(--fg-2); }
+.t-callout { padding-left: 1.2rem; border-left: 2px solid var(--accent); font-family: var(--t-quote, var(--t-accent)); font-style: italic; font-weight: var(--t-qw, var(--t-aw)); font-size: 1.6rem; line-height: 1.25; }
+.t-chips { list-style: none; display: grid; max-width: 30rem; }
+.t-chips li { display: flex; justify-content: space-between; padding: 0.5rem 0; color: var(--fg-2); }
+.t-btn { justify-self: start; display: inline-flex; gap: 0.6rem; padding: 0.75rem 1.1rem; border-radius: 4px; background: var(--accent); color: var(--on-accent); font-weight: 500; }
+.t-node { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font: 400 11px/1 var(--t-mono); }
+.t-node span:not(.t-arrow) { padding: 0.7rem 0.9rem; border: 1px solid var(--line-2); background: var(--bg-raised); }
+.t-node .is-accent { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+.t-node .t-arrow { color: var(--fg-3); }
+.t-legible { font-size: 1.4rem; color: var(--fg-2); }
+
+.t-missing { font: 400 12px/1.4 var(--t-mono); color: var(--accent); }
+
+/* Shared by the Supreme boards: labels in the lettering face, caps and tracked. */
+.t-solo .t-micro, .t-solo .t-eyebrow, .t-writer .t-micro, .t-writer .t-eyebrow { font-family: var(--t-text); font-weight: 600; font-size: 11.5px; letter-spacing: 0.16em; }
+
+/* 1 · Supreme alone */
+.t-solo .t-display { max-width: 17ch; font-size: clamp(2.8rem, 0.8rem + 6.6vw, 8rem); line-height: 0.9; }
+.t-solo .t-display em { font-style: italic; letter-spacing: -0.05em; }
+.t-solo .t-lede { font-weight: 300; font-size: clamp(1.6rem, 1rem + 1.6vw, 2.4rem); line-height: 1.12; }
+.t-solo .t-q { font-weight: 750; }
+.t-solo .t-figs { border-top: 0; }
+.t-solo .t-figs b { font-size: min(clamp(3.4rem, 2rem + 4vw, 6rem), 9cqi); letter-spacing: -0.06em; line-height: 0.9; }
+.t-solo .t-figs > div + div { border-left: 0; }
+.t-solo .t-callout { border: 0; padding: 0; font-family: var(--t-text); font-weight: 200; font-size: 2.2rem; line-height: 1.08; letter-spacing: -0.035em; }
+.t-solo .t-btn { border-radius: 0; font-weight: 650; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; }
+.t-solo .t-steps b { font-weight: 650; }
+
+/* 2 · Engineer and writer */
+.t-writer .t-display { max-width: 15ch; font-size: clamp(2.6rem, 0.9rem + 5.4vw, 6.8rem); line-height: 0.92; }
+.t-writer .t-display em { font-style: normal; color: var(--accent); letter-spacing: inherit; }
+.t-writer .t-then { display: block; max-width: 22ch; margin-top: 0.35em; font: italic 300 0.52em/1.12 var(--t-voice); letter-spacing: -0.015em; color: var(--fg-2); }
+.t-writer .t-lede { font: italic 300 clamp(1.5rem, 1rem + 1.4vw, 2.2rem)/1.2 var(--t-voice); letter-spacing: -0.01em; }
+.t-writer .t-q { font-weight: 800; }
+.t-writer .t-figs b { font-size: min(clamp(2.6rem, 1.6rem + 3vw, 4.6rem), 9cqi); letter-spacing: -0.05em; }
+.t-writer .t-callout { font-size: 1.9rem; }
+.t-writer .t-steps b { font-weight: 700; }
+.t-writer .t-btn { font-weight: 700; }
+
+/* 3 · Drawing office */
+.t-drawing .t-hero { position: relative; padding: clamp(1.5rem, 4vw, 3.5rem); border: 1px solid var(--fg-3);
+  background-image: linear-gradient(color-mix(in srgb, var(--line) 70%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--line) 70%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px; background-position: -1px -1px; }
+.t-drawing .t-display { max-width: 19ch; font-size: clamp(2.5rem, 0.8rem + 5vw, 6.2rem); line-height: 0.96; }
+.t-drawing .t-display em { position: relative; font-style: normal; color: inherit; letter-spacing: inherit; text-decoration: underline 0.06em var(--accent); text-underline-offset: 0.12em; }
+.t-mark { display: inline-grid; place-items: center; width: 1.7em; height: 1.7em; border: 1px solid var(--accent); border-radius: 50%; font: 500 11px/1 var(--t-mono); color: var(--accent); letter-spacing: 0; vertical-align: middle; }
+.t-display .t-mark { position: absolute; top: -0.3em; right: -0.62em; width: 2em; height: 2em; font-size: max(10px, 0.12em); background: var(--bg); }
+.t-note { display: flex; gap: 0.6rem; align-items: center; margin-top: 1.6rem; font: 400 12px/1.4 var(--t-mono); color: var(--fg-2); }
+.t-drawing .t-cue { margin-top: 1rem; }
+.t-block { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 2rem; border: 1px solid var(--fg-3); background: var(--bg); font-family: var(--t-mono); }
+.t-block div { padding: 0.45rem 0.6rem; border-right: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); }
+.t-block dt { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.t-block dd { margin-top: 0.2rem; font-size: 11.5px; }
+@media (min-width: 60rem) { .t-block { position: absolute; right: -1px; bottom: -1px; width: 22rem; margin: 0; } .t-drawing .t-hero { padding-bottom: 6rem; } }
+.t-drawing .t-lede { font-weight: 300; }
+.t-drawing .t-q { font-weight: 600; }
+.t-drawing .t-num { border-radius: 0; }
+.t-drawing .t-figs { border-top: 0; }
+.t-drawing .t-figs > div::before { content: ''; display: block; height: 9px; margin-bottom: 0.7rem; border-inline: 1px solid var(--fg-3); background: linear-gradient(var(--fg-3), var(--fg-3)) center / 100% 1px no-repeat; }
+.t-drawing .t-figs > div + div { border-left: 0; }
+.t-drawing .t-figs b { font-size: min(clamp(2.6rem, 1.6rem + 3vw, 4.6rem), 9cqi); }
+.t-drawing .t-callout { font-family: var(--t-text); font-style: normal; font-weight: 300; border-left-style: dashed; }
+.t-drawing .t-btn { border-radius: 0; }

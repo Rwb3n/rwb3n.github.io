@@ -60,6 +60,8 @@ export function nodeStrings(node) {
       case 'callout': prose(b.text, where); break;
       case 'hero': label(b.title, where); label(b.subtitle, where); break;
       case 'split': (b.left || []).forEach((c) => walk(c, where)); (b.right || []).forEach((c) => walk(c, where)); break;
+      case 'section': label(b.kicker, where); label(b.title, where); (b.blocks || []).forEach((c) => walk(c, where)); break;
+      case 'timeline': (b.items || []).forEach((i) => { label(i.date, where); label(i.event || i.title, where); prose(i.detail, where); }); break;
       case 'metricRow': b.items.forEach((i) => { label(i.value, where); label(i.label, where); }); break;
       case 'metric': label(b.value, where); label(b.label, where); label(b.sublabel, where); break;
       case 'stats': b.items.forEach((i) => { label(i.label, where); label(i.value, where); }); break;

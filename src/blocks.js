@@ -34,6 +34,20 @@ const renderers = {
       h('div', null, right.map((b) => renderBlock(b, ctx))),
     ),
 
+  // Heading level comes from where the section sits: the caller sets
+  // ctx.headingLevel (default 3, under a conversation turn's h2).
+  section: ({ title, kicker, tone = 'plain', blocks: children = [] }, ctx) => {
+    const level = Math.min(6, ctx?.headingLevel || 3);
+    const inner = { ...ctx, headingLevel: level + 1 };
+    return h('section', { class: `b-section is-${tone}` },
+      h('header', { class: 'b-section-head' },
+        kicker && h('p', { class: 'micro' }, kicker),
+        h(`h${level}`, { class: 'b-section-title' }, title),
+      ),
+      children.map((b) => renderBlock(b, inner)),
+    );
+  },
+
   metricRow: ({ items }) => {
     const el = h('div', { class: 'b-metric-row' },
       items.map((m) => h('div', null,

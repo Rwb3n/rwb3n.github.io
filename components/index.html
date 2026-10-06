@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Components — mindunder.dev</title>
+    <meta name="description" content="The component library behind mindunder.dev: design tokens, interface pieces and every content block, with live examples and a composer." />
+    <meta name="robots" content="noindex" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&amp;family=Geist:wght@300..700&amp;family=Geist+Mono:wght@400..600&amp;display=swap" />
+    <script>
+      (function () {
+        var d = document.documentElement, t = null, r = {};
+        try { t = localStorage.getItem('mu-theme'); r = JSON.parse(localStorage.getItem('mu-reading') || '{}'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        d.dataset.theme = t;
+        d.dataset.motion = r.motion || (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'calm' : 'full');
+        d.dataset.text = r.text || 'standard';
+        d.classList.add('js');
+      })();
+    </script>
+    <link rel="stylesheet" href="/styles/tokens.css" />
+    <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="stylesheet" href="/styles/library.css" />
+    <script type="module" src="/src/library.js"></script>
+  </head>
+  <body class="lib">
+    <a class="skip" href="#lib-main">Skip to content</a>
+
+    <header class="bar">
+      <a class="brand" href="/" aria-label="mindunder.dev — home">
+        <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="9" r="5.25" />
+          <path d="M3 17.5h18M6 21h12" />
+        </svg>
+        <span class="brand-name">mindunder<span class="brand-tld">.dev</span></span>
+      </a>
+      <p class="bar-status">Components</p>
+      <div class="bar-tools">
+        <div class="lib-seg" role="group" aria-label="Motion" data-motion-pick>
+          <button type="button" data-v="full">Full</button>
+          <button type="button" data-v="calm">Calm</button>
+          <button type="button" data-v="off">Off</button>
+        </div>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark colours">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="8.25" />
+            <path class="theme-toggle-fill" d="M12 3.75a8.25 8.25 0 0 1 0 16.5z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="lib-layout">
+      <nav class="lib-nav" aria-label="Components" data-nav></nav>
+
+      <main class="lib-main" id="lib-main">
+        <header class="lib-intro">
+          <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Design system</p>
+          <h1 class="lib-title">One set of <em>parts</em>, many pages.</h1>
+          <p class="lib-lede">Every page on this site is a list of blocks in JSON. This page shows every block, the props it takes, and where it is used. The projects are test content: they exist to exercise these parts. Edit any example, or compose a new topic at the end.</p>
+          <dl class="offer lib-counts" data-counts></dl>
+        </header>
+        <div data-sections><p class="micro">Loading components</p></div>
+      </main>
+    </div>
+
+    <p class="lib-toast" role="status" data-toast></p>
+  </body>
+</html>

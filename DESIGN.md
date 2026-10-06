@@ -21,6 +21,36 @@ answers in structured blocks — diagrams, metrics, tables — and offers the ne
 questions. The deeper they go, the closer the "how would this work in my
 business?" prompt moves to the top.
 
+## Landing: one idea per screen
+
+The landing used to hold everything on one screen: headline, examples, three
+facts, six links, the lens and the ask bar, about 200 words at once. Now it is
+a sequence, read by scrolling:
+
+1. The headline and the lens. Nothing else, apart from one line saying what
+   is below.
+2. What this looks like: the examples, large.
+3. Before we work together: first step, cost, reply time.
+4. Where to start: the topics, the cost estimate, the one-page view.
+
+The ask bar stays hidden while the headline screen is in view (pressing "/"
+brings it back). Each later screen rises once as it scrolls into view, only
+in Full motion. If a link is chosen below the headline screen, the lens
+"fix" is skipped, because it would play off screen. Headings and text for
+the screens are in `site.json` → `landing.steps` and `landing.cue`.
+
+## Topics: room to read
+
+Inside a topic, paragraphs sit close together (24px), and anything that is
+not a paragraph (a diagram, numbers, a list, a table, the before/after) gets
+extra space above and below (56px from text), so each one reads as its own
+thing. "Next topics" sits clearly apart from the answer and is quieter than
+it: no rules between rows, secondary text colour, as wide as the answer's
+text. Only the one action (booking) stays a filled button. Facts are shown as
+one list (`facts`), one per row at body size, not as separate paragraphs.
+The map in the side column is closed until "Map: N of 33 read" is chosen, on
+every screen size.
+
 ## System
 
 Black and white. One ink, one paper, a high-contrast serif and a lot of
@@ -34,6 +64,8 @@ exact type, and motion that is slow, deliberate and finished.
 | Display | Bodoni Moda (optical sizes, + italic) | headline, topic titles, big numbers, callouts |
 | Text | Geist | body copy; small labels set in capitals, tracked 0.22em |
 | Diagram | Geist Mono | diagram boxes and code only (flow layout measures mono widths) |
+
+Earlier type directions (Supreme, Sentient, Azeret Mono and others) are kept on `/type/` for reference; `/components/` shows every block in the current system.
 
 The display step (`--step-display`) runs from 44px to 120px. One word in the
 headline is set in italic; that is the only emphasis on the page.
@@ -83,7 +115,7 @@ Motion has three settings, chosen in **Reading settings**:
 
 | Setting | What moves |
 | --- | --- |
-| Full (default) | Everything above, with one rule: anything that starts by itself is over within 5 seconds (WCAG 2.2.2 Pause, Stop, Hide). The boot plays, the lens makes one pass to the fault and locks, then the canvas stops drawing. After that, things move only when the visitor moves, scrolls or clicks. When the pointer rests, the lens glides back to the fault once. Measured: the last autonomous frame is at about 4 s. |
+| Full (default) | Everything above, with one rule: anything that starts by itself is over within 5 seconds (WCAG 2.2.2 Pause, Stop, Hide). The boot plays, the lens makes one pass to the fault and locks, then the canvas stops drawing. After that, things move only when the visitor moves, scrolls or clicks. When the pointer rests, the lens glides back to the fault once. Sequence: headline (0–1.4 s), dots and lens (1.1–2.1 s), one look elsewhere then the fault (found at about 3.1 s). Measured in Chromium at 390, 1440 and 1920px: the last autonomous frame is at 4.1–4.4 s. The budget is in `src/lens.js` (`BOOT_WAIT`, `BOOT_MS`, the two search legs). |
 | Calm | Nothing starts by itself. The lens is parked on the fault and moves only while the visitor moves it. Short fades and scrolls (≤ 300 ms). |
 | Off | Nothing moves. Scrolls jump. |
 
@@ -105,7 +137,40 @@ remembered.
 
 ## Components
 
-`src/blocks.js` renders the content blocks: `text`, `hero`, `callout`, `split`,
+The library page is `/components/`. `src/catalog.js` is the contract: each
+block's props (type, required, what it does) and an example. Topics in
+`content/nodes` are validated against it by `npm test`. The projects in the
+content are test content that exercises these parts.
+
+Two blocks hold other blocks: `split` (two columns) and `section` (a heading
+over a group, `tone` plain / raised / accent). Sections nest, and each level
+takes the next heading level, so the outline stays correct in the
+conversation (h3 under the turn's h2) and on the one-page view.
+
+Some blocks look different depending on their props: `grid` (two or three
+columns), `layers` (steps or labels), `flow` (horizontal, vertical,
+fan-out), `section` (plain, raised, accent), `badge` (default, active) and
+`fact` (published or not). Each has a `variantKey` and `variants` in the
+catalogue, and the library shows every variant. `npm test` fails if the
+content uses a look the library does not show.
+
+Pages are assembled by shared code, so the library's "Page layouts" section
+is the real thing:
+- `src/layouts.js`: the side column (`createRail`), the conversation turn,
+  "Next topics" and the one-page view, drawn with fixture topics.
+- `src/static.js` + `src/landing.js`: the landing's markup (the same
+  generator that writes `index.html`) and its movement (words, lens, x-ray).
+
+A browser test (`tests/visual/site.spec.js`) checks that every class used on
+the landing, in the one-page view, in topic answers and in the side column
+also appears on `/components/`.
+
+`content/graphs/fixtures.json` is test content, loaded by `/components/`
+and the tests, never by the site. It uses the blocks no real topic needs yet
+(`npm test` fails if any block is unused), so the site never shows invented
+facts to cover a component. Fixtures follow the same writing rules.
+
+`src/blocks.js` renders the content blocks: `text`, `hero`, `callout`, `section`, `split`,
 `metric`, `metricRow`, `stats`, `pills`, `badge`, `grid`, `layers`, `table`,
 `code`, `progress`, `flow`, `brief`, `compose`, `fact`, `facts`, `timeline`,
 and the two interactive blocks in `src/showpieces.js`:
@@ -123,8 +188,10 @@ and the two interactive blocks in `src/showpieces.js`:
   summary" puts the sentence into the visit summary and the booking email.
 
 The one-page view (`#/all`) uses scroll-driven animation (`animation-timeline:
-view()`): sections rise as they scroll into view, so they move only when the
-visitor scrolls.
+view()`): each heading and block rises as it scrolls into view, so it moves
+only when the visitor scrolls. Paragraphs are shown whole there (no
+word-by-word reveal). `tests/visual/site.spec.js` checks that every listed
+topic is on the page and that no paragraph is hidden.
 
 Flow diagrams (`src/flow.js`) are laid out by hand in SVG. They measure their
 labels, then choose a shape that fits: a horizontal flow folds to vertical, a
@@ -138,7 +205,7 @@ and W3C COGA ("Making content usable for people with cognitive and learning
 disabilities").
 
 - The offer, first step, price status and reply time are on the landing, in
-  a definition list, before any interaction.
+  a definition list, readable by scrolling: no click, no JavaScript needed.
 - Literal words only: no idioms, metaphors or in-jokes. Banned phrases are
   listed in `site.json` → `language` and checked by `npm test`.
 - Short sentences (≤ 25 words), statements not questions, reading grade ≤ 9.

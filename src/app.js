@@ -1,10 +1,10 @@
 // Application controller: wires content, engine and DOM together.
 
 import { h, wait, reducedMotion, motionOff } from './dom.js';
-import { copy, site, config, factText } from './copy.js';
+import { copy, config } from './copy.js';
 import { renderBlock } from './blocks.js';
+import { turnShell, chips, onePage, createRail } from './layouts.js';
 import { splitWords } from './type.js';
-import { createMap } from './map.js';
 import { sfx } from './sound.js';
 import * as E from './engine.js';
 
@@ -21,10 +21,6 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     landing: $('[data-landing]'),
     session: $('[data-session]'),
     log: $('[data-log]'),
-    trail: $('[data-trail]'),
-    depth: $('[data-depth]'),
-    depthLabel: $('[data-depth-label]'),
-    brief: $('[data-brief]'),
     ask: $('[data-ask]'),
     input: $('[data-ask-input]'),
     entry: $('[data-entry]'),
@@ -38,37 +34,21 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
   let current = 0;    // index of the turn in view
   let generation = 0; // bumps on reset, so in-flight answers stop writing
 
-  // Map ------------------------------------------------------------------------
-  const map = createMap(content, { onPick: (id) => { setMapOpen(false); navigate(id, null, { focus: true }); } });
-  const mapCount = h('p', { class: 'map-count' });
-  const total = Object.keys(content.nodes).length;
-  el.depth.closest('.rail-block').before(
-    h('div', { class: 'rail-block rail-map', id: 'rail-map' }, h('h2', { class: 'rail-heading' }, 'Map'), map.el, mapCount),
-  );
-  // On narrow screens the rail is a strip; the map opens from a button at its end.
-  const railEl = el.trail.closest('.rail');
-  const mapToggle = h('button', { class: 'rail-map-toggle', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'rail-map' });
-  const setMapOpen = (open) => {
-    railEl.classList.toggle('is-map-open', open);
-    mapToggle.setAttribute('aria-expanded', String(open));
-  };
-  mapToggle.addEventListener('click', (e) => { e.stopPropagation(); setMapOpen(!railEl.classList.contains('is-map-open')); });
-  document.addEventListener('click', (e) => { if (!e.target.closest?.('.rail-map, .rail-map-toggle')) setMapOpen(false); });
-  el.trail.after(mapToggle);
-  const countMap = () => {
-    const seen = new Set(map.route).size;
-    mapCount.textContent = `${seen} of ${total} topics read`;
-    mapToggle.textContent = `Map: ${seen} of ${total} read`;
-  };
-  countMap();
+  // Side column (trail, depth and brief are filled in from it below) ---------------
+  const rail = createRail(content, {
+    onPick: (id) => navigate(id, null, { focus: true }),
+    onBrief: () => navigate('_show_brief', null, { focus: true }),
+    onAll: () => showAll(),
+  });
+  $('[data-rail]').replaceWith(rail.el);
+  Object.assign(el, { trail: rail.trail, depth: rail.depth, depthLabel: rail.depthLabel, brief: rail.brief });
+  const { map } = rail;
+  const countMap = rail.count;
 
   el.input.placeholder = copy.ui.placeholder;
 
   // Features switched in content/site.json.
-  if (!config.features.map) { el.trail.closest('.rail').querySelector('.rail-map').hidden = true; mapToggle.hidden = true; }
-  if (!config.features.depthMeter) el.depth.closest('.rail-block').hidden = true;
   if (config.features.freeText === false) el.ask.hidden = true;
-  el.brief.closest('.rail-block').append(h('a', { class: 'rail-mail', href: '#/all', onclick: (e) => { e.preventDefault(); showAll(); } }, copy.ui.allLink));
 
   // Chips without a label use the title of the topic they open, so a button
   // always says where it goes.
@@ -186,19 +166,12 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     const src = snapshot(from);
     spendChips();
     const n = turns.length + 1;
-    const q = h('div', { class: 'turn-q' },
-      h('span', { class: 'turn-index' }, h('b', null, `${copy.ui.questionIndex} ${n}`)),
-      h('h2', { class: `turn-question${quoted ? ' is-quoted' : ''}`, tabindex: '-1' }, question),
-      technical && h('p', { class: 'turn-tag' }, copy.ui.technical),
-    );
-    const answer = h('div', { class: 'turn-a' });
-    const turn = h('article', { class: `turn${aside ? ' is-aside' : ''}`, id: `turn-${n}` }, q, answer);
+    const { turn, answer, heading } = turnShell({ n, question, aside, quoted, technical });
     el.log.append(turn);
     turns.push({ el: turn, label: label || question });
     current = turns.length - 1;
     updateRail();
     turnObserver?.observe(turn);
-    const heading = q.querySelector('.turn-question');
     const target = turnScroll(turn);
     let landed;
     if (src) landed = fly(src, heading, target);
@@ -310,22 +283,10 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
     return 180;
   }
 
-  function renderChips(chips) {
-    return h('nav', { class: 'chips', 'aria-label': copy.ui.next },
-      h('span', { class: 'chips-heading micro' }, copy.ui.next),
-      chips.map((chip, i) =>
-        h('button', {
-          class: `chip${chip.isEngagement ? ' is-engage' : ''}${chip.primary || chip.target === '_book' ? ' is-primary' : ''}`,
-          type: 'button',
-          style: { '--i': i },
-          onclick: (e) => choose(chip, { focus: true, from: e.currentTarget.querySelector('.chip-label') }),
-        },
-          h('span', { class: 'chip-label' }, chip.isEngagement && h('span', { class: 'pulse', 'aria-hidden': 'true' }), chip.label),
-          h('span', { class: 'chip-arrow', 'aria-hidden': 'true' }, chip.expand ? '+' : '→'),
-        ),
-      ),
-    );
+  function renderChips(list) {
+    return chips(list, (chip, e) => choose(chip, { focus: true, from: e.currentTarget.querySelector('.chip-label') }));
   }
+
 
   // Navigation ------------------------------------------------------------------
 
@@ -460,31 +421,12 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
   }
 
   function updateRail() {
-    el.trail.replaceChildren(
-      ...turns.map((t) =>
-        h('li', { class: 'trail-item' },
-          h('button', { class: 'trail-link', type: 'button', onclick: () => scrollToTurn(t.el) }, t.label),
-        ),
-      ),
-    );
-    markCurrent();
+    rail.setTrail(turns.map((t) => t.label), current, (i) => scrollToTurn(turns[i].el));
     const level = E.gravityLevel(session);
-    el.depth.dataset.level = String(turns.length ? level : -1);
-    el.depthLabel.textContent = copy.depth[turns.length ? level : 0];
+    rail.setDepth(turns.length ? level : -1);
   }
 
-  function markCurrent() {
-    const links = el.trail.querySelectorAll('.trail-link');
-    links.forEach((b, i) => (i === current ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current')));
-    // On narrow screens the trail is a horizontal strip: keep the marker in view
-    // by scrolling the strip itself, never the page.
-    const strip = el.trail;
-    const cur = links[current];
-    if (strip && cur && strip.scrollWidth > strip.clientWidth) {
-      const left = cur.offsetLeft - strip.clientWidth / 2 + cur.offsetWidth / 2;
-      strip.scrollTo({ left: Math.max(0, left), behavior: reducedMotion() ? 'auto' : 'smooth' });
-    }
-  }
+  const markCurrent = () => rail.markCurrent(current);
 
   const turnObserver = 'IntersectionObserver' in window
     ? new IntersectionObserver((entries) => {
@@ -503,8 +445,6 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
 
   function showAll() {
     if (!el.page) return;
-    const byParent = {};
-    for (const [id, p] of Object.entries(content.parents)) (byParent[p] ||= []).push(id);
     const ctx = {
       navigate: (target) => {
         const a = el.page.querySelector(`#page-${CSS.escape(target)}`);
@@ -513,47 +453,7 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
       },
       addEstimate,
     };
-    const main = (config.onePage.sections || []).filter((id) => content.nodes[id]);
-    const extra = (config.onePage.appendix || []).filter((id) => content.nodes[id]);
-    const listed = new Set([...main, ...extra]);
-    const done = new Set();
-    // Each topic appears once: listed topics at their own place, others under their parent.
-    const section = (id, level) => {
-      const node = content.nodes[id];
-      if (!node || done.has(id) || (level === 3 && listed.has(id))) return null;
-      done.add(id);
-      const H = level === 2 ? 'h2' : 'h3';
-      const body = h('div', { class: 'page-body' });
-      for (const b of node.blocks) {
-        const n = renderBlock(b, ctx);
-        if (n) { body.append(n); n.onReveal?.(); n.querySelectorAll('*').forEach((c) => c.onReveal?.()); }
-      }
-      return h('section', { class: `page-section is-l${level}`, id: `page-${id}`, 'aria-labelledby': `page-h-${id}` },
-        h(H, { class: 'page-heading', id: `page-h-${id}` }, node.label),
-        node.audience === 'technical' && h('p', { class: 'turn-tag' }, copy.ui.technical),
-        body,
-        level === 2 && (byParent[id] || []).map((c) => section(c, 3)),
-      );
-    };
-    const toc = (ids) => h('ol', { class: 'page-toc-list' }, ids.map((id) => h('li', null, h('a', { href: `#page-${id}`, onclick: (e) => { e.preventDefault(); ctx.navigate(id); } }, content.nodes[id].label))));
-    const factKeys = Object.keys(config.facts).filter((k) => factText(k) && !config.facts[k].link);
-
-    el.page.replaceChildren(
-      h('header', { class: 'page-head' },
-        h('h1', { class: 'page-title', id: 'page-title', tabindex: '-1' }, config.onePage.title || copy.ui.allLink),
-        config.onePage.intro && h('p', { class: 'page-intro' }, config.onePage.intro),
-        renderBlock({ type: 'facts', keys: factKeys }, ctx),
-        h('nav', { class: 'page-toc', 'aria-label': 'Contents' },
-          h('h2', { class: 'micro' }, 'Contents'), toc(main),
-          extra.length && h('h2', { class: 'micro' }, 'Technical appendix'), extra.length && toc(extra)),
-      ),
-      main.map((id) => section(id, 2)),
-      extra.length && h('div', { class: 'page-appendix' }, h('h2', { class: 'page-appendix-title' }, 'Technical appendix'), extra.map((id) => section(id, 2))),
-      h('footer', { class: 'page-foot' },
-        h('a', { class: 'btn btn-primary', href: `mailto:${site.email}` }, `Email ${site.email}`),
-        h('button', { class: 'btn btn-ghost', type: 'button', onclick: () => reset() }, copy.ui.backToStart),
-      ),
-    );
+    el.page.replaceChildren(...onePage({ content, ctx, onBack: () => reset() }));
     mode = 'page';
     el.landing.hidden = true;
     el.session.hidden = true;
@@ -570,7 +470,6 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
 
   el.ask.addEventListener('submit', (e) => { e.preventDefault(); ask(el.input.value); });
   el.input.addEventListener('input', () => el.ask.classList.toggle('has-value', el.input.value.trim().length > 0));
-  el.brief.addEventListener('click', () => navigate('_show_brief', null, { focus: true }));
 
   document.addEventListener('keydown', (e) => {
     const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName);

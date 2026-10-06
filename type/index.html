@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Type directions — mindunder.dev</title>
+    <meta name="robots" content="noindex" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=zodiak@400,401&amp;display=swap" />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=archivo@400,500,600&amp;display=swap" />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=jet-brains-mono@400,500&amp;display=swap" />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=azeret-mono@400,500&amp;display=swap" />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=sentient@301&amp;display=swap" />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=supreme@1,2&amp;display=swap" />
+    <script>
+      (function () {
+        var t = null; try { t = localStorage.getItem('mu-theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+    <link rel="stylesheet" href="/styles/tokens.css" />
+    <link rel="stylesheet" href="/type/type.css" />
+  </head>
+  <body>
+    <header class="t-top">
+      <a href="/" class="t-brand">mindunder<span>.dev</span></a>
+      <p>Type directions · the site's own words in each · arrows are always set in the mono face</p>
+      <nav><a href="#current">Current</a><a href="#solo">1 · Alone</a><a href="#writer">2 · Engineer and writer</a><a href="#drawing">3 · Drawing office</a></nav>
+    </header>
+    <main data-boards></main>
+    <script type="module" src="/type/type.js"></script>
+  </body>
+</html>
