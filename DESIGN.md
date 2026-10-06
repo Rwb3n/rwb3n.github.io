@@ -23,40 +23,54 @@ business?" prompt moves to the top.
 
 ## System
 
+Black and white. One ink, one paper, a high-contrast serif and a lot of
+space. The reference is a fashion house, not a software product: restraint,
+exact type, and motion that is slow, deliberate and finished.
+
 **Type.** Three voices, each with one job.
 
 | Role | Face | Used for |
 | --- | --- | --- |
-| Display | Instrument Serif (+ italic) | headline, questions, callouts, big numbers |
-| Text | Geist | body copy, chips, anything read at length |
-| System | Geist Mono | labels, indices, diagram nodes, the command bar |
+| Display | Bodoni Moda (optical sizes, + italic) | headline, topic titles, big numbers, callouts |
+| Text | Geist | body copy; small labels set in capitals, tracked 0.22em |
+| Diagram | Geist Mono | diagram boxes and code only (flow layout measures mono widths) |
 
-Minor-third ramp (`--step--2` … `--step-4`), fluid at the display end, and a
-hero step (`--step-display`) that runs from 48px to 124px.
+The display step (`--step-display`) runs from 44px to 120px. One word in the
+headline is set in italic; that is the only emphasis on the page.
 
-**Colour.** Warm paper and carbon ink, one signal colour. Every text pair
-clears WCAG AA in both themes:
+**Colour.** `#000` on `#fff`, and the reverse in dark mode. No accent colour:
+emphasis is italic, weight, or solid ink (the key step in a diagram is a black
+box with white text). Greys are for secondary text only:
 
 | Token | Light | Dark | Contrast on `--bg` (L / D) |
 | --- | --- | --- | --- |
-| `--fg` | `#1b1a17` | `#ecebe6` | 15.3 / 16.3 |
-| `--fg-2` | `#55524b` | `#a9a69e` | 6.9 / 8.0 |
-| `--fg-3` | `#6b675f` | `#85827b` | 5.0 / 5.1 |
-| `--accent` | `#b53f14` | `#ff6a3d` | 5.0 / 6.8 |
+| `--fg` | `#000000` | `#ffffff` | 21 / 21 |
+| `--fg-2` | `#545454` | `#b0b0b0` | 7.57 / 9.68 |
+| `--fg-3` | `#6e6e6e` | `#8c8c8c` | 5.10 / 6.25 |
 
-The accent is reserved for three things: *the thing that matters* (the
-italic "see", the fault, the current step), *live state* (pulse dots), and
-*the one action* (sending the brief).
+**Shape.** Square corners, 1px hairlines, no shadows, no glare, no tilt.
 
-**Shape.** 2–4px radii and 1px hairlines. It's an instrument, not an app.
+**Copy.** Short and literal. Say the thing, then stop. No explaining the
+interface ("Choose one to read more"), no reassurance padding, no idioms.
+Examples are still labelled as examples; missing facts still say they are
+missing (`On request. Not published yet.`).
 
 **Motion.** Motion carries the story: *surface → underneath → found → fixed*.
-Expo-out for arrivals, a cubic in-out for journeys, and a damped spring
-(`--ease-spring`, CSS `linear()`) for things that land.
+The main curve is `--ease-runway` (`cubic-bezier(0.76, 0, 0.24, 1)`): a slow
+start and a decisive arrival.
+
+Runway moments (full motion):
+
+- **Curtain.** On the first page of a visit, the screen is black and the black
+  lifts away (1 s). Later pages in the same visit skip it.
+- **Headline.** Each word rises straight up out of its own mask.
+- **Ink fill.** Hovering a row floods it with black from the left; the words
+  turn white. Rows, next-topic links, cards and the calculator link all share it.
+- **Answers** arrive from behind a mask, top to bottom.
 
 | Moment | What moves |
 | --- | --- |
-| Boot | The dot field ripples out from the word *find*; headline words rise through masks; the lens irises open; one sonar ping. |
+| Boot | The curtain lifts; the dot field ripples out from the italic word; headline words rise through masks; the lens irises open; one sonar ping. |
 | Search | The lens follows the pointer (autopilot when idle); dots bulge off its rim; click anywhere to ping. |
 | X-ray | Under the lens, the copy becomes outlines with measured cap height, x-height, baseline and descender. |
 | Found | Magnetic pull, spring kick, ticks lock to the diagonals, crosshair, annotation draws and types in. |

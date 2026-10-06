@@ -1,31 +1,32 @@
 [
   {
     "id": "haios",
-    "label": "Haios: a way to organise AI work",
+    "label": "Haios",
     "parent": null,
     "intents": ["haios", "multi-agent"],
     "tags": ["project", "deep"],
     "audience": "technical",
     "blocks": [
-      { "type": "text", "content": "In plain terms: Haios is a research project. It organises work for AI software using ordinary files and folders, instead of a database or a special server." },
-      { "type": "flow", "layout": "vertical", "title": "Work is organised in four levels, largest first", "nodes": [
-        { "id": "ep", "label": "Epoch", "sublabel": "a long period" },
-        { "id": "ar", "label": "Arc", "sublabel": "a theme" },
-        { "id": "ch", "label": "Chapter", "sublabel": "one work session" },
-        { "id": "wi", "label": "Work item", "sublabel": "one task" }
-      ], "edges": [
-        { "from": "ep", "to": "ar", "label": "contains" },
-        { "from": "ar", "to": "ch", "label": "contains" },
-        { "from": "ch", "to": "wi", "label": "produces" }
-      ]},
+      { "type": "text", "content": "Haios is a research project. It organises AI work in ordinary files and folders, not a database or a special server." },
+      {
+        "type": "flow",
+        "layout": "vertical",
+        "title": "Work is organised in four levels, largest first",
+        "nodes": [
+          { "id": "ep", "label": "Epoch", "sublabel": "a long period" },
+          { "id": "ar", "label": "Arc", "sublabel": "a theme" },
+          { "id": "ch", "label": "Chapter", "sublabel": "one work session" },
+          { "id": "wi", "label": "Work item", "sublabel": "one task" }
+        ],
+        "edges": [
+          { "from": "ep", "to": "ar", "label": "contains" },
+          { "from": "ar", "to": "ch", "label": "contains" },
+          { "from": "ch", "to": "wi", "label": "produces" }
+        ]
+      },
       { "type": "pills", "label": "Main features", "items": ["Uses plain files", "Works with different AI software", "Keeps three kinds of notes"] }
     ],
-    "chips": [
-      { "target": "haios_why_files" },
-      { "target": "haios_architecture" },
-      { "target": "haios_memory" },
-      { "target": "projects" }
-    ]
+    "chips": [{ "target": "haios_why_files" }, { "target": "haios_architecture" }, { "target": "haios_memory" }, { "target": "projects" }]
   },
   {
     "id": "haios_why_files",
@@ -36,13 +37,13 @@
     "audience": "technical",
     "blocks": [
       { "type": "text", "content": "Databases, message systems and online services can break, cost money, and tie you to one supplier." },
-      { "type": "text", "content": "Plain files work everywhere. Every AI tool can read them, and every computer can store them. A version control tool such as Git records every change for free." },
+      {
+        "type": "text",
+        "content": "Plain files work everywhere. Every AI tool can read them, and every computer can store them. A version control tool such as Git records every change for free."
+      },
       { "type": "callout", "text": "If an AI tool cannot do its work by reading and writing files, the limit is in the tool, not in the files." }
     ],
-    "chips": [
-      { "target": "haios_architecture" },
-      { "target": "haios_memory" }
-    ]
+    "chips": [{ "target": "haios_architecture" }, { "target": "haios_memory" }]
   },
   {
     "id": "haios_architecture",
@@ -53,14 +54,17 @@
     "audience": "technical",
     "blocks": [
       { "type": "text", "content": "There is no central server. The folders themselves tell each AI tool what to do next." },
-      { "type": "code", "language": "folders", "content": "epochs/\n  arc-001/\n    chapter-001/\n      work-items/\n        WI-001.md\n      hindsight.md\n      reasoning-bank.md" },
-      { "type": "text", "content": "Because the rules are in the folder structure, no extra software is needed. Any AI tool that can read files can take part." }
+      {
+        "type": "code",
+        "language": "folders",
+        "content": "epochs/\n  arc-001/\n    chapter-001/\n      work-items/\n        WI-001.md\n      hindsight.md\n      reasoning-bank.md"
+      },
+      {
+        "type": "text",
+        "content": "Because the rules are in the folder structure, no extra software is needed. Any AI tool that can read files can take part."
+      }
     ],
-    "chips": [
-      { "target": "haios_memory" },
-      { "target": "behold" },
-      { "target": "projects" }
-    ]
+    "chips": [{ "target": "haios_memory" }, { "target": "behold" }, { "target": "projects" }]
   },
   {
     "id": "haios_memory",
@@ -71,20 +75,19 @@
     "audience": "technical",
     "blocks": [
       { "type": "text", "content": "Haios keeps three kinds of notes. The idea comes from how people remember things." },
-      { "type": "flow", "layout": "vertical", "nodes": [
-        { "id": "h", "label": "Hindsight", "sublabel": "what happened" },
-        { "id": "r", "label": "Reasoning bank", "sublabel": "how to do it" },
-        { "id": "f", "label": "Foresight", "sublabel": "what is likely next" }
-      ], "edges": [
-        { "from": "h", "to": "r", "label": "informs" },
-        { "from": "r", "to": "f", "label": "predicts" }
-      ], "loop": { "from": "f", "to": "h", "label": "is checked later" } },
+      {
+        "type": "flow",
+        "layout": "vertical",
+        "nodes": [
+          { "id": "h", "label": "Hindsight", "sublabel": "what happened" },
+          { "id": "r", "label": "Reasoning bank", "sublabel": "how to do it" },
+          { "id": "f", "label": "Foresight", "sublabel": "what is likely next" }
+        ],
+        "edges": [{ "from": "h", "to": "r", "label": "informs" }, { "from": "r", "to": "f", "label": "predicts" }],
+        "loop": { "from": "f", "to": "h", "label": "is checked later" }
+      },
       { "type": "text", "content": "Each work session writes all three kinds of notes. Over time, the notes build up into useful knowledge." }
     ],
-    "chips": [
-      { "target": "haios_architecture" },
-      { "target": "callsheet" },
-      { "target": "projects" }
-    ]
+    "chips": [{ "target": "haios_architecture" }, { "target": "callsheet" }, { "target": "projects" }]
   }
 ]

@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <style>
-    rect { fill: #f3f0e9; } .s { stroke: #1b1a17; } .a { fill: #b53f14; }
-    @media (prefers-color-scheme: dark) { rect { fill: #0c0d0d; } .s { stroke: #ecebe6; } .a { fill: #ff6a3d; } }
+    rect { fill: #000; } .s { stroke: #fff; } .a { fill: #fff; }
+    @media (prefers-color-scheme: dark) { rect { fill: #fff; } .s { stroke: #000; } .a { fill: #000; } }
   </style>
-  <rect width="32" height="32" rx="6"/>
-  <g class="s" fill="none" stroke-width="2" stroke-linecap="round">
-    <circle cx="16" cy="12.5" r="6"/>
-    <path d="M6 22h20M10 26h12"/>
+  <rect width="32" height="32"/>
+  <g class="s" fill="none" stroke-width="1.5">
+    <circle cx="16" cy="13" r="6.5"/>
+    <path d="M6 23h20M10 26.5h12"/>
   </g>
-  <circle class="a" cx="16" cy="12.5" r="2"/>
+  <circle class="a" cx="16" cy="13" r="1.6"/>
 </svg>

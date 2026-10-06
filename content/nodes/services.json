@@ -6,20 +6,17 @@
     "intents": ["what do you do", "what you do", "method", "how it works", "services", "service"],
     "tags": ["overview"],
     "blocks": [
-      {
-        "type": "text",
-        "content": "First, I look at how work moves through your business. I find the steps that people repeat by hand. Then I build software that does those steps."
-      },
+      { "type": "text", "content": "I map how work moves through your business. Then I automate the steps people repeat." },
       {
         "type": "compare",
-        "label": "Show the process",
+        "label": "View",
         "states": [
           {
             "key": "before",
             "label": "Before",
-            "title": "Before: people pass the work along",
-            "stat": { "value": "2", "label": "routine steps done by a person" },
-            "text": "Each time work passes from one person to another, it waits. Each wait adds delay and a chance of a mistake.",
+            "title": "Before. People pass the work along.",
+            "stat": { "value": "2", "label": "routine steps done by hand" },
+            "text": "Every hand-off is a wait. Every wait is a chance of a mistake.",
             "nodes": [
               { "id": "info", "label": "Information" },
               { "id": "p1", "label": "Person", "variant": "muted" },
@@ -31,9 +28,9 @@
           {
             "key": "after",
             "label": "After",
-            "title": "After: the system does the routine steps",
-            "stat": { "value": "0", "label": "routine steps done by a person" },
-            "text": "The system collects and checks the information. You make the decision. Then the system carries it out.",
+            "title": "After. The system does the routine steps.",
+            "stat": { "value": "0", "label": "routine steps done by hand" },
+            "text": "The system collects and checks. You decide. The system acts.",
             "nodes": [
               { "id": "info", "label": "Information" },
               { "id": "sys", "label": "System", "variant": "accent", "via": "collects" },
@@ -42,30 +39,29 @@
             ]
           }
         ]
-      },
-      { "type": "text", "content": "Choose Before or After to compare the two ways of working." }
+      }
     ],
     "chips": [{ "target": "estimate" }, { "target": "trust_ladder" }, { "target": "proof" }, { "target": "process" }]
   },
   {
     "id": "ahead",
-    "label": "What you get from it",
+    "label": "What you get",
     "parent": null,
     "intents": ["benefit", "benefits", "what do i get", "outcome", "outcomes", "value"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "You find out about important changes early, so you can act before they cause problems." },
+      { "type": "text", "content": "You hear about changes early, while there is time to act." },
       {
         "type": "text",
-        "content": "This comes from a system that checks information every day. My own system reads UK company records, insolvency notices and public contract awards every night. It tells me about changes the same morning."
+        "content": "My own system reads UK company records, insolvency notices and contract awards every night. It reports changes the same morning."
       },
-      { "type": "text", "content": "A system for your business would check the sources that matter in your market." }
+      { "type": "text", "content": "Yours would read the sources that matter in your market." }
     ],
     "chips": [{ "target": "signals" }, { "target": "method" }]
   },
   {
     "id": "estimate",
-    "label": "What repeated work costs you",
+    "label": "What repeated work costs",
     "parent": null,
     "intents": [
       "estimate",
@@ -82,24 +78,15 @@
     ],
     "tags": ["overview", "tool"],
     "blocks": [
-      { "type": "text", "content": "Type three numbers about one task that your team repeats. This page works out the time and money it takes each year." },
+      { "type": "text", "content": "One task your team repeats. Three numbers." },
       {
         "type": "estimate",
-        "title": "Your estimate",
+        "title": "Estimate",
         "inputs": [
-          {
-            "key": "people",
-            "label": "People who do this task",
-            "min": 1,
-            "max": 500,
-            "step": 1,
-            "value": 3,
-            "less": "One person fewer",
-            "more": "One person more"
-          },
+          { "key": "people", "label": "People doing it", "min": 1, "max": 500, "step": 1, "value": 3, "less": "One person fewer", "more": "One person more" },
           {
             "key": "hours",
-            "label": "Hours each person spends on it each week",
+            "label": "Hours each, per week",
             "min": 0.5,
             "max": 40,
             "step": 0.5,
@@ -109,8 +96,8 @@
           },
           {
             "key": "rate",
-            "label": "Cost of one hour of their time, in pounds",
-            "hint": "Include salary and other staff costs. Type a number from 5 to 500.",
+            "label": "Cost per hour",
+            "hint": "Salary plus other staff costs. From 5 to 500.",
             "min": 5,
             "max": 500,
             "step": 1,
@@ -123,20 +110,20 @@
         "labels": {
           "hours": "Hours a year",
           "cost": "Cost a year",
-          "weeksBefore": "This is the same as",
+          "weeksBefore": "Equal to",
           "weeksAfter": "full working weeks.",
-          "key": "Each square is one working week of 37.5 hours. Two rows are one full-time person for a year.",
+          "key": "One square is one working week of 37.5 hours. Two rows are one full-time person for a year.",
           "more": "+ {n} more weeks"
         },
         "weeksPerYear": 46,
         "hoursPerWeek": 37.5,
-        "note": "This uses only the numbers you type. Nothing is sent. It assumes 46 working weeks a year. It is an estimate, not a quote.",
-        "addLabel": "Add this estimate to my summary",
-        "added": "I added this estimate to your summary."
+        "note": "Uses only what you type. Nothing is sent. Assumes 46 working weeks a year. An estimate, not a quote.",
+        "addLabel": "Add to my summary",
+        "added": "Added to your summary."
       },
-      { "type": "text", "content": "Most tasks cannot be removed completely. A system usually does the routine part, and a person checks the result." }
+      { "type": "text", "content": "A system rarely removes a task completely. It does the routine part. A person checks the result." }
     ],
-    "chips": [{ "target": "method" }, { "target": "process" }, { "label": "See a summary of your visit", "target": "_show_brief" }]
+    "chips": [{ "target": "method" }, { "target": "process" }, { "label": "Your summary", "target": "_show_brief" }]
   },
   {
     "id": "signals",
@@ -145,30 +132,14 @@
     "intents": ["problems", "problem you solve", "examples", "symptoms", "pain points"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "Here are four common problems. Each one is an example, not a quote from a client. Choose one to read more." },
+      { "type": "text", "content": "Four common problems. These are examples, not client stories." },
       {
         "type": "grid",
         "items": [
-          {
-            "title": "A supplier fails without warning",
-            "description": "You find out from social media or from an unhappy customer.",
-            "target": "signal_blindside"
-          },
-          {
-            "title": "Weekly reports made by hand",
-            "description": "Someone copies the same data into the same spreadsheet every week.",
-            "target": "signal_monday"
-          },
-          {
-            "title": "Hearing about tenders too late",
-            "description": "A competitor has already met the buyer before you hear about the tender.",
-            "target": "signal_late"
-          },
-          {
-            "title": "Only one person knows how things work",
-            "description": "The owner cannot take two weeks off, because the answers are in their head.",
-            "target": "signal_instinct"
-          }
+          { "title": "A supplier fails without warning", "description": "You hear it from a customer.", "target": "signal_blindside" },
+          { "title": "Reports built by hand", "description": "The same spreadsheet, every week.", "target": "signal_monday" },
+          { "title": "Tenders found too late", "description": "A competitor met the buyer first.", "target": "signal_late" },
+          { "title": "One person holds the knowledge", "description": "They cannot take two weeks off.", "target": "signal_instinct" }
         ]
       }
     ],
@@ -176,69 +147,69 @@
   },
   {
     "id": "signal_blindside",
-    "label": "Problem: a supplier fails without warning",
+    "label": "A supplier fails without warning",
     "parent": "signals",
     "intents": ["supplier fails", "insolvency", "warning"],
     "tags": ["overview"],
     "blocks": [
       {
         "type": "callout",
-        "text": "Example: a company's biggest supplier stopped trading. The company found out from a LinkedIn post. On the same day, a client asked where their delivery was."
+        "text": "Example. A company's main supplier stopped trading. They found out from a LinkedIn post. The same day, a client asked where their delivery was."
       },
       {
         "type": "text",
-        "content": "Public records often show warning signs weeks earlier. I build systems that check those records every day. They email you on the morning a relevant record appears, so you have time to prepare."
+        "content": "Public records often show the warning signs weeks earlier. I build systems that read them daily and email you the morning something changes."
       }
     ],
     "chips": [{ "target": "signal_monday" }, { "target": "method" }, { "target": "signals" }]
   },
   {
     "id": "signal_monday",
-    "label": "Problem: weekly reports made by hand",
+    "label": "Reports built by hand",
     "parent": "signals",
     "intents": ["report", "reports", "spreadsheet", "spreadsheets", "copy data"],
     "tags": ["overview"],
     "blocks": [
       {
         "type": "callout",
-        "text": "Example: every Monday, one person spends the whole day copying data from five places into one spreadsheet. A second person checks it. It still contains mistakes."
+        "text": "Example. Every Monday, one person spends the day copying data from five places into one spreadsheet. A second person checks it. It still has mistakes."
       },
       {
         "type": "text",
-        "content": "I build a system that makes the report automatically before your working day starts. It follows the same steps every time, so it does not make copying mistakes. The person who made the report can do other work."
+        "content": "I build a system that produces the report before the working day starts. Same steps, every time. No copying errors. The person who made it does other work."
       }
     ],
     "chips": [{ "target": "estimate" }, { "target": "signal_late" }, { "target": "method" }, { "target": "signals" }]
   },
   {
     "id": "signal_late",
-    "label": "Problem: hearing about tenders too late",
+    "label": "Tenders found too late",
     "parent": "signals",
     "intents": ["tender", "tenders", "contracts", "too late"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "callout", "text": "Example: a company heard about a public tender late. By then, the company that won it had already met the buyer twice." },
+      { "type": "callout", "text": "Example. A company heard about a public tender late. The winner had already met the buyer twice." },
       {
         "type": "text",
-        "content": "Companies that hear first usually have a system that checks public notices every day. My system checks five public registers every night. A system for your business would check the sources that matter in your market."
+        "content": "Whoever hears first usually has a system checking public notices daily. Mine checks five public registers every night. Yours would check the sources in your market."
       }
     ],
     "chips": [{ "target": "signal_instinct" }, { "target": "method" }, { "target": "signals" }]
   },
   {
     "id": "signal_instinct",
-    "label": "Problem: only one person knows how things work",
+    "label": "One person holds the knowledge",
     "parent": "signals",
     "intents": ["only one person", "key person", "holiday", "time off"],
     "tags": ["overview"],
     "blocks": [
       {
         "type": "callout",
-        "text": "Example: a business owner has not taken two weeks off in six years. The reason is not money. The knowledge needed to run the business is only in their head."
+        "text": "Example. An owner has not taken two weeks off in six years. Not for lack of money. The knowledge to run the business is only in their head."
       },
       {
         "type": "text",
-        "content": "I write down the checks and decisions that person makes every day. Then I build a system that does the routine ones. It keeps working when that person is away."
+        "content": "I write down the checks and decisions that person makes. Then I automate the routine ones. The work continues while they are away."
       }
     ],
     "chips": [{ "target": "method" }, { "target": "proof" }, { "target": "signals" }]
@@ -253,26 +224,23 @@
       {
         "type": "flow",
         "layout": "horizontal",
-        "title": "The four stages, in order",
+        "title": "Four stages, in order",
         "nodes": [
-          { "id": "yd", "label": "You do the task" },
+          { "id": "yd", "label": "You do it" },
           { "id": "sg", "label": "System suggests" },
           { "id": "ck", "label": "System acts, you check" },
           { "id": "rn", "label": "System runs alone", "variant": "accent" }
         ],
         "edges": [{ "from": "yd", "to": "sg" }, { "from": "sg", "to": "ck" }, { "from": "ck", "to": "rn" }]
       },
-      {
-        "type": "text",
-        "content": "A new system moves up one stage at a time. It never skips a stage. If it starts making more mistakes, it moves back one stage automatically."
-      },
-      { "type": "callout", "text": "In one of my own systems, two of three tasks have reached the last stage. The third task is still at the checking stage." }
+      { "type": "text", "content": "One stage at a time. No skipping. If mistakes rise, the system moves back a stage automatically." },
+      { "type": "callout", "text": "In one of my systems, two of three tasks now run alone. The third is still checked." }
     ],
     "chips": [{ "target": "callsheet_zero_ops" }, { "target": "proof" }, { "target": "process" }]
   },
   {
     "id": "proof",
-    "label": "Proof from systems I run",
+    "label": "Proof",
     "parent": null,
     "intents": ["proof", "evidence", "track record", "case study", "case studies", "clients", "done this before"],
     "tags": ["overview", "work"],
@@ -280,17 +248,14 @@
       { "type": "fact", "key": "clients" },
       {
         "type": "pills",
-        "label": "Public sources my system checks every night",
+        "label": "Public sources my system reads nightly",
         "items": ["UK company records", "Property sales", "Government contracts", "Insolvency notices", "Grant funding"]
       },
-      {
-        "type": "text",
-        "content": "Anyone can read these sources. My system links them together, so a change in one source can show an opportunity in another."
-      },
+      { "type": "text", "content": "All public. My system links them, so a change in one can point to an opportunity in another." },
       {
         "type": "flow",
         "layout": "horizontal",
-        "title": "Example of linked changes",
+        "title": "Example: linked changes",
         "nodes": [
           { "id": "cf", "label": "A company closes" },
           { "id": "ps", "label": "Its building is for sale" },
@@ -299,12 +264,12 @@
         ],
         "edges": [{ "from": "cf", "to": "ps" }, { "from": "ps", "to": "co" }, { "from": "co", "to": "op" }]
       },
-      { "type": "text", "content": "One of my systems runs a public online directory called Callsheet. These figures come from that system." },
+      { "type": "text", "content": "Figures from Callsheet, a public directory I built and run." },
       {
         "type": "metricRow",
         "items": [
-          { "value": "37", "label": "jobs that run on a timetable" },
-          { "value": "95%", "label": "of problems fixed without me (approximate)" },
+          { "value": "37", "label": "scheduled jobs" },
+          { "value": "95%", "label": "problems fixed without me (approximate)" },
           { "value": "£36", "label": "a month to run" }
         ]
       },
@@ -319,27 +284,19 @@
     "intents": ["process", "how do we start", "getting started", "get started", "work together", "engagement", "hire", "steps", "next step"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "Every project follows the same five steps, in this order." },
+      { "type": "text", "content": "Five steps. Always in this order." },
       {
         "type": "layers",
         "items": [
-          { "label": "1", "title": "We talk, and I listen", "detail": "You tell me what works, what is difficult, and what you wish happened automatically." },
-          {
-            "label": "2",
-            "title": "I map how the work really happens",
-            "detail": "I look at what people actually do, where time goes, and where the value is."
-          },
-          {
-            "label": "3",
-            "title": "I show you a design",
-            "detail": "It shows what stays, what changes, and what becomes automatic. Nothing changes until you approve it."
-          },
+          { "label": "1", "title": "We talk. I listen.", "detail": "What works, what is hard, what you want automated." },
+          { "label": "2", "title": "I map the real work", "detail": "What people actually do. Where the time goes." },
+          { "label": "3", "title": "I show you a design", "detail": "What stays, what changes, what becomes automatic. Nothing changes until you approve it." },
           {
             "label": "4",
-            "title": "I build it and we test it",
-            "detail": "At first a person checks everything it does. It only runs alone after it has shown that it works."
+            "title": "I build it. We test it.",
+            "detail": "A person checks everything at first. It runs alone only after it has shown that it works."
           },
-          { "label": "5", "title": "It runs, and you decide", "detail": "The system does the routine work. You make the decisions that need judgement." }
+          { "label": "5", "title": "It runs. You decide.", "detail": "The system does the routine work. You make the calls that need judgement." }
         ]
       },
       { "type": "fact", "key": "firstStep" },
@@ -351,37 +308,37 @@
   },
   {
     "id": "cost",
-    "label": "Cost",
+    "label": "Price",
     "parent": null,
     "intents": ["cost", "costs", "price", "prices", "pricing", "fee", "fees", "quote", "budget", "how much", "charge", "rates"],
     "tags": ["overview"],
     "blocks": [
       { "type": "fact", "key": "cost" },
       { "type": "fact", "key": "timeline" },
-      { "type": "text", "content": "The first step is a free 30-minute call. After the call you get a one-page written summary." }
+      { "type": "text", "content": "The first call is free and takes 30 minutes. Afterwards you get a one-page written summary." }
     ],
-    "chips": [{ "target": "estimate" }, { "label": "Book the free 30-minute call", "target": "_book" }, { "target": "process" }]
+    "chips": [{ "target": "estimate" }, { "label": "Book the free call", "target": "_book" }, { "target": "process" }]
   },
   {
     "id": "contact",
-    "label": "Contact and booking",
+    "label": "Contact",
     "parent": null,
     "intents": ["contact", "email", "talk", "call", "book", "booking", "get in touch", "meeting", "speak"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "Tell me which work takes too much time in your business. The first call takes 30 minutes and is free." },
-      { "type": "text", "content": "After the call you get a one-page written summary of where time is lost. You keep it, whether or not we work together." },
+      { "type": "text", "content": "Tell me which work takes too much time. The first call is free and takes 30 minutes." },
+      { "type": "text", "content": "Afterwards you get a one-page summary of where time is lost. It is yours either way." },
       {
         "type": "stats",
         "items": [
           { "label": "Based in", "value": "London, UK" },
-          { "label": "Reply time", "value": "The same day" },
-          { "label": "First call", "value": "30 minutes, free" },
+          { "label": "Reply", "value": "Same day" },
+          { "label": "First call", "value": "Free, 30 minutes" },
           { "label": "Email", "value": "lab@mindunder.dev" }
         ]
       },
-      { "type": "text", "content": "There is no sales presentation. If I cannot find anything worth fixing, I will tell you." }
+      { "type": "text", "content": "No sales pitch. If there is nothing worth fixing, I will say so." }
     ],
-    "chips": [{ "label": "Book the free 30-minute call", "target": "_book" }]
+    "chips": [{ "label": "Book the free call", "target": "_book" }]
   }
 ]

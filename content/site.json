@@ -1,144 +1,147 @@
 {
   "$comment": "Site configuration. Everything a visitor reads outside the topic files lives here. Leave a value as null if it is not decided yet: the site will not invent it. Run `npm run sync` after editing, then `npm test`.",
-
   "brand": "mindunder.dev",
   "timeZone": "Europe/London",
-
-  "person": {
-    "name": "Ruben",
-    "fullName": null,
-    "email": "lab@mindunder.dev",
-    "location": "London, UK",
-    "links": []
-  },
-
+  "person": { "name": "Ruben", "fullName": null, "email": "lab@mindunder.dev", "location": "London, UK", "links": [] },
   "meta": {
-    "title": "mindunder.dev: business process automation in London",
-    "description": "I find the work your team repeats by hand. Then I build a system that does it. The first step is a free 30-minute call. Based in London."
+    "title": "mindunder.dev — business process automation, London",
+    "description": "I find the work your team repeats by hand, then automate it. First call free. London."
   },
-
   "facts": {
-    "what": {
-      "label": "What I do",
-      "value": "I look at how work moves through your business. I find the steps that people repeat by hand. Then I build software that does those steps for you."
-    },
-    "who": {
-      "label": "Who it is for",
-      "value": null,
-      "missing": null
-    },
-    "firstStep": {
-      "label": "First step",
-      "value": "A free 30-minute call. Afterwards you get a one-page written summary of where time is lost. You keep it whether or not we work together."
-    },
-    "cost": {
-      "label": "Cost",
-      "value": null,
-      "missing": "Prices are not published on this site yet. The first call is free. You can ask for a price by email."
-    },
-    "timeline": {
-      "label": "How long it takes",
-      "value": null,
-      "missing": null
-    },
-    "reply": {
-      "label": "Reply time",
-      "value": "The same day"
-    },
-    "location": {
-      "label": "Based in",
-      "value": "London, UK"
-    },
+    "what": { "label": "What I do", "value": "I find the steps your team repeats by hand. Then I build software that does them." },
+    "who": { "label": "Who it is for", "value": null, "missing": null },
+    "firstStep": { "label": "First call", "value": "Free. 30 minutes. You keep the written summary." },
+    "cost": { "label": "Price", "value": null, "missing": "On request. Not published yet." },
+    "timeline": { "label": "How long it takes", "value": null, "missing": null },
+    "reply": { "label": "Reply", "value": "Same day" },
+    "location": { "label": "Based in", "value": "London, UK" },
     "clients": {
       "label": "Client work",
       "value": null,
-      "missing": "No client case studies are published yet. The examples on this site are systems I built and run for my own projects."
+      "missing": "No client case studies published yet. The examples here are systems I built and run myself."
     },
-    "handover": {
-      "label": "After the project",
-      "value": null,
-      "missing": null
-    },
-    "callsheetUrl": {
-      "label": "Callsheet website",
-      "value": null,
-      "missing": null,
-      "link": true
-    }
+    "handover": { "label": "After the project", "value": null, "missing": null },
+    "callsheetUrl": { "label": "Callsheet website", "value": null, "missing": null, "link": true }
   },
-
   "landing": {
-    "eyebrow": "Business process automation · London",
-    "headline": ["I find the work your team repeats by hand.", "Then I build a system that does it."],
-    "accent": "find",
-    "lede": "For example: copying data between systems, chasing approvals by email, or making the same report every week. I work alone, from London.",
+    "eyebrow": "Business process automation — London",
+    "headline": ["I find the work", "your team repeats.", "Then I automate it."],
+    "accent": "automate",
+    "lede": "Copying between systems. Chasing approvals. The same report every Monday. I work alone, from London.",
     "facts": ["firstStep", "cost", "reply"],
-    "allLink": "Read everything on one page",
-    "tool": { "target": "estimate", "label": "Work out what repeated work costs you", "note": "Type three numbers. It takes about one minute." },
+    "allLink": "Everything on one page",
+    "tool": { "target": "estimate", "label": "Calculate what repeated work costs", "note": "Three numbers. One minute." },
     "lens": {
-      "idle": "Illustration: a business process drawn as a network. Move your pointer to look underneath it. Click to scan the whole picture.",
-      "idleTouch": "Illustration: a business process drawn as a network. Move your finger across it to look underneath. Tap to scan the whole picture.",
-      "found": "Illustration: the circled point is a bottleneck, a place where work waits for a person.",
+      "idle": "Move the pointer to look underneath.",
+      "idleTouch": "Touch and move to look underneath.",
+      "found": "Bottleneck: work waiting for a person.",
       "note": "bottleneck",
-      "noteLines": ["example only", "work waits here"]
+      "noteLines": ["example"]
     }
   },
-
   "onePage": {
-    "title": "Everything on one page",
-    "intro": "This page has the main topics in order. Technical details about my own projects are at the end.",
+    "title": "Everything, on one page",
+    "intro": "Every topic, in order. Technical detail at the end.",
     "sections": ["method", "signals", "trust_ladder", "proof", "process", "cost", "ruben", "contact"],
     "appendix": ["projects", "callsheet", "callsheet_zero_ops", "haios", "behold"]
   },
-
-  "reading": {
-    "motion": "full",
-    "text": "standard",
-    "sound": false
-  },
-
-  "features": {
-    "map": true,
-    "depthMeter": false,
-    "freeText": true,
-    "sound": true
-  },
-
+  "reading": { "motion": "full", "text": "standard", "sound": false },
+  "features": { "map": true, "depthMeter": false, "freeText": true, "sound": true },
   "copy": {
     "ui": {
-      "placeholder": "Type a question, for example: What does it cost?",
-      "placeholderSession": "Type a question",
+      "placeholder": "Ask a question. For example: what does it cost?",
+      "placeholderSession": "Ask a question",
       "thinking": "Loading",
-      "next": "Next topics",
+      "next": "Next",
       "questionIndex": "Topic",
-      "technical": "Technical detail, mainly for developers",
-      "allLink": "Read everything on one page",
+      "technical": "Technical detail",
+      "allLink": "Everything on one page",
       "backToStart": "Back to the start"
     }
   },
-
   "language": {
     "maxSentenceWords": 25,
-    "minSentenceWords": 3,
+    "minSentenceWords": 1,
     "maxGrade": { "business": 9, "technical": 12 },
     "knownAcronyms": ["UK", "AI", "TV", "PDF"],
     "banned": [
-      "sound familiar", "you know something", "can't see where", "can’t see where",
-      "drag", "dragging", "heavy", "skunkworks", "upstream", "headcount",
-      "hands on the wheel", "breathes", "metabolism", "meatspace", "substrate",
-      "bus factor", "blindside", "coffee meeting", "holiday test", "monday ritual",
-      "on probation", "graduate", "graduated", "graduation", "ceremony", "ceremonies",
-      "orphan", "boring", "tuesday morning", "daily driver", "descendant",
-      "the lab", "zero ops", "compounding", "system of systems", "deployment detail",
-      "glorified", "under the surface", "earn trust", "earns trust", "earn its trust", "earned",
-      "shipped", "ping", "compiling", "at the end of the day", "low-hanging", "game changer",
-      "leverage", "synergy", "seamless", "cutting-edge", "next-level", "no-brainer",
-      "ahead of the curve", "moves the needle", "deep dive", "circle back", "touch base",
-      "secret sauce", "magic", "just works", "the drag"
+      "sound familiar",
+      "you know something",
+      "can't see where",
+      "can’t see where",
+      "drag",
+      "dragging",
+      "heavy",
+      "skunkworks",
+      "upstream",
+      "headcount",
+      "hands on the wheel",
+      "breathes",
+      "metabolism",
+      "meatspace",
+      "substrate",
+      "bus factor",
+      "blindside",
+      "coffee meeting",
+      "holiday test",
+      "monday ritual",
+      "on probation",
+      "graduate",
+      "graduated",
+      "graduation",
+      "ceremony",
+      "ceremonies",
+      "orphan",
+      "boring",
+      "tuesday morning",
+      "daily driver",
+      "descendant",
+      "the lab",
+      "zero ops",
+      "compounding",
+      "system of systems",
+      "deployment detail",
+      "glorified",
+      "under the surface",
+      "earn trust",
+      "earns trust",
+      "earn its trust",
+      "earned",
+      "shipped",
+      "ping",
+      "compiling",
+      "at the end of the day",
+      "low-hanging",
+      "game changer",
+      "leverage",
+      "synergy",
+      "seamless",
+      "cutting-edge",
+      "next-level",
+      "no-brainer",
+      "ahead of the curve",
+      "moves the needle",
+      "deep dive",
+      "circle back",
+      "touch base",
+      "secret sauce",
+      "magic",
+      "just works",
+      "the drag"
     ],
     "bannedBusiness": [
-      "orchestration", "orchestrated", "cadence", "declassification", "stateless",
-      "platform-agnostic", "tRPC", "Drizzle", "event bus", "consumer", "consumers", "invariants"
+      "orchestration",
+      "orchestrated",
+      "cadence",
+      "declassification",
+      "stateless",
+      "platform-agnostic",
+      "tRPC",
+      "Drizzle",
+      "event bus",
+      "consumer",
+      "consumers",
+      "invariants"
     ]
   }
 }

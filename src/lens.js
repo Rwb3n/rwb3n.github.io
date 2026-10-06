@@ -78,7 +78,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
   function readColors() {
     const cs = getComputedStyle(document.documentElement);
     const v = (n) => cs.getPropertyValue(n).trim();
-    colors = { fg: v('--fg'), fg2: v('--fg-2'), fg3: v('--fg-3'), line: v('--line-2'), accent: v('--accent'), dot: v('--dot'), bg: v('--bg'), mono: v('--font-mono') || 'monospace', display: v('--font-display') || 'serif' };
+    colors = { fg: v('--fg'), fg2: v('--fg-2'), fg3: v('--fg-3'), line: v('--line-2'), accent: v('--accent'), dot: v('--dot'), bg: v('--bg'), mono: v('--font-mono') || 'monospace', sans: v('--font-sans') || 'sans-serif', display: v('--font-display') || 'serif' };
   }
 
   function resize() {
@@ -271,7 +271,8 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     }
     g.stroke();
 
-    g.font = `10px ${colors.mono}`;
+    g.font = `500 9px ${colors.sans}`;
+    if ('letterSpacing' in g) g.letterSpacing = '0.14em';
     g.textBaseline = 'middle';
     for (const n of nodes) {
       if (n.fault && !withHot) continue;
@@ -284,7 +285,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
       g.stroke();
       if (n.label) {
         g.fillStyle = colors.fg2;
-        g.fillText(n.label, x + n.r + 6, y);
+        g.fillText(n.label.toUpperCase(), x + n.r + 6, y);
       }
     }
   }
@@ -534,7 +535,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     };
     const typed = (str, t0) => str.slice(0, Math.max(0, Math.floor((s - t0) / 0.028)));
     // A paper plate behind the words, so the lines under the lens never run through them.
-    ctx.font = `10px ${colors.mono}`;
+    ctx.font = `500 9px ${colors.sans}`;
     const lines = (copy.lens.noteLines || []).map((n) => n.toUpperCase());
     const plateW = Math.max(ctx.measureText(copy.lens.note || '').width * 1.9, ...lines.map((n) => ctx.measureText(n).width)) + 10;
     const plateH = 30 + lines.length * 14;
@@ -543,12 +544,14 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     ctx.fillRect(x1 + 12, y1 - 16, plateW, plateH);
     ctx.globalAlpha = 1;
     mark(x1 + 12, y1 - 16, plateW, plateH);
-    ctx.font = `italic 22px ${colors.display}`;
+    ctx.font = `italic 26px ${colors.display}`;
     ctx.fillStyle = colors.accent;
     halo(typed(copy.lens.note || '', 0.28), x1 + 18, y1 + 6);
-    ctx.font = `10px ${colors.mono}`;
+    ctx.font = `500 9px ${colors.sans}`;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0.22em';
     ctx.fillStyle = colors.fg2;
     lines.forEach((n, i) => halo(typed(n, 0.5 + i * 0.16), x1 + 18, y1 + 24 + i * 14));
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
     ctx.lineWidth = 1;
   }
 
@@ -590,14 +593,17 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     ctx.lineWidth = 1;
 
     // Readout.
-    ctx.font = `10px ${colors.mono}`;
+    // Readout: one word, only when it means something.
+    if (!found) return;
+    ctx.font = `500 9px ${colors.sans}`;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0.22em';
     ctx.fillStyle = c;
     ctx.textBaseline = 'alphabetic';
-    if (!found && W < 720) return;
-    const label = found ? 'FOUND' : `X ${(lens.x / W).toFixed(2)}  Y ${(lens.y / H).toFixed(2)}`;
+    const label = 'FOUND';
     const a = -Math.PI / 4;
     const rx = lens.x + Math.cos(a) * (RR + 14), ry = lens.y + Math.sin(a) * (RR + 14);
     ctx.fillText(label, rx, ry);
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
     mark(rx - 2, ry - 12, 150, 17);
   }
 

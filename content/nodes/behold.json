@@ -1,16 +1,12 @@
 {
   "id": "behold",
-  "label": "Behold: the everyday version of Haios",
+  "label": "Behold",
   "parent": null,
   "intents": ["behold"],
   "tags": ["project"],
   "blocks": [
-    { "type": "text", "content": "Behold is a simpler version of Haios. Haios is my research project. Behold is the version I use for my own work every day." },
+    { "type": "text", "content": "Behold is the everyday version of Haios, my research project. I use it for my own work daily." },
     { "type": "pills", "label": "How it works", "items": ["Work is split into sessions", "Simple folders", "A person and AI software working together"] }
   ],
-  "chips": [
-    { "target": "haios" },
-    { "target": "projects" },
-    { "target": "ruben" }
-  ]
+  "chips": [{ "target": "haios" }, { "target": "projects" }, { "target": "ruben" }]
 }

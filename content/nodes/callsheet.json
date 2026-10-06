@@ -1,45 +1,46 @@
 [
   {
     "id": "callsheet",
-    "label": "Callsheet: an automated online directory",
+    "label": "Callsheet",
     "parent": null,
     "intents": ["callsheet", "directory", "film", "media", "broadcasting"],
     "tags": ["project", "deep"],
     "blocks": [
-      { "type": "text", "content": "Callsheet is a public online directory of UK film, TV and media companies. I built it alone, and it runs without staff." },
-      { "type": "metricRow", "items": [
-        { "value": "37", "label": "Jobs run on a timetable" },
-        { "value": "~95%", "label": "Problems fixed automatically" },
-        { "value": "~£36", "label": "Running cost per month" }
-      ]},
+      { "type": "text", "content": "Callsheet is a public directory of UK film, TV and media companies. I built it alone. It runs without staff." },
+      {
+        "type": "metricRow",
+        "items": [
+          { "value": "37", "label": "Jobs run on a timetable" },
+          { "value": "~95%", "label": "Problems fixed automatically" },
+          { "value": "~£36", "label": "Running cost per month" }
+        ]
+      },
       { "type": "fact", "key": "callsheetUrl" }
     ],
-    "chips": [
-      { "target": "callsheet_zero_ops" },
-      { "target": "callsheet_graduation" },
-      { "target": "callsheet_arch" },
-      { "target": "projects" }
-    ]
+    "chips": [{ "target": "callsheet_zero_ops" }, { "target": "callsheet_graduation" }, { "target": "callsheet_arch" }, { "target": "projects" }]
   },
   {
     "id": "callsheet_zero_ops",
-    "label": "Callsheet: how it runs without staff",
+    "label": "Callsheet: running without staff",
     "parent": "callsheet",
     "intents": ["without staff", "no staff", "runs itself"],
     "tags": ["project"],
     "blocks": [
-      { "type": "text", "content": "Nobody checks new listings by hand. Nobody runs the legal checks by hand. Nobody decides by hand when to update the data." },
-      { "type": "stats", "items": [
-        { "label": "Problems fixed automatically", "value": "About 95%" },
-        { "label": "Problems sent to me", "value": "Fewer than 5%" },
-        { "label": "My regular task", "value": "Reading one summary report each week" }
-      ]},
-      { "type": "text", "content": "The system handles new data, legal checks and emails to listed companies. I read the weekly report and deal with the few problems it sends me." }
+      { "type": "text", "content": "Nobody checks new listings by hand. Nobody runs legal checks by hand. Nobody decides when to refresh the data." },
+      {
+        "type": "stats",
+        "items": [
+          { "label": "Problems fixed automatically", "value": "About 95%" },
+          { "label": "Problems sent to me", "value": "Fewer than 5%" },
+          { "label": "My regular task", "value": "Reading one summary report each week" }
+        ]
+      },
+      {
+        "type": "text",
+        "content": "The system handles data, legal checks and emails to listed companies. I read one weekly report and deal with the few problems it sends me."
+      }
     ],
-    "chips": [
-      { "target": "callsheet_graduation" },
-      { "target": "callsheet_scheduler" }
-    ]
+    "chips": [{ "target": "callsheet_graduation" }, { "target": "callsheet_scheduler" }]
   },
   {
     "id": "callsheet_arch",
@@ -49,32 +50,37 @@
     "tags": ["project", "technical", "deep"],
     "audience": "technical",
     "blocks": [
-      { "type": "text", "content": "In plain terms: the system watches what happens, records it, checks the results, and gives itself more work only when the results are good." },
-      { "type": "flow", "layout": "horizontal", "nodes": [
-        { "id": "ob", "label": "Watch" },
-        { "id": "lo", "label": "Record" },
-        { "id": "ev", "label": "Check results" },
-        { "id": "gr", "label": "Allow more" },
-        { "id": "go", "label": "Set limits" }
-      ], "edges": [
-        { "from": "ob", "to": "lo", "label": "events" },
-        { "from": "lo", "to": "ev", "label": "decisions" },
-        { "from": "ev", "to": "gr", "label": "targets" },
-        { "from": "gr", "to": "go", "label": "permission" }
-      ], "loop": { "from": "go", "to": "ob", "label": "feedback" } },
-      { "type": "layers", "items": [
-        { "label": "Layer 4", "title": "Website and admin screens", "detail": "20 pages and 118 server functions." },
-        { "label": "Layer 3", "title": "Business areas", "detail": "Data, operations, platform and sales." },
-        { "label": "Layer 2", "title": "Rules for decisions", "detail": "Scoring, ageing of old data, and approval of new automatic tasks." },
-        { "label": "Layer 1", "title": "Core services", "detail": "Messages between parts, the timetable, process steps and the record of events." },
-        { "label": "Layer 0", "title": "Outside services", "detail": "Payments, database, file storage and email." }
-      ]}
+      { "type": "text", "content": "The system watches, records and checks its results. It gives itself more work only when the results are good." },
+      {
+        "type": "flow",
+        "layout": "horizontal",
+        "nodes": [
+          { "id": "ob", "label": "Watch" },
+          { "id": "lo", "label": "Record" },
+          { "id": "ev", "label": "Check results" },
+          { "id": "gr", "label": "Allow more" },
+          { "id": "go", "label": "Set limits" }
+        ],
+        "edges": [
+          { "from": "ob", "to": "lo", "label": "events" },
+          { "from": "lo", "to": "ev", "label": "decisions" },
+          { "from": "ev", "to": "gr", "label": "targets" },
+          { "from": "gr", "to": "go", "label": "permission" }
+        ],
+        "loop": { "from": "go", "to": "ob", "label": "feedback" }
+      },
+      {
+        "type": "layers",
+        "items": [
+          { "label": "Layer 4", "title": "Website and admin screens", "detail": "20 pages and 118 server functions." },
+          { "label": "Layer 3", "title": "Business areas", "detail": "Data, operations, platform and sales." },
+          { "label": "Layer 2", "title": "Rules for decisions", "detail": "Scoring, ageing of old data, and approval of new automatic tasks." },
+          { "label": "Layer 1", "title": "Core services", "detail": "Messages between parts, the timetable, process steps and the record of events." },
+          { "label": "Layer 0", "title": "Outside services", "detail": "Payments, database, file storage and email." }
+        ]
+      }
     ],
-    "chips": [
-      { "target": "callsheet_domains" },
-      { "target": "callsheet_graduation" },
-      { "target": "callsheet_scheduler" }
-    ]
+    "chips": [{ "target": "callsheet_domains" }, { "target": "callsheet_graduation" }, { "target": "callsheet_scheduler" }]
   },
   {
     "id": "callsheet_domains",
@@ -85,24 +91,26 @@
     "audience": "technical",
     "blocks": [
       { "type": "text", "content": "The system is split into four business areas. A central message system sends each area the events it needs." },
-      { "type": "flow", "layout": "fanout", "title": "Central message system and the four areas", "nodes": [
-        { "id": "bus", "label": "Message system", "sublabel": "25 event types", "variant": "accent" },
-        { "id": "d", "label": "Data", "sublabel": "9 handlers" },
-        { "id": "o", "label": "Operations", "sublabel": "12 handlers" },
-        { "id": "p", "label": "Platform", "sublabel": "4 handlers" },
-        { "id": "c", "label": "Sales", "sublabel": "8 handlers" }
-      ], "edges": [
-        { "from": "bus", "to": "d", "label": "listings" },
-        { "from": "bus", "to": "o", "label": "legal checks" },
-        { "from": "bus", "to": "p", "label": "accounts" },
-        { "from": "bus", "to": "c", "label": "revenue" }
-      ]}
+      {
+        "type": "flow",
+        "layout": "fanout",
+        "title": "Central message system and the four areas",
+        "nodes": [
+          { "id": "bus", "label": "Message system", "sublabel": "25 event types", "variant": "accent" },
+          { "id": "d", "label": "Data", "sublabel": "9 handlers" },
+          { "id": "o", "label": "Operations", "sublabel": "12 handlers" },
+          { "id": "p", "label": "Platform", "sublabel": "4 handlers" },
+          { "id": "c", "label": "Sales", "sublabel": "8 handlers" }
+        ],
+        "edges": [
+          { "from": "bus", "to": "d", "label": "listings" },
+          { "from": "bus", "to": "o", "label": "legal checks" },
+          { "from": "bus", "to": "p", "label": "accounts" },
+          { "from": "bus", "to": "c", "label": "revenue" }
+        ]
+      }
     ],
-    "chips": [
-      { "target": "callsheet_trust" },
-      { "target": "callsheet_flows" },
-      { "target": "callsheet_arch" }
-    ]
+    "chips": [{ "target": "callsheet_trust" }, { "target": "callsheet_flows" }, { "target": "callsheet_arch" }]
   },
   {
     "id": "callsheet_graduation",
@@ -113,19 +121,28 @@
     "audience": "technical",
     "blocks": [
       { "type": "text", "content": "No task starts out running alone. Each task must meet a clear target before it is allowed to." },
-      { "type": "progress", "label": "Tasks approved to run alone", "current": 2, "total": 3, "sublabel": "Two tasks are approved. The third is still being checked." },
-      { "type": "table", "headers": ["Task", "Target it must meet", "Monthly limit"], "rows": [
-        ["Deciding how often to refresh listings", "Fewer than 2% wrong results, and a return of more than 50% on its cost", "10 a month"],
-        ["Applying routine rule changes", "Nothing to do with money, and at least 50 similar past decisions", "5 a month"],
-        ["Releasing a new scoring method", "Four weeks in full use, with fewer than 5% of listings changing category", "1 a month"]
-      ]},
-      { "type": "text", "content": "A new scoring method is released in stages: to 10% of listings, then 25%, 50% and 100%. If more than 10% of listings change category within 7 days, the change is undone automatically." }
+      {
+        "type": "progress",
+        "label": "Tasks approved to run alone",
+        "current": 2,
+        "total": 3,
+        "sublabel": "Two tasks are approved. The third is still being checked."
+      },
+      {
+        "type": "table",
+        "headers": ["Task", "Target it must meet", "Monthly limit"],
+        "rows": [
+          ["Deciding how often to refresh listings", "Fewer than 2% wrong results, and a return of more than 50% on its cost", "10 a month"],
+          ["Applying routine rule changes", "Nothing to do with money, and at least 50 similar past decisions", "5 a month"],
+          ["Releasing a new scoring method", "Four weeks in full use, with fewer than 5% of listings changing category", "1 a month"]
+        ]
+      },
+      {
+        "type": "text",
+        "content": "A new scoring method is released in stages: to 10% of listings, then 25%, 50% and 100%. If more than 10% of listings change category within 7 days, the change is undone automatically."
+      }
     ],
-    "chips": [
-      { "target": "callsheet_scheduler" },
-      { "target": "callsheet_trust" },
-      { "target": "callsheet" }
-    ]
+    "chips": [{ "target": "callsheet_scheduler" }, { "target": "callsheet_trust" }, { "target": "callsheet" }]
   },
   {
     "id": "callsheet_scheduler",
@@ -135,18 +152,18 @@
     "tags": ["project", "technical", "deep"],
     "audience": "technical",
     "blocks": [
-      { "type": "split", "left": [
-        { "type": "metric", "value": "37", "label": "Scheduled jobs", "sublabel": "18 of them set their own next run time" }
-      ], "right": [
-        { "type": "text", "content": "Most websites only do something when a person uses them. This one also runs its own jobs on a timetable." }
-      ]},
-      { "type": "code", "language": "timetable", "content": "every day      [4]  legal checks, audit, clean-up, unfinished sign-ups\nevery week     [1]  finding customers who may leave\nevery month    [8]  health checks, reports, learning, emails\nevery quarter  [4]  categories, calibration, prices, performance" }
+      {
+        "type": "split",
+        "left": [{ "type": "metric", "value": "37", "label": "Scheduled jobs", "sublabel": "18 of them set their own next run time" }],
+        "right": [{ "type": "text", "content": "Most websites only do something when a person uses them. This one also runs its own jobs on a timetable." }]
+      },
+      {
+        "type": "code",
+        "language": "timetable",
+        "content": "every day      [4]  legal checks, audit, clean-up, unfinished sign-ups\nevery week     [1]  finding customers who may leave\nevery month    [8]  health checks, reports, learning, emails\nevery quarter  [4]  categories, calibration, prices, performance"
+      }
     ],
-    "chips": [
-      { "target": "callsheet_graduation" },
-      { "target": "callsheet_flows" },
-      { "target": "callsheet" }
-    ]
+    "chips": [{ "target": "callsheet_graduation" }, { "target": "callsheet_flows" }, { "target": "callsheet" }]
   },
   {
     "id": "callsheet_trust",
@@ -157,22 +174,23 @@
     "audience": "technical",
     "blocks": [
       { "type": "text", "content": "Every listing starts as unclaimed. When a company claims its listing, 75% of claims are approved automatically." },
-      { "type": "flow", "layout": "horizontal", "nodes": [
-        { "id": "u", "label": "Unclaimed", "variant": "muted" },
-        { "id": "c", "label": "Claimed" },
-        { "id": "v", "label": "Checked" },
-        { "id": "p", "label": "Premium", "variant": "accent" }
-      ], "edges": [
-        { "from": "u", "to": "c", "label": "email or Companies House" },
-        { "from": "c", "to": "v", "label": "checks" },
-        { "from": "v", "to": "p", "label": "a person" }
-      ]}
+      {
+        "type": "flow",
+        "layout": "horizontal",
+        "nodes": [
+          { "id": "u", "label": "Unclaimed", "variant": "muted" },
+          { "id": "c", "label": "Claimed" },
+          { "id": "v", "label": "Checked" },
+          { "id": "p", "label": "Premium", "variant": "accent" }
+        ],
+        "edges": [
+          { "from": "u", "to": "c", "label": "email or Companies House" },
+          { "from": "c", "to": "v", "label": "checks" },
+          { "from": "v", "to": "p", "label": "a person" }
+        ]
+      }
     ],
-    "chips": [
-      { "target": "callsheet_domains" },
-      { "target": "callsheet_flows" },
-      { "target": "callsheet" }
-    ]
+    "chips": [{ "target": "callsheet_domains" }, { "target": "callsheet_flows" }, { "target": "callsheet" }]
   },
   {
     "id": "callsheet_flows",
@@ -183,29 +201,34 @@
     "audience": "technical",
     "blocks": [
       { "type": "text", "content": "Two processes run step by step, and both can run at the same time." },
-      { "type": "flow", "layout": "horizontal", "title": "Closing a company's listing", "nodes": [
-        { "id": "v", "label": "Check the request" },
-        { "id": "e", "label": "Export the data" },
-        { "id": "c", "label": "Close the listing", "variant": "accent" }
-      ], "edges": [
-        { "from": "v", "to": "e" },
-        { "from": "e", "to": "c" }
-      ]},
-      { "type": "flow", "layout": "horizontal", "title": "Deleting personal data", "nodes": [
-        { "id": "er", "label": "Delete the data", "variant": "accent" },
-        { "id": "d", "label": "Answer the request" },
-        { "id": "dn", "label": "Done", "variant": "muted" }
-      ], "edges": [
-        { "from": "er", "to": "d" },
-        { "from": "d", "to": "dn" }
-      ]},
-      { "type": "text", "content": "Under UK data protection law (GDPR), a request to delete personal data must be completed within 30 days. The system flags the request at 7 days, 3 days, and after the deadline." }
+      {
+        "type": "flow",
+        "layout": "horizontal",
+        "title": "Closing a company's listing",
+        "nodes": [
+          { "id": "v", "label": "Check the request" },
+          { "id": "e", "label": "Export the data" },
+          { "id": "c", "label": "Close the listing", "variant": "accent" }
+        ],
+        "edges": [{ "from": "v", "to": "e" }, { "from": "e", "to": "c" }]
+      },
+      {
+        "type": "flow",
+        "layout": "horizontal",
+        "title": "Deleting personal data",
+        "nodes": [
+          { "id": "er", "label": "Delete the data", "variant": "accent" },
+          { "id": "d", "label": "Answer the request" },
+          { "id": "dn", "label": "Done", "variant": "muted" }
+        ],
+        "edges": [{ "from": "er", "to": "d" }, { "from": "d", "to": "dn" }]
+      },
+      {
+        "type": "text",
+        "content": "Under UK data protection law (GDPR), a request to delete personal data must be completed within 30 days. The system flags the request at 7 days, 3 days, and after the deadline."
+      }
     ],
-    "chips": [
-      { "target": "callsheet_stack" },
-      { "target": "callsheet_arch" },
-      { "target": "callsheet" }
-    ]
+    "chips": [{ "target": "callsheet_stack" }, { "target": "callsheet_arch" }, { "target": "callsheet" }]
   },
   {
     "id": "callsheet_stack",
@@ -216,13 +239,20 @@
     "audience": "technical",
     "blocks": [
       { "type": "text", "content": "It uses common, well-tested tools, so there are fewer surprises." },
-      { "type": "pills", "label": "Software, for developers", "items": ["Next.js 16", "TypeScript", "tRPC", "Supabase", "Drizzle", "Paddle", "Cloudflare R2 (file storage)", "Resend", "Vitest", "Playwright"] },
-      { "type": "metricRow", "items": [{ "value": "20", "label": "Pages" }, { "value": "6", "label": "Server addresses for other software" }, { "value": "~£36", "label": "Running cost per month" }] }
+      {
+        "type": "pills",
+        "label": "Software, for developers",
+        "items": ["Next.js 16", "TypeScript", "tRPC", "Supabase", "Drizzle", "Paddle", "Cloudflare R2 (file storage)", "Resend", "Vitest", "Playwright"]
+      },
+      {
+        "type": "metricRow",
+        "items": [
+          { "value": "20", "label": "Pages" },
+          { "value": "6", "label": "Server addresses for other software" },
+          { "value": "~£36", "label": "Running cost per month" }
+        ]
+      }
     ],
-    "chips": [
-      { "target": "callsheet_arch" },
-      { "target": "projects" },
-      { "target": "ruben" }
-    ]
+    "chips": [{ "target": "callsheet_arch" }, { "target": "projects" }, { "target": "ruben" }]
   }
 ]

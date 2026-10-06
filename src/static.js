@@ -66,7 +66,7 @@ export function renderRegions(site, content) {
   const email = site.person?.email;
   const noscript = [
     '<section class="noscript">',
-    '  <p>This site works best with JavaScript turned on. Here is a short summary.</p>',
+    '  <p>JavaScript is off. The essentials:</p>',
     '  <dl class="offer">',
     ...Object.keys(site.facts || {})
       .map((k) => [site.facts[k], factText(site, k)])

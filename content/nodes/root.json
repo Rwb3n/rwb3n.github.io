@@ -5,15 +5,10 @@
   "intents": ["home", "start over", "restart", "beginning", "start page"],
   "tags": ["entry"],
   "blocks": [
-    { "type": "hero", "title": "I find the work your team repeats by hand. Then I build a system that does it.", "accentWord": "find" },
+    { "type": "hero", "title": "I find the work your team repeats. Then I automate it.", "accentWord": "automate" },
     { "type": "fact", "key": "what" },
     { "type": "fact", "key": "firstStep" },
     { "type": "fact", "key": "cost" }
   ],
-  "chips": [
-    { "target": "method" },
-    { "target": "signals" },
-    { "target": "proof" },
-    { "target": "process" }
-  ]
+  "chips": [{ "target": "method" }, { "target": "signals" }, { "target": "proof" }, { "target": "process" }]
 }

@@ -6,7 +6,7 @@
 
 :root {
   /* Type families */
-  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-display: 'Bodoni Moda', 'Didot', 'Bodoni 72', 'Iowan Old Style', Georgia, serif;
   --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
@@ -18,9 +18,9 @@
   --step-2: clamp(1.375rem, 1.1rem + 0.9vw, 1.75rem);
   --step-3: clamp(1.75rem, 1.3rem + 1.6vw, 2.625rem);
   --step-4: clamp(2.25rem, 1.4rem + 3vw, 3.75rem);
-  --step-display: clamp(2.4rem, 1rem + 4.2vw, 5.25rem);
+  --step-display: clamp(2.75rem, 0.9rem + 6vw, 7.5rem);
 
-  --tracking-micro: 0.14em;
+  --tracking-micro: 0.22em;
   --tracking-tight: -0.02em;
 
   /* Space — 4px base */
@@ -34,19 +34,21 @@
   --space-8: 4rem;
   --space-9: 6rem;
 
-  --gutter: clamp(1rem, 0.5rem + 2.2vw, 2.5rem);
+  --gutter: clamp(1.25rem, 0.25rem + 4vw, 5rem);
   --measure: 38rem;
   --bar-h: 3.5rem;
   --ask-h: 4.25rem;
 
-  /* Radii are deliberately small: this is an instrument, not a toy. */
-  --radius-1: 2px;
-  --radius-2: 4px;
+  /* Square. */
+  --radius-1: 0;
+  --radius-2: 0;
   --radius-round: 999px;
 
   /* Motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* The runway curve: slow start, decisive arrival. */
+  --ease-runway: cubic-bezier(0.76, 0, 0.24, 1);
   --dur-1: 120ms;
   --dur-2: 240ms;
   --dur-3: 480ms;
@@ -60,64 +62,67 @@
   }
 }
 
-/* Light — warm paper, ink, and a single burnt-orange signal. */
+/* Black and white. One ink, one paper. Greys are for secondary text only and
+   all clear AA (light: 7.5 and 5.1 to 1; dark: 9.6 and 6.2 to 1). */
 :root,
 :root[data-theme='light'] {
   color-scheme: light;
-  --bg: #f3f0e9;
-  --bg-raised: #fbfaf6;
-  --bg-sunken: #ebe7de;
-  --fg: #1b1a17;
-  --fg-2: #55524b;
-  --fg-3: #6b675f;
-  --line: #dcd7cc;
-  --line-2: #c9c3b6;
-  --accent: #b53f14;
-  --accent-soft: rgb(181 63 20 / 0.09);
-  --accent-line: rgb(181 63 20 / 0.35);
-  --on-accent: #fbfaf6;
-  --dot: rgb(27 26 23 / 0.16);
-  --shadow: 0 1px 0 rgb(27 26 23 / 0.04), 0 12px 32px -18px rgb(27 26 23 / 0.28);
-  --selection: rgb(181 63 20 / 0.18);
+  --bg: #ffffff;
+  --bg-raised: #ffffff;
+  --bg-sunken: #f5f5f5;
+  --fg: #000000;
+  --fg-2: #545454;
+  --fg-3: #6e6e6e;
+  --line: #e8e8e8;
+  --line-2: #cccccc;
+  --accent: #000000;
+  --accent-soft: rgb(0 0 0 / 0.045);
+  --accent-line: rgb(0 0 0 / 0.4);
+  --on-accent: #ffffff;
+  --dot: rgb(0 0 0 / 0.11);
+  --shadow: none;
+  --selection: #000000;
+  --on-selection: #ffffff;
 }
 
-/* Dark — carbon ink, not pure black; phosphor-orange signal. */
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #0c0d0d;
-  --bg-raised: #141616;
-  --bg-sunken: #080909;
-  --fg: #ecebe6;
-  --fg-2: #a9a69e;
-  --fg-3: #85827b;
-  --line: #232626;
-  --line-2: #343838;
-  --accent: #ff6a3d;
-  --accent-soft: rgb(255 106 61 / 0.1);
-  --accent-line: rgb(255 106 61 / 0.4);
-  --on-accent: #0c0d0d;
-  --dot: rgb(236 235 230 / 0.13);
-  --shadow: 0 1px 0 rgb(0 0 0 / 0.4), 0 16px 40px -20px rgb(0 0 0 / 0.8);
-  --selection: rgb(255 106 61 / 0.25);
+  --bg: #000000;
+  --bg-raised: #000000;
+  --bg-sunken: #0d0d0d;
+  --fg: #ffffff;
+  --fg-2: #b0b0b0;
+  --fg-3: #8c8c8c;
+  --line: #1f1f1f;
+  --line-2: #3d3d3d;
+  --accent: #ffffff;
+  --accent-soft: rgb(255 255 255 / 0.07);
+  --accent-line: rgb(255 255 255 / 0.45);
+  --on-accent: #000000;
+  --dot: rgb(255 255 255 / 0.13);
+  --shadow: none;
+  --selection: #ffffff;
+  --on-selection: #000000;
 }
 
 /* No-JS fallback follows the OS. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     color-scheme: dark;
-    --bg: #0c0d0d;
-    --bg-raised: #141616;
-    --bg-sunken: #080909;
-    --fg: #ecebe6;
-    --fg-2: #a9a69e;
-    --fg-3: #85827b;
-    --line: #232626;
-    --line-2: #343838;
-    --accent: #ff6a3d;
-    --accent-soft: rgb(255 106 61 / 0.1);
-    --accent-line: rgb(255 106 61 / 0.4);
-    --on-accent: #0c0d0d;
-    --dot: rgb(236 235 230 / 0.13);
-    --selection: rgb(255 106 61 / 0.25);
+    --bg: #000000;
+    --bg-raised: #000000;
+    --bg-sunken: #0d0d0d;
+    --fg: #ffffff;
+    --fg-2: #b0b0b0;
+    --fg-3: #8c8c8c;
+    --line: #1f1f1f;
+    --line-2: #3d3d3d;
+    --accent: #ffffff;
+    --accent-soft: rgb(255 255 255 / 0.07);
+    --accent-line: rgb(255 255 255 / 0.45);
+    --on-accent: #000000;
+    --dot: rgb(255 255 255 / 0.13);
+    --selection: #ffffff;
+    --on-selection: #000000;
   }
 }

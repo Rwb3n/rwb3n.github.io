@@ -25,7 +25,7 @@ const html = document.documentElement;
 // Switching theme spreads the new one out from the toggle as a circle.
 function setTheme(t) {
   html.dataset.theme = t;
-  for (const m of document.querySelectorAll('meta[name="theme-color"]')) m.content = t === 'dark' ? '#0c0d0d' : '#f3f0e9';
+  for (const m of document.querySelectorAll('meta[name="theme-color"]')) m.content = t === 'dark' ? '#000000' : '#ffffff';
   document.dispatchEvent(new CustomEvent('mu:theme', { detail: t }));
 }
 const toggle = document.querySelector('[data-theme-toggle]');
