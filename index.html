@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <!-- sync:meta -->
     <title>mindunder.dev — business process automation, London</title>
-    <meta name="description" content="I find the work your team repeats by hand, then automate it. First call free. London." />
+    <meta name="description" content="I find the work your team repeats by hand, then build a system that does it. The first call is free. Based in London." />
     <meta property="og:title" content="mindunder.dev — business process automation, London" />
-    <meta property="og:description" content="I find the work your team repeats by hand, then automate it. First call free. London." />
+    <meta property="og:description" content="I find the work your team repeats by hand, then build a system that does it. The first call is free. Based in London." />
     <!-- /sync:meta -->
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
@@ -21,9 +21,13 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href="https://mindunder.dev/" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap" />
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <!-- Fontshare: one stylesheet per family. Supreme and Sentient are under the ITF Free Font
+         License, which does not allow the files in a public repository, so they load from Fontshare. -->
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=supreme@1&amp;display=swap" />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=sentient@301&amp;display=swap" />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=azeret-mono@400,500,600&amp;display=swap" />
 
     <!-- Theme and reading settings are applied before first paint, so there is no flash. -->
     <!-- sync:reading -->
@@ -101,13 +105,13 @@
           <div class="landing-inner">
             <!-- sync:landing -->
             <div class="copy" data-copy>
-              <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Business process automation — London</p>
+              <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Business process automation · London</p>
               <h1 class="display" id="landing-title">
-                <span class="display-line">I <em class="is-accent">find</em> the work your team repeats.</span>
-                <span class="display-line">Then I automate it.</span>
+                <span class="display-line">I <em class="is-accent">find</em> the work your team repeats by hand.</span>
+                <span class="display-line">Then I build a system that does it.</span>
               </h1>
             </div>
-            <a class="land-cue" href="#land-examples">Below: examples, price, where to start <span aria-hidden="true">↓</span></a>
+            <a class="land-cue" href="#land-cases">Three examples, a system I run, and how we would start <span aria-hidden="true">↓</span></a>
             <!-- /sync:landing -->
           </div>
 
@@ -120,28 +124,77 @@
 
         <div class="landing-steps">
           <!-- sync:steps -->
-          <section class="land-step" id="land-examples" aria-labelledby="land-examples-h">
-            <h2 class="land-step-head" id="land-examples-h">What it looks like</h2>
-            <p class="lede">Copying between systems. Chasing approvals. The same report every Monday. I work alone, from London.</p>
+          <section class="land-step is-cases" id="land-cases" aria-labelledby="land-cases-h">
+            <h2 class="land-step-head" id="land-cases-h">Where the time goes</h2>
+            <p class="land-intro">Three situations I see often. They are illustrations, not named clients. The numbers show the scale, not a promise.</p>
+            <div class="land-cases">
+              <article class="land-case">
+                <p class="land-case-tag">Example · Wholesale, 40 staff</p>
+                <h3 class="land-case-title">The Monday report</h3>
+                <dl class="land-case-body">
+                  <div><dt>Today</dt><dd>Every Monday the operations manager rebuilds the leadership report by hand. Sales come from the accounts system, stock from the warehouse system, deliveries from the courier's website. It takes most of the morning, and the figures are a day old by the meeting.</dd></div>
+                  <div><dt>What I would build</dt><dd>The report builds itself overnight from the same three systems and is in the inbox at 7am. The manager reads it, checks anything flagged, and adds comments.</dd></div>
+                  <div class="is-result"><dt>What changes</dt><dd>About 5 hours a week back. Roughly 230 hours a year.</dd></div>
+                </dl>
+              </article>
+              <article class="land-case">
+                <p class="land-case-tag">Example · Professional services, 25 staff</p>
+                <h3 class="land-case-title">Setting up a new client</h3>
+                <dl class="land-case-body">
+                  <div><dt>Today</dt><dd>When a proposal is signed, someone copies the client's details into the customer database (CRM), the billing system and the project tracker. Then they email three colleagues. It takes about 40 minutes a client, and something small is usually missed.</dd></div>
+                  <div><dt>What I would build</dt><dd>Signing the proposal starts it. The records appear in all three systems, the right people are told, and anything missing is flagged for a person to fill in.</dd></div>
+                  <div class="is-result"><dt>What changes</dt><dd>At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts.</dd></div>
+                </dl>
+              </article>
+              <article class="land-case">
+                <p class="land-case-tag">Example · Runs today on my own systems</p>
+                <h3 class="land-case-title">Early warning on suppliers</h3>
+                <dl class="land-case-body">
+                  <div><dt>Today</dt><dd>A distributor found out its main supplier had gone into administration when deliveries stopped. The signs had been public for weeks, in Companies House filings and insolvency notices.</dd></div>
+                  <div><dt>What I would build</dt><dd>A system reads those public records every night for the companies you depend on. It emails you the morning something changes, such as overdue accounts or a winding-up petition.</dd></div>
+                  <div class="is-result"><dt>What changes</dt><dd>Weeks of warning instead of none. My own system already reads these records every night.</dd></div>
+                </dl>
+              </article>
+            </div>
           </section>
-          <section class="land-step" id="land-offer" aria-labelledby="land-offer-h">
-            <h2 class="land-step-head" id="land-offer-h">Before we start</h2>
+          <section class="land-step is-proof" id="land-proof" aria-labelledby="land-proof-h">
+            <h2 class="land-step-head" id="land-proof-h">A system I run today</h2>
+            <p class="land-intro">Callsheet is a public directory of UK film, TV and media companies. I built it alone. It keeps its listings up to date from public records, checks claims from companies, and handles data-protection requests, without staff.</p>
+            <ul class="land-metrics" role="list">
+              <li><span class="land-metric-value">37</span> <span class="land-metric-label">scheduled jobs, from nightly checks to quarterly reviews</span></li>
+              <li><span class="land-metric-value">~95%</span> <span class="land-metric-label">of problems fixed without me</span></li>
+              <li><span class="land-metric-value">£36</span> <span class="land-metric-label">a month to run</span></li>
+            </ul>
+            <p class="land-note">My part is reading one summary a week and dealing with what the system could not fix.</p>
+            <a class="land-link" href="#/callsheet" data-target="callsheet">How Callsheet works <span aria-hidden="true">→</span></a>
+          </section>
+          <section class="land-step is-how" id="land-how" aria-labelledby="land-how-h">
+            <h2 class="land-step-head" id="land-how-h">How we would start</h2>
+            <ol class="land-how" role="list">
+              <li><span class="land-how-n">1</span><h3 class="land-how-title">A 30-minute call, free</h3><p class="land-how-detail">You tell me where the time goes. I ask how the work actually moves.</p></li>
+              <li><span class="land-how-n">2</span><h3 class="land-how-title">A one-page summary</h3><p class="land-how-detail">Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together.</p></li>
+              <li><span class="land-how-n">3</span><h3 class="land-how-title">A first system, checked by a person</h3><p class="land-how-detail">It does the work and someone checks every result. It runs alone only once the results are consistently right.</p></li>
+              <li><span class="land-how-n">4</span><h3 class="land-how-title">It runs, and reports</h3><p class="land-how-detail">You get a regular report of what it did, and of anything it could not do.</p></li>
+            </ol>
+          </section>
+          <section class="land-step is-book" id="land-book" aria-labelledby="land-book-h">
+            <h2 class="land-step-head" id="land-book-h">Next step</h2>
+            <p class="land-line">Tell me which job takes up your team's week. I reply the same day.</p>
+            <a class="entry-tool is-cta" href="mailto:lab@mindunder.dev" data-target="_book"><span class="entry-tool-label">Book the free call</span><span class="entry-arrow" aria-hidden="true">→</span></a>
             <dl class="offer">
-              <div class="offer-item"><dt>First call</dt><dd>Free. 30 minutes. You keep the written summary.</dd></div>
-              <div class="offer-item"><dt>Price</dt><dd>On request. Not published yet.</dd></div>
-              <div class="offer-item"><dt>Reply</dt><dd>Same day</dd></div>
+              <div class="offer-item"><dt>Price</dt><dd>Not on the site yet. Ask in the call or by email.</dd></div>
+              <div class="offer-item"><dt>Reply</dt><dd>The same day</dd></div>
+              <div class="offer-item"><dt>Based in</dt><dd>London, UK</dd></div>
             </dl>
-          </section>
-          <section class="land-step" id="land-start" aria-labelledby="land-start-h">
-            <h2 class="land-step-head" id="land-start-h">Where to start</h2>
-            <nav class="entry" aria-label="Start here" data-entry>
+            <h3 class="land-more-head">Or read more first</h3>
+            <nav class="entry" aria-label="Topics" data-entry>
               <a class="entry-item" href="#/method" data-target="method"><span class="entry-index">01</span><span class="entry-label">What I do</span><span class="entry-arrow" aria-hidden="true">→</span></a>
               <a class="entry-item" href="#/signals" data-target="signals"><span class="entry-index">02</span><span class="entry-label">Problems I solve</span><span class="entry-arrow" aria-hidden="true">→</span></a>
               <a class="entry-item" href="#/proof" data-target="proof"><span class="entry-index">03</span><span class="entry-label">Proof</span><span class="entry-arrow" aria-hidden="true">→</span></a>
               <a class="entry-item" href="#/process" data-target="process"><span class="entry-index">04</span><span class="entry-label">How we start</span><span class="entry-arrow" aria-hidden="true">→</span></a>
             </nav>
             <div class="entry-more">
-              <a class="entry-tool" href="#/estimate" data-target="estimate"><span class="entry-tool-label">Calculate what repeated work costs</span><span class="entry-tool-note">Three numbers. One minute.</span><span class="entry-arrow" aria-hidden="true">→</span></a>
+              <a class="entry-tool" href="#/estimate" data-target="estimate"><span class="entry-tool-label">Work out what a repeated task costs you</span><span class="entry-tool-note">Three numbers, one minute.</span><span class="entry-arrow" aria-hidden="true">→</span></a>
               <p class="entry-all"><a href="#/all" data-all-link>Everything on one page <span aria-hidden="true">→</span></a></p>
             </div>
           </section>
@@ -166,9 +219,9 @@
           <p>JavaScript is off. The essentials:</p>
           <dl class="offer">
             <div class="offer-item"><dt>What I do</dt><dd>I find the steps your team repeats by hand. Then I build software that does them.</dd></div>
-            <div class="offer-item"><dt>First call</dt><dd>Free. 30 minutes. You keep the written summary.</dd></div>
-            <div class="offer-item"><dt>Price</dt><dd>On request. Not published yet.</dd></div>
-            <div class="offer-item"><dt>Reply</dt><dd>Same day</dd></div>
+            <div class="offer-item"><dt>First step</dt><dd>A free 30-minute call. Afterwards you get a one-page summary of where time is lost, yours to keep.</dd></div>
+            <div class="offer-item"><dt>Price</dt><dd>Not on the site yet. Ask in the call or by email.</dd></div>
+            <div class="offer-item"><dt>Reply</dt><dd>The same day</dd></div>
             <div class="offer-item"><dt>Based in</dt><dd>London, UK</dd></div>
             <div class="offer-item"><dt>Client work</dt><dd>No client case studies published yet. The examples here are systems I built and run myself.</dd></div>
           </dl>

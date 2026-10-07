@@ -64,10 +64,10 @@ export function createApp(content, root = document, { beforeLeave } = {}) {
       choose({ target: a.dataset.target }, { from: a.querySelector('.entry-label') });
     });
   }
-  for (const a of el.landing?.querySelectorAll('.entry-tool[data-target]') || []) {
+  for (const a of el.landing?.querySelectorAll('.entry-tool[data-target], .land-link[data-target]') || []) {
     a.addEventListener('click', (e) => {
       e.preventDefault();
-      choose({ target: a.dataset.target }, { from: a.querySelector('.entry-tool-label') });
+      choose({ target: a.dataset.target }, { from: a.querySelector('.entry-tool-label') || a });
     });
   }
   for (const a of document.querySelectorAll('[data-all-link]')) {

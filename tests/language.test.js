@@ -16,6 +16,19 @@ const manifest = json('content/graphs/default.json');
 const content = indexContent(manifest.nodes.map((n) => json(`content/nodes/${n}.json`)));
 applyConfig(site);
 
+// Every string in landing.path: intros, notes and case text are prose; the rest are labels.
+function pathStrings(path, where = 'landing.path') {
+  const out = [];
+  for (const [k, v] of Object.entries(path)) {
+    if (k.startsWith('$')) continue;
+    const w = `${where}.${k}`;
+    if (typeof v === 'string') out.push({ kind: /intro|note|line|before|build|result|detail/.test(k) ? 'prose' : 'label', text: v, where: w });
+    else if (Array.isArray(v)) v.forEach((x, i) => (typeof x === 'string' ? (k === 'facts' ? null : out.push({ kind: 'label', text: x, where: `${w}[${i}]` })) : out.push(...pathStrings(x, `${w}[${i}]`))));
+    else if (v && typeof v === 'object') out.push(...pathStrings(v, w));
+  }
+  return out;
+}
+
 const report = (issues) => issues.map((i) => `  [${i.scope}] ${i.where}: ${i.msg}${i.text ? `\n      “${i.text}”` : ''}`).join('\n');
 
 test('every topic passes the plain-language rules', () => {
@@ -34,7 +47,9 @@ test('site.json text passes the plain-language rules', () => {
   const strings = [
     { kind: 'label', text: L.eyebrow, where: 'landing.eyebrow' },
     ...L.headline.map((t, i) => ({ kind: 'prose', text: t, where: `landing.headline[${i}]` })),
-    { kind: 'prose', text: L.lede, where: 'landing.lede' },
+    L.lede && { kind: 'prose', text: L.lede, where: 'landing.lede' },
+    L.cue && { kind: 'label', text: L.cue, where: 'landing.cue' },
+    ...pathStrings(L.path || {}),
     { kind: 'label', text: L.allLink, where: 'landing.allLink' },
     L.tool && { kind: 'label', text: L.tool.label, where: 'landing.tool.label' },
     L.tool?.note && { kind: 'prose', text: L.tool.note, where: 'landing.tool.note' },

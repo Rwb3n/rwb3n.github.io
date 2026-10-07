@@ -5,15 +5,15 @@
   "person": { "name": "Ruben", "fullName": null, "email": "lab@mindunder.dev", "location": "London, UK", "links": [] },
   "meta": {
     "title": "mindunder.dev — business process automation, London",
-    "description": "I find the work your team repeats by hand, then automate it. First call free. London."
+    "description": "I find the work your team repeats by hand, then build a system that does it. The first call is free. Based in London."
   },
   "facts": {
     "what": { "label": "What I do", "value": "I find the steps your team repeats by hand. Then I build software that does them." },
     "who": { "label": "Who it is for", "value": null, "missing": null },
-    "firstStep": { "label": "First call", "value": "Free. 30 minutes. You keep the written summary." },
-    "cost": { "label": "Price", "value": null, "missing": "On request. Not published yet." },
+    "firstStep": { "label": "First step", "value": "A free 30-minute call. Afterwards you get a one-page summary of where time is lost, yours to keep." },
+    "cost": { "label": "Price", "value": null, "missing": "Not on the site yet. Ask in the call or by email." },
     "timeline": { "label": "How long it takes", "value": null, "missing": null },
-    "reply": { "label": "Reply", "value": "Same day" },
+    "reply": { "label": "Reply", "value": "The same day" },
     "location": { "label": "Based in", "value": "London, UK" },
     "clients": {
       "label": "Client work",
@@ -24,13 +24,12 @@
     "callsheetUrl": { "label": "Callsheet website", "value": null, "missing": null, "link": true }
   },
   "landing": {
-    "eyebrow": "Business process automation — London",
-    "headline": ["I find the work your team repeats.", "Then I automate it."],
+    "eyebrow": "Business process automation · London",
+    "headline": ["I find the work your team repeats by hand.", "Then I build a system that does it."],
     "accent": "find",
-    "lede": "Copying between systems. Chasing approvals. The same report every Monday. I work alone, from London.",
     "facts": ["firstStep", "cost", "reply"],
     "allLink": "Everything on one page",
-    "tool": { "target": "estimate", "label": "Calculate what repeated work costs", "note": "Three numbers. One minute." },
+    "tool": { "target": "estimate", "label": "Work out what a repeated task costs you", "note": "Three numbers, one minute." },
     "lens": {
       "idle": "Move the pointer to look underneath.",
       "idleTouch": "Touch and move to look underneath.",
@@ -38,12 +37,70 @@
       "note": "bottleneck",
       "noteLines": ["example"]
     },
-    "cue": "Below: examples, price, where to start",
-    "steps": {
-      "$": "Headings for the three screens under the headline. Each screen holds one idea.",
-      "examples": "What it looks like",
-      "offer": "Before we start",
-      "start": "Where to start"
+    "cue": "Three examples, a system I run, and how we would start",
+    "path": {
+      "$": "The landing, one screen per idea, in this order. Rendered by src/static.js.",
+      "cases": {
+        "head": "Where the time goes",
+        "intro": "Three situations I see often. They are illustrations, not named clients. The numbers show the scale, not a promise.",
+        "labels": { "before": "Today", "build": "What I would build", "result": "What changes" },
+        "items": [
+          {
+            "tag": "Example · Wholesale, 40 staff",
+            "title": "The Monday report",
+            "before": "Every Monday the operations manager rebuilds the leadership report by hand. Sales come from the accounts system, stock from the warehouse system, deliveries from the courier's website. It takes most of the morning, and the figures are a day old by the meeting.",
+            "build": "The report builds itself overnight from the same three systems and is in the inbox at 7am. The manager reads it, checks anything flagged, and adds comments.",
+            "result": "About 5 hours a week back. Roughly 230 hours a year."
+          },
+          {
+            "tag": "Example · Professional services, 25 staff",
+            "title": "Setting up a new client",
+            "before": "When a proposal is signed, someone copies the client's details into the customer database (CRM), the billing system and the project tracker. Then they email three colleagues. It takes about 40 minutes a client, and something small is usually missed.",
+            "build": "Signing the proposal starts it. The records appear in all three systems, the right people are told, and anything missing is flagged for a person to fill in.",
+            "result": "At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts."
+          },
+          {
+            "tag": "Example · Runs today on my own systems",
+            "title": "Early warning on suppliers",
+            "before": "A distributor found out its main supplier had gone into administration when deliveries stopped. The signs had been public for weeks, in Companies House filings and insolvency notices.",
+            "build": "A system reads those public records every night for the companies you depend on. It emails you the morning something changes, such as overdue accounts or a winding-up petition.",
+            "result": "Weeks of warning instead of none. My own system already reads these records every night."
+          }
+        ]
+      },
+      "proof": {
+        "head": "A system I run today",
+        "intro": "Callsheet is a public directory of UK film, TV and media companies. I built it alone. It keeps its listings up to date from public records, checks claims from companies, and handles data-protection requests, without staff.",
+        "metrics": [
+          { "value": "37", "label": "scheduled jobs, from nightly checks to quarterly reviews" },
+          { "value": "~95%", "label": "of problems fixed without me" },
+          { "value": "£36", "label": "a month to run" }
+        ],
+        "note": "My part is reading one summary a week and dealing with what the system could not fix.",
+        "link": { "target": "callsheet", "label": "How Callsheet works" }
+      },
+      "how": {
+        "head": "How we would start",
+        "items": [
+          { "title": "A 30-minute call, free", "detail": "You tell me where the time goes. I ask how the work actually moves." },
+          {
+            "title": "A one-page summary",
+            "detail": "Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together."
+          },
+          {
+            "title": "A first system, checked by a person",
+            "detail": "It does the work and someone checks every result. It runs alone only once the results are consistently right."
+          },
+          { "title": "It runs, and reports", "detail": "You get a regular report of what it did, and of anything it could not do." }
+        ]
+      },
+      "book": {
+        "head": "Next step",
+        "line": "Tell me which job takes up your team's week. I reply the same day.",
+        "cta": "Book the free call",
+        "facts": ["cost", "reply", "location"],
+        "more": "Or read more first"
+      }
     }
   },
   "onePage": {

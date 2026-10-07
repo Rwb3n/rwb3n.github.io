@@ -548,7 +548,7 @@ export function createLens(canvas, caption, { onFrame } = {}) {
     ctx.fillRect(x1 + 12, y1 - 16, plateW, plateH);
     ctx.globalAlpha = 1;
     mark(x1 + 12, y1 - 16, plateW, plateH);
-    ctx.font = `italic 26px ${colors.display}`;
+    ctx.font = `italic 300 22px ${colors.voice}`;
     ctx.fillStyle = colors.accent;
     halo(typed(copy.lens.note || '', 0.28), x1 + 18, y1 + 6);
     ctx.font = `500 9px ${colors.sans}`;

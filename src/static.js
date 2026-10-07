@@ -30,17 +30,19 @@ export function renderRegions(site, content) {
     return `<a class="entry-item" href="#/${esc(c.target)}" data-target="${esc(c.target)}"><span class="entry-index">${String(i + 1).padStart(2, '0')}</span><span class="entry-label">${esc(label)}</span><span class="entry-arrow" aria-hidden="true">→</span></a>`;
   });
 
-  const facts = (L.facts || []).map((k) => [site.facts?.[k], factText(site, k)]).filter(([f, v]) => f && v);
+  const facts = (L.path?.book?.facts || L.facts || []).map((k) => [site.facts?.[k], factText(site, k)]).filter(([f, v]) => f && v);
 
-  // The landing is a sequence, one idea per screen: the headline (with the
-  // lens), then examples, then the first step and cost, then where to start.
-  const S = L.steps || {};
+  // The landing is one path, one idea per screen: the headline (with the lens),
+  // then three examples with their context, a system that runs today, how we
+  // would start, and the next step. Copy lives in site.json → landing.path.
+  const P = L.path || {};
   const step = (id, title, body) => [
-    `<section class="land-step" id="land-${id}" aria-labelledby="land-${id}-h">`,
+    `<section class="land-step is-${id}" id="land-${id}" aria-labelledby="land-${id}-h">`,
     `  <h2 class="land-step-head" id="land-${id}-h">${esc(title)}</h2>`,
     ...body.filter(Boolean).map((l) => `  ${l}`),
     '</section>',
   ];
+  const first = ['cases', 'proof', 'how', 'book'].find((k) => P[k]) || 'book';
 
   const landing = [
     '<div class="copy" data-copy>',
@@ -49,18 +51,50 @@ export function renderRegions(site, content) {
     ...display.map((l) => `    <span class="display-line">${l}</span>`),
     '  </h1>',
     '</div>',
-    L.cue ? `<a class="land-cue" href="#land-examples">${esc(L.cue)} <span aria-hidden="true">↓</span></a>` : '',
+    L.cue ? `<a class="land-cue" href="#land-${first}">${esc(L.cue)} <span aria-hidden="true">↓</span></a>` : '',
   ].filter(Boolean);
 
+  const C = P.cases, R = P.proof, H = P.how, B = P.book;
+  const lab = C?.labels || {};
+  const email = site.person?.email;
   const steps = [
-    ...(L.lede ? step('examples', S.examples || 'Examples', [`<p class="lede">${esc(L.lede)}</p>`]) : []),
-    ...(facts.length ? step('offer', S.offer || 'The first step', [
-      '<dl class="offer">',
-      ...facts.map(([f, v]) => `  <div class="offer-item"><dt>${esc(f.label)}</dt><dd>${esc(v)}</dd></div>`),
-      '</dl>',
+    ...(C ? step('cases', C.head, [
+      C.intro && `<p class="land-intro">${esc(C.intro)}</p>`,
+      '<div class="land-cases">',
+      ...(C.items || []).flatMap((c) => [
+        '  <article class="land-case">',
+        `    <p class="land-case-tag">${esc(c.tag)}</p>`,
+        `    <h3 class="land-case-title">${esc(c.title)}</h3>`,
+        '    <dl class="land-case-body">',
+        `      <div><dt>${esc(lab.before || 'Today')}</dt><dd>${esc(c.before)}</dd></div>`,
+        `      <div><dt>${esc(lab.build || 'What I would build')}</dt><dd>${esc(c.build)}</dd></div>`,
+        `      <div class="is-result"><dt>${esc(lab.result || 'What changes')}</dt><dd>${esc(c.result)}</dd></div>`,
+        '    </dl>',
+        '  </article>',
+      ]),
+      '</div>',
     ]) : []),
-    ...step('start', S.start || 'Where to start', [
-      '<nav class="entry" aria-label="Start here" data-entry>',
+    ...(R ? step('proof', R.head, [
+      R.intro && `<p class="land-intro">${esc(R.intro)}</p>`,
+      '<ul class="land-metrics" role="list">',
+      ...(R.metrics || []).map((m) => `  <li><span class="land-metric-value">${esc(m.value)}</span> <span class="land-metric-label">${esc(m.label)}</span></li>`),
+      '</ul>',
+      R.note && `<p class="land-note">${esc(R.note)}</p>`,
+      R.link && `<a class="land-link" href="#/${esc(R.link.target)}" data-target="${esc(R.link.target)}">${esc(R.link.label)} <span aria-hidden="true">→</span></a>`,
+    ]) : []),
+    ...(H ? step('how', H.head, [
+      '<ol class="land-how" role="list">',
+      ...(H.items || []).map((it, i) => `  <li><span class="land-how-n">${i + 1}</span><h3 class="land-how-title">${esc(it.title)}</h3><p class="land-how-detail">${esc(it.detail)}</p></li>`),
+      '</ol>',
+    ]) : []),
+    ...step('book', B?.head || 'Next step', [
+      B?.line && `<p class="land-line">${esc(B.line)}</p>`,
+      B?.cta && email && `<a class="entry-tool is-cta" href="mailto:${esc(email)}" data-target="_book"><span class="entry-tool-label">${esc(B.cta)}</span><span class="entry-arrow" aria-hidden="true">→</span></a>`,
+      facts.length && '<dl class="offer">',
+      ...facts.map(([f, v]) => `  <div class="offer-item"><dt>${esc(f.label)}</dt><dd>${esc(v)}</dd></div>`),
+      facts.length && '</dl>',
+      B?.more && `<h3 class="land-more-head">${esc(B.more)}</h3>`,
+      '<nav class="entry" aria-label="Topics" data-entry>',
       ...entries.map((e) => `  ${e}`),
       '</nav>',
       '<div class="entry-more">',
@@ -81,7 +115,6 @@ export function renderRegions(site, content) {
 
   const caption = [`<span class="lens-caption-text" data-lens-caption-text>${esc(L.lens?.idle)}</span>`];
 
-  const email = site.person?.email;
   const noscript = [
     '<section class="noscript">',
     '  <p>JavaScript is off. The essentials:</p>',

@@ -5,13 +5,16 @@
    ========================================================================== */
 
 :root {
-  /* Type families */
-  --font-display: 'Bodoni Moda', 'Didot', 'Bodoni 72', 'Iowan Old Style', Georgia, serif;
-  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  /* Used by the component library (/components/) and some blocks. */
-  --font-voice: var(--font-display);
-  --weight-display: 400;
+  /* Type families, all loaded from Fontshare (api.fontshare.com): Supreme and
+     Sentient (ITF Free Font License), Azeret Mono (SIL OFL). Two voices: the
+     claim is built in Supreme, the spoken line is set in Sentient italic.
+     Supreme and Sentient have no → or ↓; Azeret Mono is second in their stacks
+     so the browser draws the arrows from it (see /components/#glyphs). */
+  --font-display: 'Supreme', 'Azeret Mono', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Supreme', 'Azeret Mono', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-voice: 'Sentient', 'Azeret Mono', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-mono: 'Azeret Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --weight-display: 800;
   --tracking-display: -0.045em;
 
   /* Type scale — a 1.25 minor-third ramp, fluid at the display end */
@@ -22,9 +25,9 @@
   --step-2: clamp(1.375rem, 1.1rem + 0.9vw, 1.75rem);
   --step-3: clamp(1.75rem, 1.3rem + 1.6vw, 2.625rem);
   --step-4: clamp(2.25rem, 1.4rem + 3vw, 3.75rem);
-  --step-display: clamp(2.75rem, 0.9rem + 6vw, 7.5rem);
+  --step-display: clamp(2.6rem, 0.9rem + 5.2vw, 6.25rem);
 
-  --tracking-micro: 0.22em;
+  --tracking-micro: 0.16em;
   --tracking-tight: -0.02em;
 
   /* Space — 4px base */

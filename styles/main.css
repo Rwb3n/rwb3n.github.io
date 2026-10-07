@@ -1672,10 +1672,9 @@ html:not([data-motion='full']) .cmp-thumb { transition: none; }
   letter-spacing: var(--tracking-micro);
   text-transform: uppercase;
 }
-.display, .turn-question, .page-title, .page-heading, .b-hero-title, .b-metric-value, .b-metric-big, .cmp-stat-num, .est-num {
+.display, .turn-question, .page-title, .b-hero-title, .b-metric-value, .b-metric-big, .cmp-stat-num, .est-num {
   font-family: var(--font-display);
-  font-weight: 400;
-  font-optical-sizing: auto;
+  font-weight: var(--weight-display);
 }
 :focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
 .skip { font-family: var(--font-sans); letter-spacing: var(--tracking-micro); text-transform: uppercase; font-size: 0.6875rem; }
@@ -1717,7 +1716,7 @@ html:not([data-motion='full']) .cmp-thumb { transition: none; }
   .settings-toggle span { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
 }
 .settings { border-radius: 0; border-color: var(--fg); box-shadow: none; }
-.settings-title { font-family: var(--font-display); font-weight: 400; font-size: var(--step-2); }
+.settings-title { font-family: var(--font-display); font-weight: 700; font-size: var(--step-1); }
 
 /* Buttons ---------------------------------------------------------------- */
 .btn, .chip.is-primary, .rail-brief {
@@ -1747,10 +1746,10 @@ html:not([data-motion='full']) .cmp-thumb { transition: none; }
   margin-top: var(--space-6);
   font-size: var(--step-display);
   line-height: 0.94;
-  letter-spacing: -0.045em;
+  letter-spacing: var(--tracking-display);
   text-wrap: balance;
 }
-.display .is-accent { font-style: italic; letter-spacing: -0.02em; color: var(--fg); }
+.display .is-accent { font-style: normal; color: var(--fg); }
 .lede { max-width: 31rem; margin-top: var(--space-7); font-size: var(--step-1); line-height: 1.55; color: var(--fg-2); }
 
 .offer { gap: 0 var(--space-7); margin-top: var(--space-8); max-width: 52rem; border-top: 1px solid var(--fg); }
@@ -1765,9 +1764,8 @@ html:not([data-motion='full']) .cmp-thumb { transition: none; }
   padding: var(--space-4) var(--space-3) var(--space-4) 0;
   border-top: 1px solid var(--line-2);
   background: none;
-  font-family: var(--font-display);
-  font-size: var(--step-2);
-  letter-spacing: -0.01em;
+  font-size: var(--step-1);
+  font-weight: 500;
   transition: color 500ms var(--ease-runway), padding 700ms var(--ease-runway);
 }
 .entry-index { font-family: var(--font-sans); font-size: 0.6875rem; letter-spacing: 0.12em; color: var(--fg-3); padding-left: var(--space-2); }
@@ -1836,11 +1834,11 @@ html:not([data-motion='full']) .cmp-thumb { transition: none; }
 .turn + .turn { border-top-color: var(--line); }
 .turn-index { color: var(--fg-2); }
 .turn-index b { color: var(--fg); font-weight: 600; }
-.turn-question { font-size: var(--step-4); line-height: 0.98; letter-spacing: -0.03em; }
+.turn-question { font-size: var(--step-4); line-height: 0.98; letter-spacing: var(--tracking-display); }
 .turn.is-aside { border-left-color: var(--fg); }
 .turn.is-aside .turn-question { font-size: var(--step-3); }
 .b-text { font-size: var(--step-1); line-height: 1.6; }
-.b-callout { border-left: 1px solid var(--fg); font-family: var(--font-display); font-size: var(--step-2); line-height: 1.3; font-style: italic; color: var(--fg); }
+.b-callout { border-left: 1px solid var(--fg); font-family: var(--font-voice); font-weight: 300; font-size: var(--step-2); line-height: 1.3; font-style: italic; color: var(--fg); }
 .turn-tag { border-radius: 0; border-color: var(--fg); font-family: var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.625rem; }
 
 .chips { border-bottom-color: var(--line-2); }
@@ -1865,9 +1863,9 @@ button.b-card:hover :is(.b-card-title, .b-card-desc, .b-card-go, .b-card-status)
 .b-pill { border-color: var(--line-2); }
 .b-layers.is-steps .b-layer-label { border-radius: 0; }
 .b-layer:first-child .b-layer-label { color: var(--fg); border-color: var(--fg); }
-.b-layer-title { font-family: var(--font-display); font-size: var(--step-2); font-weight: 400; letter-spacing: -0.01em; }
+.b-layer-title { font-size: var(--step-1); font-weight: 600; }
 .b-metric-row { border-top-color: var(--fg); }
-.b-metric-value, .b-metric-big { font-size: clamp(2.75rem, 1.6rem + 3.4vw, 4.75rem); letter-spacing: -0.04em; }
+.b-metric-value, .b-metric-big { font-size: clamp(2.5rem, 1.6rem + 3vw, 4.25rem); letter-spacing: var(--tracking-display); }
 .pulse { background: var(--fg); }
 
 /* Diagrams: hairlines; the key step is solid ink. */
@@ -1891,7 +1889,7 @@ button.b-card:hover :is(.b-card-title, .b-card-desc, .b-card-go, .b-card-status)
 .est-input, .est-prefix { font-family: var(--font-sans); }
 .est-hint.is-error { color: var(--fg); font-weight: 600; }
 .est-dl { border-top-color: var(--fg); }
-.est-num.is-accent { color: var(--fg); font-style: italic; }
+.est-num.is-accent { color: var(--fg); }
 .est-grid { gap: 2px; }
 .est-grid i { border-radius: 0; background: var(--line); }
 .est-grid i.is-on { background: var(--fg); transform: none; }
@@ -1902,7 +1900,7 @@ button.b-card:hover :is(.b-card-title, .b-card-desc, .b-card-go, .b-card-status)
 
 /* One page */
 .page-title { font-size: var(--step-display); line-height: 0.94; letter-spacing: -0.035em; }
-.page-heading { letter-spacing: -0.02em; }
+.page-heading { letter-spacing: var(--tracking-display); }
 
 /* ==========================================================================
    Runway motion (full only). Finite: everything here is over by about 2 s.
@@ -2110,11 +2108,59 @@ html:not([data-motion='full']) .js .landing .display.is-split .sw-in { animation
 .chip.is-engage { color: var(--accent); }
 
 /* ===================================================================
-/* Bodoni is wide: on phones, display headings step down, and a long word may
+/* On phones, display headings step down, and a long word may
    break rather than push the page sideways. */
 :is(.display, .turn-question, .b-hero-title, .page-title, .page-heading, .b-section-title) { overflow-wrap: break-word; }
 @media (max-width: 720px) {
   .turn-question { font-size: var(--step-3); }
   .b-hero-title { font-size: clamp(2rem, 8.5vw, 2.75rem); line-height: 1; }
   .page-title { font-size: clamp(2.5rem, 11vw, 3.5rem); }
+}
+
+/* ==========================================================================
+   Landing path: examples with context, a system that runs, how we start,
+   the next step. One idea per screen; black and white; Supreme and Sentient.
+   ========================================================================== */
+.land-step { gap: var(--space-7); }
+.land-step-head { font-size: 0.75rem; color: var(--fg); }
+.land-intro { max-width: 40rem; font-size: var(--step-2); line-height: 1.4; color: var(--fg-2); text-wrap: pretty; }
+
+.land-cases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-7) clamp(var(--space-6), 4vw, var(--space-8)); }
+.land-case { display: grid; align-content: start; gap: var(--space-4); padding-top: var(--space-5); border-top: 1px solid var(--fg); }
+.land-case-tag { font-size: 0.6875rem; font-weight: 600; letter-spacing: var(--tracking-micro); text-transform: uppercase; color: var(--fg-2); }
+.land-case-title { font-family: var(--font-display); font-weight: var(--weight-display); font-size: var(--step-3); line-height: 1; letter-spacing: var(--tracking-display); text-wrap: balance; }
+.land-case-body { display: grid; gap: var(--space-4); margin-top: var(--space-2); }
+.land-case-body dt { font-size: 0.6875rem; font-weight: 600; letter-spacing: var(--tracking-micro); text-transform: uppercase; color: var(--fg-3); }
+.land-case-body dd { margin-top: var(--space-1); font-size: var(--step-0); line-height: 1.55; color: var(--fg); text-wrap: pretty; }
+.land-case-body .is-result { padding-top: var(--space-4); border-top: 1px solid var(--line-2); }
+.land-case-body .is-result dd { font-family: var(--font-voice); font-style: italic; font-weight: 300; font-size: var(--step-2); line-height: 1.25; }
+
+.land-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6); max-width: 64rem; border-top: 1px solid var(--fg); }
+.land-metrics li { display: grid; align-content: start; gap: var(--space-2); padding-top: var(--space-5); }
+.land-metric-value { font-family: var(--font-display); font-weight: var(--weight-display); font-size: clamp(3rem, 1.6rem + 5vw, 6rem); line-height: 0.9; letter-spacing: var(--tracking-display); font-variant-numeric: lining-nums; }
+.land-metric-label { max-width: 16rem; color: var(--fg-2); }
+.land-note { max-width: 40rem; font-family: var(--font-voice); font-style: italic; font-weight: 300; font-size: var(--step-2); line-height: 1.3; }
+.land-link, .entry-all a { justify-self: start; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg); border-bottom: 1px solid var(--fg); padding-bottom: 4px; }
+
+.land-how { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-6); counter-reset: none; }
+.land-how li { display: grid; align-content: start; gap: var(--space-3); padding-top: var(--space-5); border-top: 1px solid var(--fg); }
+.land-how-n { font-family: var(--font-mono); font-size: var(--step--1); color: var(--fg-2); }
+.land-how-title { font-size: var(--step-1); font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
+.land-how-detail { color: var(--fg-2); line-height: 1.55; text-wrap: pretty; }
+
+.land-line { max-width: 22ch; font-family: var(--font-voice); font-style: italic; font-weight: 300; font-size: var(--step-4); line-height: 1.08; letter-spacing: -0.015em; text-wrap: balance; }
+.entry-tool.is-cta { justify-self: start; border-color: var(--fg); background: var(--fg); color: var(--bg); }
+.entry-tool.is-cta .entry-tool-label, .entry-tool.is-cta .entry-arrow { color: var(--bg); }
+.entry-tool.is-cta::before { background: var(--bg); }
+.entry-tool.is-cta:hover .entry-tool-label, .entry-tool.is-cta:hover .entry-arrow, .entry-tool.is-cta:focus-visible .entry-tool-label { color: var(--fg); }
+.land-step.is-book .offer { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 52rem; gap: var(--space-6); border-top: 1px solid var(--line-2); }
+.land-step.is-book .offer dd { font-size: var(--step-0); }
+.land-more-head { margin-top: var(--space-6); font-size: 0.6875rem; font-weight: 600; letter-spacing: var(--tracking-micro); text-transform: uppercase; color: var(--fg-2); }
+.land-step.is-book .entry { margin-top: calc(var(--space-6) * -1 + var(--space-2)); }
+
+@media (max-width: 1000px) {
+  .land-cases, .land-how { grid-template-columns: 1fr; }
+  .land-metrics { grid-template-columns: 1fr; gap: 0; }
+  .land-metrics li + li { border-top: 1px solid var(--line-2); }
+  .land-step.is-book .offer { grid-template-columns: 1fr; gap: 0; }
 }
