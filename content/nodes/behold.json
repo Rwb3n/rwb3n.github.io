@@ -5,7 +5,7 @@
   "intents": ["behold"],
   "tags": ["project"],
   "blocks": [
-    { "type": "text", "content": "Behold is the everyday version of Haios, my research project. I use it for my own work daily." },
+    { "type": "text", "content": "Behold is the everyday version of Haios, my research project. I use it for my own work every day." },
     { "type": "pills", "label": "How it works", "items": ["Work is split into sessions", "Simple folders", "A person and AI software working together"] }
   ],
   "chips": [{ "target": "haios" }, { "target": "projects" }, { "target": "ruben" }]

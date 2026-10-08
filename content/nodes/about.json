@@ -6,13 +6,13 @@
     "intents": ["about this business", "your company", "your business", "what is this", "what is mindunder"],
     "tags": ["overview", "identity"],
     "blocks": [
-      { "type": "text", "content": "mindunder.dev is one person. I design and build software that does routine business work." },
+      { "type": "text", "content": "mindunder.dev is one person: me. I design and build software that does routine business work." },
       {
         "type": "split",
         "left": [{ "type": "metricRow", "items": [{ "value": "3", "label": "Active projects" }, { "value": "1", "label": "Person" }] }],
         "right": [{ "type": "pills", "label": "Areas of work", "items": ["Designing how work moves", "Automated systems", "Process design"] }]
       },
-      { "type": "text", "content": "The goal: a decision made in the morning is carried out the same day, with nobody chasing it." }
+      { "type": "text", "content": "The aim is simple. A decision made in the morning is carried out the same day, without anyone chasing it." }
     ],
     "chips": [{ "target": "projects" }, { "target": "philosophy" }, { "target": "ruben" }]
   },
@@ -76,7 +76,7 @@
       { "type": "text", "content": "I am Ruben. I live and work in London." },
       {
         "type": "text",
-        "content": "I have spent years automating work for other organisations. Now I build systems that need as little manual work as possible. I work alone, by choice."
+        "content": "My main job is looking after Salesforce at London & Partners. I have spent years automating work for other teams. I work alone, by choice."
       },
       {
         "type": "pills",
@@ -84,7 +84,7 @@
         "items": ["Salesforce Administrator", "Salesforce Platform App Builder", "Salesforce Agentforce Specialist"]
       },
       { "type": "badge", "status": "Based in London, UK", "variant": "default" },
-      { "type": "callout", "text": "Most of the complexity in a business process is not needed. Simpler design, simpler work." },
+      { "type": "callout", "text": "Most of the complexity in a business process is not needed. When the design is simpler, the work is simpler." },
       { "type": "fact", "key": "handover" }
     ],
     "chips": [{ "target": "projects" }, { "target": "salesforce" }, { "target": "about" }]

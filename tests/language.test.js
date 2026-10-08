@@ -20,7 +20,7 @@ applyConfig(site);
 function pathStrings(path, where = 'landing.path') {
   const out = [];
   for (const [k, v] of Object.entries(path)) {
-    if (k.startsWith('$')) continue;
+    if (k.startsWith('$') || k === 'target') continue; // ids, not visitor text
     const w = `${where}.${k}`;
     if (typeof v === 'string') out.push({ kind: /intro|note|line|before|build|result|detail/.test(k) ? 'prose' : 'label', text: v, where: w });
     else if (Array.isArray(v)) v.forEach((x, i) => (typeof x === 'string' ? (k === 'facts' ? null : out.push({ kind: 'label', text: x, where: `${w}[${i}]` })) : out.push(...pathStrings(x, `${w}[${i}]`))));

@@ -5,7 +5,10 @@
   "intents": ["project", "projects", "portfolio", "what have you built", "built", "your work"],
   "tags": ["overview", "work"],
   "blocks": [
-    { "type": "text", "content": "Three projects, one idea. Software is given more independence only after it has shown that it works." },
+    {
+      "type": "text",
+      "content": "I run three projects of my own. All three test one idea: software is given more independence only after it has shown that it works."
+    },
     {
       "type": "grid",
       "items": [

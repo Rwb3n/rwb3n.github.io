@@ -6,7 +6,10 @@
     "intents": ["what do you do", "what you do", "method", "how it works", "services", "service"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "I map how work moves through your business. Then I automate the steps people repeat." },
+      {
+        "type": "text",
+        "content": "I look for the work your team does by hand, again and again, and build software that does it for them. People stay in charge of the decisions."
+      },
       {
         "type": "compare",
         "label": "View",
@@ -39,9 +42,30 @@
             ]
           }
         ]
+      },
+      {
+        "type": "pills",
+        "label": "Typical jobs",
+        "items": [
+          "Reports built from several systems",
+          "Copying data between systems",
+          "Chasing approvals and sign-offs",
+          "Watching public records and notices",
+          "Setting up new clients or suppliers"
+        ]
+      },
+      {
+        "type": "section",
+        "title": "What I do not do",
+        "blocks": [
+          {
+            "type": "text",
+            "content": "I do not sell software licences, and I do not replace your team. Where I can, the systems I build work with the tools you already use."
+          }
+        ]
       }
     ],
-    "chips": [{ "target": "estimate" }, { "target": "trust_ladder" }, { "target": "proof" }, { "target": "process" }]
+    "chips": [{ "target": "signals" }, { "target": "estimate" }, { "target": "trust_ladder" }, { "target": "process" }]
   },
   {
     "id": "ahead",
@@ -50,12 +74,12 @@
     "intents": ["benefit", "benefits", "what do i get", "outcome", "outcomes", "value"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "You hear about changes early, while there is time to act." },
+      { "type": "text", "content": "You hear about changes while there is still time to act on them." },
       {
         "type": "text",
-        "content": "My own system reads UK company records, insolvency notices and contract awards every night. It reports changes the same morning."
+        "content": "My own system reads UK company records, insolvency notices and public contract awards every night, and reports changes the same morning."
       },
-      { "type": "text", "content": "Yours would read the sources that matter in your market." }
+      { "type": "text", "content": "A system for your business would read the sources that matter in your market." }
     ],
     "chips": [{ "target": "signals" }, { "target": "method" }]
   },
@@ -78,7 +102,7 @@
     ],
     "tags": ["overview", "tool"],
     "blocks": [
-      { "type": "text", "content": "One task your team repeats. Three numbers." },
+      { "type": "text", "content": "Pick one task your team repeats every week. Type three numbers to see what it costs in a year." },
       {
         "type": "estimate",
         "title": "Estimate",
@@ -121,7 +145,10 @@
         "addLabel": "Add to my summary",
         "added": "Added to your summary."
       },
-      { "type": "text", "content": "A system rarely removes a task completely. It does the routine part. A person checks the result." }
+      {
+        "type": "text",
+        "content": "A system rarely removes a task completely. It usually takes the routine part and leaves a person to check the result. Expect most of the time back, not all of it."
+      }
     ],
     "chips": [{ "target": "method" }, { "target": "process" }, { "label": "Your summary", "target": "_show_brief" }]
   },
@@ -132,54 +159,250 @@
     "intents": ["problems", "problem you solve", "examples", "symptoms", "pain points"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "Four common problems. These are examples, not client stories." },
+      {
+        "type": "text",
+        "content": "Five situations I see often. Each one is an illustration of a common pattern, not a named client. Each page shows what happens today, what I would build and what changes."
+      },
       {
         "type": "grid",
         "items": [
-          { "title": "A supplier fails without warning", "description": "You hear it from a customer.", "target": "signal_blindside" },
-          { "title": "Reports built by hand", "description": "The same spreadsheet, every week.", "target": "signal_monday" },
-          { "title": "Tenders found too late", "description": "A competitor met the buyer first.", "target": "signal_late" },
-          { "title": "One person holds the knowledge", "description": "They cannot take two weeks off.", "target": "signal_instinct" }
+          {
+            "title": "The Monday report",
+            "description": "Wholesale, 40 staff. Most of a morning every week, rebuilding the same report from three systems.",
+            "target": "signal_monday"
+          },
+          {
+            "title": "Setting up a new client",
+            "description": "Professional services, 25 staff. About 40 minutes of copying for each new client, and something is often missed.",
+            "target": "signal_onboarding"
+          },
+          {
+            "title": "Early warning on suppliers",
+            "description": "Distribution. The warning signs were public for weeks. The business found out when deliveries stopped.",
+            "target": "signal_blindside"
+          },
+          {
+            "title": "Tenders found too late",
+            "description": "Building services. A competitor had met the buyer twice before the tender was seen.",
+            "target": "signal_late"
+          },
+          {
+            "title": "One person holds the knowledge",
+            "description": "A family business. The owner has not taken two weeks off in six years.",
+            "target": "signal_instinct"
+          }
         ]
       }
     ],
-    "chips": [{ "target": "method" }, { "target": "proof" }]
+    "chips": [{ "target": "method" }, { "target": "proof" }, { "target": "estimate" }]
   },
   {
     "id": "signal_blindside",
-    "label": "A supplier fails without warning",
+    "label": "Early warning on suppliers",
     "parent": "signals",
     "intents": ["supplier fails", "insolvency", "warning"],
     "tags": ["overview"],
     "blocks": [
+      { "type": "text", "content": "This one already runs: my own system reads these public records every night. The business below is an illustration." },
       {
-        "type": "callout",
-        "text": "Example. A company's main supplier stopped trading. They found out from a LinkedIn post. The same day, a client asked where their delivery was."
+        "type": "section",
+        "kicker": "Illustration, using a system that runs today",
+        "title": "Today",
+        "blocks": [
+          { "type": "text", "content": "A distributor buys most of its stock from one supplier. Nobody watches that supplier's public records." },
+          {
+            "type": "text",
+            "content": "The supplier's accounts become overdue at Companies House. Then a winding-up petition appears in The Gazette. The distributor finds out when deliveries stop."
+          }
+        ]
       },
       {
-        "type": "text",
-        "content": "Public records often show the warning signs weeks earlier. I build systems that read them daily and email you the morning something changes."
+        "type": "section",
+        "title": "What I would build",
+        "blocks": [
+          {
+            "type": "flow",
+            "layout": "horizontal",
+            "title": "Early warning",
+            "nodes": [
+              { "id": "n0", "label": "Public records" },
+              { "id": "n1", "label": "Your key companies" },
+              { "id": "n2", "label": "A change found", "variant": "accent" },
+              { "id": "n3", "label": "Email that morning" }
+            ],
+            "edges": [{ "from": "n0", "to": "n1", "label": "every night" }, { "from": "n1", "to": "n2" }, { "from": "n2", "to": "n3" }]
+          },
+          {
+            "type": "text",
+            "content": "You give the system a list of the companies you depend on: suppliers, large customers and partners. Each night it checks their filings and notices."
+          },
+          { "type": "text", "content": "When something changes, you get one short email that says what changed and where to see it." }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "What changes",
+        "blocks": [
+          {
+            "type": "text",
+            "content": "Weeks of warning instead of none. That is time to find a second supplier, change payment terms, or speak to the customer first."
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "What it needs from you",
+        "blocks": [{ "type": "text", "content": "A list of company names or company numbers. Nothing needs to connect to your own systems." }]
       }
     ],
     "chips": [{ "target": "signal_monday" }, { "target": "method" }, { "target": "signals" }]
   },
   {
     "id": "signal_monday",
-    "label": "Reports built by hand",
+    "label": "The Monday report",
     "parent": "signals",
     "intents": ["report", "reports", "spreadsheet", "spreadsheets", "copy data"],
     "tags": ["overview"],
     "blocks": [
+      { "type": "text", "content": "A wholesaler with 40 staff holds a leadership meeting every Monday at 11. This is an illustration of a common pattern." },
       {
-        "type": "callout",
-        "text": "Example. Every Monday, one person spends the day copying data from five places into one spreadsheet. A second person checks it. It still has mistakes."
+        "type": "section",
+        "kicker": "Illustration",
+        "title": "Today",
+        "blocks": [
+          {
+            "type": "text",
+            "content": "The operations manager starts at 8. Sales figures come from the accounts system, stock levels from the warehouse system, and delivery times from the courier's website."
+          },
+          {
+            "type": "text",
+            "content": "Each one is exported, pasted into a spreadsheet and tidied. The report is ready just before the meeting. By then the figures are a day old, and nobody has had time to check them."
+          }
+        ]
       },
       {
-        "type": "text",
-        "content": "I build a system that produces the report before the working day starts. Same steps, every time. No copying errors. The person who made it does other work."
+        "type": "section",
+        "title": "What I would build",
+        "blocks": [
+          {
+            "type": "flow",
+            "layout": "horizontal",
+            "title": "The new Monday report",
+            "nodes": [
+              { "id": "n0", "label": "Three systems" },
+              { "id": "n1", "label": "Overnight build", "variant": "accent" },
+              { "id": "n2", "label": "Checks" },
+              { "id": "n3", "label": "Report in the inbox" }
+            ],
+            "edges": [{ "from": "n0", "to": "n1", "label": "read" }, { "from": "n1", "to": "n2" }, { "from": "n2", "to": "n3", "label": "7am" }]
+          },
+          {
+            "type": "text",
+            "content": "Overnight, the system collects the same figures from the same three places. It builds the report in the format the meeting already uses."
+          },
+          { "type": "text", "content": "If a figure looks wrong, for example stock falling to zero overnight, it is flagged at the top of the report." }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "What changes",
+        "blocks": [
+          {
+            "type": "metricRow",
+            "items": [
+              { "value": "5", "label": "hours a week back for the operations manager" },
+              { "value": "7am", "label": "report ready every Monday" },
+              { "value": "230", "label": "hours a year, roughly" }
+            ]
+          },
+          { "type": "text", "content": "The manager spends Monday morning on what the figures mean, not on collecting them." }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "What it needs from you",
+        "blocks": [
+          {
+            "type": "text",
+            "content": "Read access to the three systems, a copy of the current report, and one person to compare the first new reports with the old ones. The new report runs alongside the old one until the two match."
+          }
+        ]
       }
     ],
     "chips": [{ "target": "estimate" }, { "target": "signal_late" }, { "target": "method" }, { "target": "signals" }]
+  },
+  {
+    "id": "signal_onboarding",
+    "label": "Setting up a new client",
+    "parent": "signals",
+    "intents": ["onboarding", "new client", "new clients", "client setup", "set up a client", "setting up clients"],
+    "tags": ["overview"],
+    "blocks": [
+      {
+        "type": "text",
+        "content": "A professional services firm with 25 staff takes on about 30 new clients a month. This is an illustration of a common pattern."
+      },
+      {
+        "type": "section",
+        "kicker": "Illustration",
+        "title": "Today",
+        "blocks": [
+          {
+            "type": "text",
+            "content": "When a proposal is signed, an administrator copies the client's details into the customer database (CRM), the billing system and the project tracker."
+          },
+          {
+            "type": "text",
+            "content": "Then they email the account lead, finance and the delivery team. It takes about 40 minutes a client. Most months, at least one client is set up with a wrong address or a missing contact."
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "What I would build",
+        "blocks": [
+          {
+            "type": "flow",
+            "layout": "horizontal",
+            "title": "A new client, set up",
+            "nodes": [
+              { "id": "n0", "label": "Proposal signed" },
+              { "id": "n1", "label": "Records created", "variant": "accent" },
+              { "id": "n2", "label": "Gaps checked" },
+              { "id": "n3", "label": "Team told" }
+            ],
+            "edges": [{ "from": "n0", "to": "n1" }, { "from": "n1", "to": "n2" }, { "from": "n2", "to": "n3" }]
+          },
+          {
+            "type": "text",
+            "content": "Signing the proposal starts it. The system creates the records in all three systems and checks that nothing is missing."
+          },
+          { "type": "text", "content": "If something is missing, it asks a named person to fill it in. Only then does it tell the team." }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "What changes",
+        "blocks": [
+          {
+            "type": "metricRow",
+            "items": [{ "value": "20", "label": "hours a month back, at 30 new clients" }, { "value": "3", "label": "systems updated from one signature" }]
+          },
+          { "type": "text", "content": "Missing details are caught before anyone starts work, not when the first invoice bounces." }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "What it needs from you",
+        "blocks": [
+          {
+            "type": "text",
+            "content": "Access to the three systems and a list of the details each one needs. Also an hour with the person who does this today, to see how it really works."
+          }
+        ]
+      }
+    ],
+    "chips": [{ "target": "signal_monday" }, { "target": "process" }, { "target": "signals" }]
   },
   {
     "id": "signal_late",
@@ -188,10 +411,41 @@
     "intents": ["tender", "tenders", "contracts", "too late"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "callout", "text": "Example. A company heard about a public tender late. The winner had already met the buyer twice." },
+      { "type": "text", "content": "A building services company bids for public contracts. This is an illustration of a common pattern." },
       {
-        "type": "text",
-        "content": "Whoever hears first usually has a system checking public notices daily. Mine checks five public registers every night. Yours would check the sources in your market."
+        "type": "section",
+        "kicker": "Illustration",
+        "title": "Today",
+        "blocks": [
+          {
+            "type": "text",
+            "content": "Someone checks the main tender websites when they have time, usually once a week. A council publishes a planned contract months in advance, but nobody sees that early notice."
+          },
+          { "type": "text", "content": "By the time the tender opens, a competitor has already met the buyer twice and helped shape the brief." }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "What I would build",
+        "blocks": [
+          { "type": "text", "content": "A system reads the public contract notices every night, including the early notices that come before a tender." },
+          { "type": "text", "content": "It keeps the ones that match your work and your region, and sends a short summary each morning." }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "What changes",
+        "blocks": [{ "type": "text", "content": "You hear about the work at the planning stage, while the buyer is still open to conversations." }]
+      },
+      {
+        "type": "section",
+        "title": "What it needs from you",
+        "blocks": [
+          {
+            "type": "text",
+            "content": "A description of the work you want and where. In the first weeks, a person marks which notices were useful, so the matching gets better."
+          }
+        ]
       }
     ],
     "chips": [{ "target": "signal_instinct" }, { "target": "method" }, { "target": "signals" }]
@@ -203,13 +457,50 @@
     "intents": ["only one person", "key person", "holiday", "time off"],
     "tags": ["overview"],
     "blocks": [
+      { "type": "text", "content": "A family business of 15 people is run by its founder. This is an illustration of a common pattern." },
       {
-        "type": "callout",
-        "text": "Example. An owner has not taken two weeks off in six years. Not for lack of money. The knowledge to run the business is only in their head."
+        "type": "section",
+        "kicker": "Illustration",
+        "title": "Today",
+        "blocks": [
+          {
+            "type": "text",
+            "content": "Every morning the owner checks the orders, approves discounts, decides which jobs go first and chases late payers. None of it is written down."
+          },
+          {
+            "type": "text",
+            "content": "The owner has not taken two weeks off in six years. Money is not the reason. Nobody else knows how the decisions are made."
+          }
+        ]
       },
       {
-        "type": "text",
-        "content": "I write down the checks and decisions that person makes. Then I automate the routine ones. The work continues while they are away."
+        "type": "section",
+        "title": "What I would build",
+        "blocks": [
+          {
+            "type": "text",
+            "content": "First I sit with the owner and write down the checks and decisions, with the reasons. Most of them turn out to be rules, such as a small discount for repeat customers."
+          },
+          {
+            "type": "text",
+            "content": "The system makes the routine decisions by those rules. It sends the unusual ones to a named person, with the facts needed to decide."
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "What changes",
+        "blocks": [
+          {
+            "type": "text",
+            "content": "The business keeps running while the owner is away. Because the rules are written down, new staff are easier to train."
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "What it needs from you",
+        "blocks": [{ "type": "text", "content": "Time with the owner to walk through a normal week, and a second person who will handle the unusual cases." }]
       }
     ],
     "chips": [{ "target": "method" }, { "target": "proof" }, { "target": "signals" }]
@@ -221,6 +512,7 @@
     "intents": ["trust", "safe", "safety", "risk", "testing", "supervised", "control", "mistakes"],
     "tags": ["overview"],
     "blocks": [
+      { "type": "text", "content": "A new system never starts by running alone. It moves through four stages, one at a time." },
       {
         "type": "flow",
         "layout": "horizontal",
@@ -233,8 +525,14 @@
         ],
         "edges": [{ "from": "yd", "to": "sg" }, { "from": "sg", "to": "ck" }, { "from": "ck", "to": "rn" }]
       },
-      { "type": "text", "content": "One stage at a time. No skipping. If mistakes rise, the system moves back a stage automatically." },
-      { "type": "callout", "text": "In one of my systems, two of three tasks now run alone. The third is still checked." }
+      {
+        "type": "text",
+        "content": "At each stage you can see what it did and why. It moves up only after its results have been right for long enough. If mistakes start to rise, it moves back a stage by itself."
+      },
+      {
+        "type": "callout",
+        "text": "In Callsheet, my own directory, two of the three tasks that may run alone have reached the last stage. I still check the third."
+      }
     ],
     "chips": [{ "target": "callsheet_zero_ops" }, { "target": "proof" }, { "target": "process" }]
   },
@@ -247,35 +545,56 @@
     "blocks": [
       { "type": "fact", "key": "clients" },
       {
-        "type": "pills",
-        "label": "Public sources my system reads nightly",
-        "items": ["UK company records", "Property sales", "Government contracts", "Insolvency notices", "Grant funding"]
+        "type": "section",
+        "kicker": "Runs today",
+        "title": "Callsheet",
+        "blocks": [
+          { "type": "text", "content": "Callsheet is a public directory of UK film, TV and media companies. I built it alone, and it runs without staff." },
+          {
+            "type": "metricRow",
+            "items": [
+              { "value": "37", "label": "scheduled jobs" },
+              { "value": "~95%", "label": "of problems fixed without me" },
+              { "value": "£36", "label": "a month to run" }
+            ]
+          },
+          {
+            "type": "text",
+            "content": "Its jobs range from nightly checks of public records to quarterly reviews of its own categories. My part is reading one summary a week."
+          }
+        ]
       },
-      { "type": "text", "content": "All public. My system links them, so a change in one can point to an opportunity in another." },
       {
-        "type": "flow",
-        "layout": "horizontal",
-        "title": "Example: linked changes",
-        "nodes": [
-          { "id": "cf", "label": "A company closes" },
-          { "id": "ps", "label": "Its building is for sale" },
-          { "id": "co", "label": "Its contracts need a supplier" },
-          { "id": "op", "label": "A chance for you", "variant": "accent" }
-        ],
-        "edges": [{ "from": "cf", "to": "ps" }, { "from": "ps", "to": "co" }, { "from": "co", "to": "op" }]
-      },
-      { "type": "text", "content": "Figures from Callsheet, a public directory I built and run." },
-      {
-        "type": "metricRow",
-        "items": [
-          { "value": "37", "label": "scheduled jobs" },
-          { "value": "95%", "label": "problems fixed without me (approximate)" },
-          { "value": "£36", "label": "a month to run" }
+        "type": "section",
+        "kicker": "Runs today",
+        "title": "Public records, linked",
+        "blocks": [
+          {
+            "type": "pills",
+            "label": "Sources my system reads every night",
+            "items": ["UK company records", "Property sales", "Government contracts", "Insolvency notices", "Grant funding"]
+          },
+          {
+            "type": "text",
+            "content": "Each night my system reads these public sources and links them. A change in one can point to a risk or an opportunity in another."
+          },
+          {
+            "type": "flow",
+            "layout": "horizontal",
+            "title": "Example: linked changes",
+            "nodes": [
+              { "id": "n0", "label": "A company closes" },
+              { "id": "n1", "label": "Its building is for sale" },
+              { "id": "n2", "label": "Its contracts need a supplier" },
+              { "id": "n3", "label": "A chance for you", "variant": "accent" }
+            ],
+            "edges": [{ "from": "n0", "to": "n1" }, { "from": "n1", "to": "n2" }, { "from": "n2", "to": "n3" }]
+          }
         ]
       },
       { "type": "fact", "key": "callsheetUrl" }
     ],
-    "chips": [{ "target": "process" }, { "target": "projects" }, { "target": "ruben" }]
+    "chips": [{ "target": "callsheet" }, { "target": "trust_ladder" }, { "target": "process" }]
   },
   {
     "id": "process",
@@ -284,19 +603,22 @@
     "intents": ["process", "how do we start", "getting started", "get started", "work together", "engagement", "hire", "steps", "next step"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "Five steps. Always in this order." },
+      { "type": "text", "content": "Every project follows the same four steps, in this order. You can stop after the summary and keep it." },
       {
         "type": "layers",
         "items": [
-          { "label": "1", "title": "We talk. I listen.", "detail": "What works, what is hard, what you want automated." },
-          { "label": "2", "title": "I map the real work", "detail": "What people actually do. Where the time goes." },
-          { "label": "3", "title": "I show you a design", "detail": "What stays, what changes, what becomes automatic. Nothing changes until you approve it." },
+          { "label": "1", "title": "A 30-minute call, free", "detail": "You tell me where the time goes. I ask how the work actually moves." },
           {
-            "label": "4",
-            "title": "I build it. We test it.",
-            "detail": "A person checks everything at first. It runs alone only after it has shown that it works."
+            "label": "2",
+            "title": "A one-page summary",
+            "detail": "Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together."
           },
-          { "label": "5", "title": "It runs. You decide.", "detail": "The system does the routine work. You make the calls that need judgement." }
+          {
+            "label": "3",
+            "title": "A first system, checked by a person",
+            "detail": "It does the work and someone checks every result. It runs alone only once the results are consistently right."
+          },
+          { "label": "4", "title": "It runs, and reports", "detail": "You get a regular report of what it did, and of anything it could not do." }
         ]
       },
       { "type": "facts", "keys": ["firstStep", "cost", "timeline", "handover"] }
@@ -310,7 +632,8 @@
     "intents": ["cost", "costs", "price", "prices", "pricing", "fee", "fees", "quote", "budget", "how much", "charge", "rates"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "facts", "keys": ["cost", "firstStep", "timeline"] }
+      { "type": "facts", "keys": ["cost", "firstStep", "timeline"] },
+      { "type": "text", "content": "The calculator shows what one repeated task costs you now. That is a useful number to bring to the first call." }
     ],
     "chips": [{ "target": "estimate" }, { "label": "Book the free call", "target": "_book" }, { "target": "process" }]
   },
@@ -321,8 +644,11 @@
     "intents": ["contact", "email", "talk", "call", "book", "booking", "get in touch", "meeting", "speak"],
     "tags": ["overview"],
     "blocks": [
-      { "type": "text", "content": "Tell me which work takes too much time. The first call is free and takes 30 minutes." },
-      { "type": "text", "content": "Afterwards you get a one-page summary of where time is lost. It is yours either way." },
+      { "type": "text", "content": "Tell me which job takes up your team's week. The first call is 30 minutes and free." },
+      {
+        "type": "text",
+        "content": "Afterwards you get a one-page summary of where time is lost and what I would automate first. It is yours to keep, whether or not we work together."
+      },
       {
         "type": "stats",
         "items": [
@@ -332,7 +658,7 @@
           { "label": "Email", "value": "lab@mindunder.dev" }
         ]
       },
-      { "type": "text", "content": "No sales pitch. If there is nothing worth fixing, I will say so." }
+      { "type": "text", "content": "There is no sales pitch. If I do not find anything worth automating, I will say so." }
     ],
     "chips": [{ "label": "Book the free call", "target": "_book" }]
   }

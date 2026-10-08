@@ -50,21 +50,24 @@
             "title": "The Monday report",
             "before": "Every Monday the operations manager rebuilds the leadership report by hand. Sales come from the accounts system, stock from the warehouse system, deliveries from the courier's website. It takes most of the morning, and the figures are a day old by the meeting.",
             "build": "The report builds itself overnight from the same three systems and is in the inbox at 7am. The manager reads it, checks anything flagged, and adds comments.",
-            "result": "About 5 hours a week back. Roughly 230 hours a year."
+            "result": "About 5 hours a week back. Roughly 230 hours a year.",
+            "link": { "target": "signal_monday", "label": "The full example: the Monday report" }
           },
           {
             "tag": "Example · Professional services, 25 staff",
             "title": "Setting up a new client",
             "before": "When a proposal is signed, someone copies the client's details into the customer database (CRM), the billing system and the project tracker. Then they email three colleagues. It takes about 40 minutes a client, and something small is usually missed.",
             "build": "Signing the proposal starts it. The records appear in all three systems, the right people are told, and anything missing is flagged for a person to fill in.",
-            "result": "At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts."
+            "result": "At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts.",
+            "link": { "target": "signal_onboarding", "label": "The full example: a new client" }
           },
           {
             "tag": "Example · Runs today on my own systems",
             "title": "Early warning on suppliers",
             "before": "A distributor found out its main supplier had gone into administration when deliveries stopped. The signs had been public for weeks, in Companies House filings and insolvency notices.",
             "build": "A system reads those public records every night for the companies you depend on. It emails you the morning something changes, such as overdue accounts or a winding-up petition.",
-            "result": "Weeks of warning instead of none. My own system already reads these records every night."
+            "result": "Weeks of warning instead of none. My own system already reads these records every night.",
+            "link": { "target": "signal_blindside", "label": "The full example: supplier warnings" }
           }
         ]
       },

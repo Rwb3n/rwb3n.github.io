@@ -2164,3 +2164,9 @@ html:not([data-motion='full']) .js .landing .display.is-split .sw-in { animation
   .land-metrics li + li { border-top: 1px solid var(--line-2); }
   .land-step.is-book .offer { grid-template-columns: 1fr; gap: 0; }
 }
+
+/* Inside a section, paragraphs follow each other at the section's own gap. */
+.b-section > .b-text + .b-text { margin-top: var(--space-2); }
+.b-section { gap: var(--space-3); }
+.b-section-head { margin-bottom: var(--space-1); }
+.turn-a > .b-section, .page-body > .b-section { margin-block: var(--space-4); }

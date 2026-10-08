@@ -6,7 +6,10 @@
     "intents": ["callsheet", "directory", "film", "media", "broadcasting"],
     "tags": ["project", "deep"],
     "blocks": [
-      { "type": "text", "content": "Callsheet is a public directory of UK film, TV and media companies. I built it alone. It runs without staff." },
+      {
+        "type": "text",
+        "content": "Callsheet is a public directory of UK film, TV and media companies. I built it alone, and it runs without staff. It keeps listings current from public records, checks claims from companies and handles data-protection requests."
+      },
       {
         "type": "metricRow",
         "items": [

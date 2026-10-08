@@ -70,6 +70,7 @@ export function renderRegions(site, content) {
         `      <div><dt>${esc(lab.build || 'What I would build')}</dt><dd>${esc(c.build)}</dd></div>`,
         `      <div class="is-result"><dt>${esc(lab.result || 'What changes')}</dt><dd>${esc(c.result)}</dd></div>`,
         '    </dl>',
+        c.link ? `    <a class="land-link" href="#/${esc(c.link.target)}" data-target="${esc(c.link.target)}">${esc(c.link.label)} <span aria-hidden="true">→</span></a>` : '',
         '  </article>',
       ]),
       '</div>',
