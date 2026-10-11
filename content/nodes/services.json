@@ -247,12 +247,6 @@
     "blocks": [
       { "type": "fact", "key": "clients" },
       {
-        "type": "pills",
-        "label": "Public sources my system reads nightly",
-        "items": ["UK company records", "Property sales", "Government contracts", "Insolvency notices", "Grant funding"]
-      },
-      { "type": "text", "content": "All public. My system links them, so a change in one can point to an opportunity in another." },
-      {
         "type": "flow",
         "layout": "horizontal",
         "title": "Example: linked changes",
@@ -263,17 +257,7 @@
           { "id": "op", "label": "A chance for you", "variant": "accent" }
         ],
         "edges": [{ "from": "cf", "to": "ps" }, { "from": "ps", "to": "co" }, { "from": "co", "to": "op" }]
-      },
-      { "type": "text", "content": "Figures from Callsheet, a public directory I built and run." },
-      {
-        "type": "metricRow",
-        "items": [
-          { "value": "37", "label": "scheduled jobs" },
-          { "value": "95%", "label": "problems fixed without me (approximate)" },
-          { "value": "£36", "label": "a month to run" }
-        ]
-      },
-      { "type": "fact", "key": "callsheetUrl" }
+      }
     ],
     "chips": [{ "target": "process" }, { "target": "projects" }, { "target": "ruben" }]
   },
