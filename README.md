@@ -30,6 +30,8 @@ content/
   graphs/fixtures.json  test content for /components/ and tests; not on the site
   nodes/*.json          topics: blocks + chips + intents (+ "audience")
 scripts/sync.mjs  writes site.json into index.html's sync regions
+scripts/model.mjs writes _model/current/: process, data, state, story models
+_model/           the models (current: generated; target: hand-written). Not served
 tests/            node --test; tests/visual: Playwright screenshots
 ```
 
@@ -53,7 +55,8 @@ Facts are `{ label, value, missing }`. With no `value`, the site shows the
 ```sh
 npm run dev      # python3 -m http.server 8000
 npm run sync     # regenerate index.html's static regions from site.json
-npm test         # sync check, engine, content graph, plain-language lint
+npm test         # sync check, model check, engine, content graph, plain-language lint
+npm run model    # regenerate _model/current/ (pictures of the site, from the code)
 npm run test:visual        # screenshots of /components/ (Playwright, Chromium)
 npm run test:visual -- -u  # accept a deliberate change as the new baseline
 ```
