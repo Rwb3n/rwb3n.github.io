@@ -40,18 +40,18 @@ Every step has a way straight to the booking. Intake helps the call but is never
 | Today | Becomes |
 |---|---|
 | landing path: cases, how, book | steps 2, 3, 6 |
-| landing path: proof (Callsheet) | **open**: is it still running? If not, it goes |
+| landing path: proof (Callsheet) | cut: Callsheet is not running (claims removed live in PR #22) |
 | method, cost, process, trust_ladder | folded into step 3 as short answers |
 | signals + 4 signal_* | folded into step 2 (the cases) |
-| estimate | **open**: keep as an aside in step 3, or cut |
+| estimate | cut for now: reads as too sales-y, needs work |
 | about, ruben, philosophy, salesforce | one block, step 4 |
 | projects, callsheet, haios, behold + 13 technical | cut |
 | conversation L1 / L2, gravity | cut |
 | conversation L3 + brief | becomes step 5, intake |
 | one page `/#/all` | becomes the whole site |
-| lens | **open**: keep only if it earns attention for the headline |
+| lens | cut for now |
 
 ## Open
 
-- Does intake come before the booking, inside Cal.com's own questions, or both?
+- Intake: **both**, a short form before the booking and Cal.com's booking questions. The split depends on what Cal.com can do (evaluate it locally first).
 - What does the visitor see after booking?
