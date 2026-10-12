@@ -11,8 +11,8 @@
       "items": [
         {
           "title": "Callsheet",
-          "status": "Running",
-          "description": "A public online directory of UK film, TV and media companies. It runs without staff.",
+          "status": "Stopped",
+          "description": "A public online directory of UK film, TV and media companies. It ran without staff.",
           "target": "callsheet"
         },
         { "title": "Haios", "status": "Research", "description": "A way to organise work for AI software using ordinary files and folders.", "target": "haios" },

@@ -18,7 +18,7 @@
     "clients": {
       "label": "Client work",
       "value": null,
-      "missing": "No client case studies published yet. The examples here are systems I built and run myself."
+      "missing": "No client case studies published yet. The examples here are illustrations."
     },
     "handover": { "label": "After the project", "value": null, "missing": null },
     "callsheetUrl": { "label": "Callsheet website", "value": null, "missing": null, "link": true }
@@ -37,7 +37,7 @@
       "note": "bottleneck",
       "noteLines": ["example"]
     },
-    "cue": "Three examples, a system I run, and how we would start",
+    "cue": "Three examples, and how we would start",
     "path": {
       "$": "The landing, one screen per idea, in this order. Rendered by src/static.js.",
       "cases": {
@@ -60,24 +60,13 @@
             "result": "At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts."
           },
           {
-            "tag": "Example · Runs today on my own systems",
+            "tag": "Example · Illustration",
             "title": "Early warning on suppliers",
             "before": "A distributor found out its main supplier had gone into administration when deliveries stopped. The signs had been public for weeks, in Companies House filings and insolvency notices.",
             "build": "A system reads those public records every night for the companies you depend on. It emails you the morning something changes, such as overdue accounts or a winding-up petition.",
             "result": "Weeks of warning instead of none. My own system already reads these records every night."
           }
         ]
-      },
-      "proof": {
-        "head": "A system I run today",
-        "intro": "Callsheet is a public directory of UK film, TV and media companies. I built it alone. It keeps its listings up to date from public records, checks claims from companies, and handles data-protection requests, without staff.",
-        "metrics": [
-          { "value": "37", "label": "scheduled jobs, from nightly checks to quarterly reviews" },
-          { "value": "~95%", "label": "of problems fixed without me" },
-          { "value": "£36", "label": "a month to run" }
-        ],
-        "note": "My part is reading one summary a week and dealing with what the system could not fix.",
-        "link": { "target": "callsheet", "label": "How Callsheet works" }
       },
       "how": {
         "head": "How we would start",
@@ -107,7 +96,7 @@
     "title": "Everything, on one page",
     "intro": "Every topic, in order. Technical detail at the end.",
     "sections": ["method", "signals", "trust_ladder", "proof", "process", "cost", "ruben", "contact"],
-    "appendix": ["projects", "callsheet", "callsheet_zero_ops", "haios", "behold"]
+    "appendix": ["projects"]
   },
   "reading": { "motion": "full", "text": "standard", "sound": false },
   "features": { "map": true, "depthMeter": false, "freeText": true, "sound": true },
