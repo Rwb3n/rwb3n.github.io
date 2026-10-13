@@ -14,17 +14,6 @@ flowchart LR
   subgraph behold
     nbehold["behold"]
   end
-  subgraph callsheet
-    ncallsheet["callsheet"]
-    ncallsheet_arch["callsheet_arch"]
-    ncallsheet_domains["callsheet_domains"]
-    ncallsheet_flows["callsheet_flows"]
-    ncallsheet_graduation["callsheet_graduation"]
-    ncallsheet_scheduler["callsheet_scheduler"]
-    ncallsheet_stack["callsheet_stack"]
-    ncallsheet_trust["callsheet_trust"]
-    ncallsheet_zero_ops["callsheet_zero_ops"]
-  end
   subgraph haios
     nhaios["haios"]
     nhaios_architecture["haios_architecture"]
@@ -60,33 +49,6 @@ flowchart LR
   nbehold --> nhaios
   nbehold --> nprojects
   nbehold --> nruben
-  ncallsheet --> ncallsheet_zero_ops
-  ncallsheet --> ncallsheet_graduation
-  ncallsheet --> ncallsheet_arch
-  ncallsheet --> nprojects
-  ncallsheet_arch --> ncallsheet_domains
-  ncallsheet_arch --> ncallsheet_graduation
-  ncallsheet_arch --> ncallsheet_scheduler
-  ncallsheet_domains --> ncallsheet_trust
-  ncallsheet_domains --> ncallsheet_flows
-  ncallsheet_domains --> ncallsheet_arch
-  ncallsheet_flows --> ncallsheet_stack
-  ncallsheet_flows --> ncallsheet_arch
-  ncallsheet_flows --> ncallsheet
-  ncallsheet_graduation --> ncallsheet_scheduler
-  ncallsheet_graduation --> ncallsheet_trust
-  ncallsheet_graduation --> ncallsheet
-  ncallsheet_scheduler --> ncallsheet_graduation
-  ncallsheet_scheduler --> ncallsheet_flows
-  ncallsheet_scheduler --> ncallsheet
-  ncallsheet_stack --> ncallsheet_arch
-  ncallsheet_stack --> nprojects
-  ncallsheet_stack --> nruben
-  ncallsheet_trust --> ncallsheet_domains
-  ncallsheet_trust --> ncallsheet_flows
-  ncallsheet_trust --> ncallsheet
-  ncallsheet_zero_ops --> ncallsheet_graduation
-  ncallsheet_zero_ops --> ncallsheet_scheduler
   ncontact --> n_book
   ncost --> nestimate
   ncost --> n_book
@@ -102,7 +64,6 @@ flowchart LR
   nhaios_architecture --> nbehold
   nhaios_architecture --> nprojects
   nhaios_memory --> nhaios_architecture
-  nhaios_memory --> ncallsheet
   nhaios_memory --> nprojects
   nhaios_why_files --> nhaios_architecture
   nhaios_why_files --> nhaios_memory
@@ -116,11 +77,9 @@ flowchart LR
   nprocess --> ncontact
   nprocess --> ncost
   nprocess --> ntrust_ladder
-  nprojects --> ncallsheet
   nprojects --> nhaios
   nprojects --> nbehold
   nprojects -.-> nbehold
-  nprojects -.-> ncallsheet
   nprojects -.-> nhaios
   nproof --> nprocess
   nproof --> nprojects
@@ -133,7 +92,6 @@ flowchart LR
   nruben --> nsalesforce
   nruben --> nabout
   nsalesforce --> nhaios
-  nsalesforce --> ncallsheet
   nsalesforce --> nprojects
   nsignal_blindside --> nsignal_monday
   nsignal_blindside --> nmethod
@@ -154,13 +112,12 @@ flowchart LR
   nsignals -.-> nsignal_instinct
   nsignals -.-> nsignal_late
   nsignals -.-> nsignal_monday
-  ntrust_ladder --> ncallsheet_zero_ops
   ntrust_ladder --> nproof
   ntrust_ladder --> nprocess
   n_book(("_book"))
   n_show_brief(("_show_brief"))
   classDef technical stroke-dasharray: 4 3;
-  class ncallsheet_arch,ncallsheet_domains,ncallsheet_flows,ncallsheet_graduation,ncallsheet_scheduler,ncallsheet_stack,ncallsheet_trust,nhaios,nhaios_architecture,nhaios_memory,nhaios_why_files technical
+  class nhaios,nhaios_architecture,nhaios_memory,nhaios_why_files technical
   classDef entry stroke-width:3px;
   class nestimate,nmethod,nprocess,nproof,nroot,nsignals entry
 ```
@@ -170,33 +127,24 @@ flowchart LR
 | `about` | about | overview, identity | text split text | 48 | projects, philosophy, ruben |
 | `ahead` | services | overview | text text text | 41 | signals, method |
 | `behold` | behold | project | text pills | 35 | haios, projects, ruben |
-| `callsheet` | callsheet | project, deep | text metricRow fact | 36 | callsheet_zero_ops, callsheet_graduation, callsheet_arch, projects |
-| `callsheet_arch` | callsheet | project, technical, deep | text flow layers | 106 | callsheet_domains, callsheet_graduation, callsheet_scheduler |
-| `callsheet_domains` | callsheet | project, technical | text flow | 58 | callsheet_trust, callsheet_flows, callsheet_arch |
-| `callsheet_flows` | callsheet | project, technical | text flow flow text | 82 | callsheet_stack, callsheet_arch, callsheet |
-| `callsheet_graduation` | callsheet | project, technical, deep | text progress table text | 137 | callsheet_scheduler, callsheet_trust, callsheet |
-| `callsheet_scheduler` | callsheet | project, technical, deep | split code | 65 | callsheet_graduation, callsheet_flows, callsheet |
-| `callsheet_stack` | callsheet | project, technical | text pills metricRow | 40 | callsheet_arch, projects, ruben |
-| `callsheet_trust` | callsheet | project, technical | text flow | 37 | callsheet_domains, callsheet_flows, callsheet |
-| `callsheet_zero_ops` | callsheet | project | text stats text | 65 | callsheet_graduation, callsheet_scheduler |
 | `contact` | services | overview | text text stats text | 60 | _book |
 | `cost` | services | overview | facts | 3 | estimate, _book, process |
 | `estimate` | services | overview, tool | text estimate text | 128 | method, process, _show_brief |
 | `haios` | haios | project, deep | text flow pills | 69 | haios_why_files, haios_architecture, haios_memory, projects |
 | `haios_architecture` | haios | project, technical, deep | text code text | 47 | haios_memory, behold, projects |
-| `haios_memory` | haios | project, technical, deep | text flow text | 58 | haios_architecture, callsheet, projects |
+| `haios_memory` | haios | project, technical, deep | text flow text | 58 | haios_architecture, projects |
 | `haios_why_files` | haios | project, deep | text text callout | 67 | haios_architecture, haios_memory |
 | `method` | services | overview | text compare | 86 | estimate, trust_ladder, proof, process |
 | `philosophy` | about | identity | text flow text | 48 | projects, haios, salesforce |
 | `process` | services | overview | text layers facts | 99 | contact, cost, trust_ladder |
-| `projects` | projects | overview, work | text grid | 69 | callsheet, haios, behold, behold, callsheet, haios |
+| `projects` | projects | overview, work | text grid | 51 | haios, behold, behold, haios |
 | `proof` | services | overview, work | fact flow | 29 | process, projects, ruben |
 | `root` | root | entry | hero fact fact fact | 15 | method, signals, proof, process |
 | `ruben` | about | identity, overview | text text pills badge callout fact | 67 | projects, salesforce, about |
-| `salesforce` | about | identity, background | text text split text | 72 | haios, callsheet, projects |
+| `salesforce` | about | identity, background | text text split text | 72 | haios, projects |
 | `signal_blindside` | services | overview | callout text | 47 | signal_monday, method, signals |
 | `signal_instinct` | services | overview | callout text | 51 | method, proof, signals |
-| `signal_late` | services | overview | callout text | 43 | signal_instinct, method, signals |
+| `signal_late` | services | overview | callout text | 36 | signal_instinct, method, signals |
 | `signal_monday` | services | overview | callout text | 53 | estimate, signal_late, method, signals |
 | `signals` | services | overview | text grid | 54 | method, proof, signal_blindside, signal_instinct, signal_late, signal_monday |
-| `trust_ladder` | services | overview | flow text callout | 58 | callsheet_zero_ops, proof, process |
+| `trust_ladder` | services | overview | flow text | 41 | proof, process |
