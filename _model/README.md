@@ -23,9 +23,9 @@ Decided (operator, 2026-10-11):
 Each phase ends with the operator's sign-off. Nothing goes to `main` without it.
 
 ```
- 0 model current     npm run model → current/                         ◀ here
- 1 model target      target/: funnel, intake, states, keep/cut list
- 2 design            DESIGN.md for the funnel; copy draft
+ 0 model current     npm run model → current/
+ 1 model target      target/: funnel, intake, states, keep/cut list    ◀ here
+ 2 design            DESIGN.md for the funnel (draft); copy draft
  3 build             one branch; cut content; intake; Cal.com embed;
                      intake Worker (wrangler dev)
  4 local UAT         U1 flow   every path to the call works
