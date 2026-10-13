@@ -7,8 +7,9 @@
 Built from the live copy wherever it already works (`content/site.json`,
 `services.json`, `about.json`). New lines are marked *new*.
 
-"Book the free call" is the one label for booking, everywhere. In steps 1–4 it
-is a quiet text link to `#book`; in step 6 it is the only filled button.
+"Book the free call" is the heading of step 6 and the label of every quiet
+link to it (steps 1–4). The page's only filled button is "Show available
+times", in step 6.
 
 ---
 

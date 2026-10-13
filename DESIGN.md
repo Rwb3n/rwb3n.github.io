@@ -57,7 +57,9 @@ other link is quieter than it.
   heading.
 - Step 6 has the page's only filled button, "Show available times". It loads
   Cal.com's script and opens the embed in place. The space the embed will
-  take is kept free while it loads, so nothing below it jumps.
+  take is kept free while it loads, so nothing below it jumps. Without
+  JavaScript the button is a plain link to the Cal.com booking page. Once
+  the embed is open (from either button), it replaces the button.
 - While it loads, one line says "Loading available times from Cal.com." If
   the script does not load (blocked or offline) within 10 seconds, that line
   is replaced by a link to the Cal.com booking page, with the answers filled
@@ -187,7 +189,7 @@ disabilities").
 - Literal words only: no idioms, metaphors or in-jokes. Banned phrases are
   listed in `site.json` → `language` and checked by `npm test`.
 - Short sentences (≤ 25 words), statements not questions, reading grade ≤ 9.
-- Buttons say where they go.
+- Buttons say where they go, or what happens when they are pressed.
 - Abbreviations are written out once, as "Full words (ABBR)".
 - Examples are labelled as examples; illustrations are labelled as
   illustrations. Nothing is presented as a client quote unless it is one.
