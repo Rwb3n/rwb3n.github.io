@@ -20,12 +20,12 @@ flowchart TD
 | `site.json › $comment` | - | 38 |
 | `site.json › brand` | Platform | 1 |
 | `site.json › copy` | Presentation | 25 |
-| `site.json › facts` | Offer | 91 |
+| `site.json › facts` | Offer | 86 |
 | `site.json › features` | Platform | 0 |
-| `site.json › landing` | Story | 586 |
+| `site.json › landing` | Story | 495 |
 | `site.json › language` | Rules | 125 |
 | `site.json › meta` | Platform | 30 |
-| `site.json › onePage` | Story | 26 |
+| `site.json › onePage` | Story | 22 |
 | `site.json › person` | Offer | 4 |
 | `site.json › reading` | Platform | 2 |
 | `site.json › timeZone` | Platform | 1 |
@@ -34,7 +34,7 @@ flowchart TD
 
 | Domain | Topics | Words |
 |---|---|---|
-| Offer | 13 | 812 |
+| Offer | 13 | 752 |
 | Proof (technical) | 11 | 766 |
 | Proof | 8 | 440 |
 | Story | 1 | 15 |

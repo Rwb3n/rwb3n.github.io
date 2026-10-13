@@ -190,7 +190,7 @@ flowchart LR
 | `philosophy` | about | identity | text flow text | 48 | projects, haios, salesforce |
 | `process` | services | overview | text layers facts | 99 | contact, cost, trust_ladder |
 | `projects` | projects | overview, work | text grid | 69 | callsheet, haios, behold, behold, callsheet, haios |
-| `proof` | services | overview, work | fact pills text flow text metricRow fact | 89 | process, projects, ruben |
+| `proof` | services | overview, work | fact flow | 29 | process, projects, ruben |
 | `root` | root | entry | hero fact fact fact | 15 | method, signals, proof, process |
 | `ruben` | about | identity, overview | text text pills badge callout fact | 67 | projects, salesforce, about |
 | `salesforce` | about | identity, background | text text split text | 72 | haios, callsheet, projects |

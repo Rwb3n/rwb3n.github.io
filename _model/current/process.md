@@ -8,12 +8,10 @@
 flowchart LR
   H["headline + lens"] --> L0
   L0["cases: Where the time goes"]
-  L1["proof: A system I run today"]
-  L2["how: How we would start"]
-  L3["book: Next step"]
+  L1["how: How we would start"]
+  L2["book: Next step"]
   L0 --> L1
   L1 --> L2
-  L2 --> L3
 ```
 
 ## A typed question (`route` in src/engine.js)

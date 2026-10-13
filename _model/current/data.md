@@ -52,15 +52,15 @@ erDiagram
 | Text | `callout` | text*: string; attribution: string | 7 |
 | Text | `code` | content*: string; language: string | 2 |
 | Text | `hero` | title*: string; accentWord: string; subtitle: string | 1 |
-| Text | `text` | content*: string | 31 |
+| Text | `text` | content*: string | 30 |
 | Numbers | `metric` | value*: any; label*: string; sublabel: string | 1 |
-| Numbers | `metricRow` | items*: list of objects | 4 |
+| Numbers | `metricRow` | items*: list of objects | 3 |
 | Numbers | `progress` | label*: string; current*: number; total*: number; sublabel: string | 1 |
 | Numbers | `stats` | items*: list of objects | 3 |
 | Lists and structure | `badge` | status*: string; variant: "default" | "active" | 1 |
 | Lists and structure | `grid` | items*: list of objects | 2 |
 | Lists and structure | `layers` | items*: list of objects | 2 |
-| Lists and structure | `pills` | items*: list of string; label: string | 7 |
+| Lists and structure | `pills` | items*: list of string; label: string | 6 |
 | Lists and structure | `section` | title*: string; kicker: string; tone: "plain" | "raised" | "accent"; blocks*: blocks | 0 |
 | Lists and structure | `split` | left: blocks; right: blocks | 3 |
 | Lists and structure | `table` | headers*: list of string; rows*: list of list of string | 1 |
