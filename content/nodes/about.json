@@ -64,7 +64,7 @@
       },
       { "type": "text", "content": "I plan a Salesforce change and an AI system the same way. Only the software differs." }
     ],
-    "chips": [{ "target": "haios" }, { "target": "callsheet" }, { "target": "projects" }]
+    "chips": [{ "target": "haios" }, { "target": "projects" }]
   },
   {
     "id": "ruben",

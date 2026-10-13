@@ -1,24 +1,18 @@
 {
   "id": "projects",
-  "label": "Three projects",
+  "label": "Two projects",
   "parent": null,
   "intents": ["project", "projects", "portfolio", "what have you built", "built", "your work"],
   "tags": ["overview", "work"],
   "blocks": [
-    { "type": "text", "content": "Three projects, one idea. Software is given more independence only after it has shown that it works." },
+    { "type": "text", "content": "Two projects, one idea. Software is given more independence only after it has shown that it works." },
     {
       "type": "grid",
       "items": [
-        {
-          "title": "Callsheet",
-          "status": "Stopped",
-          "description": "A public online directory of UK film, TV and media companies. It ran without staff.",
-          "target": "callsheet"
-        },
         { "title": "Haios", "status": "Research", "description": "A way to organise work for AI software using ordinary files and folders.", "target": "haios" },
         { "title": "Behold", "status": "In daily use", "description": "A simpler version of Haios that I use for my own daily work.", "target": "behold" }
       ]
     }
   ],
-  "chips": [{ "target": "callsheet" }, { "target": "haios" }, { "target": "behold" }]
+  "chips": [{ "target": "haios" }, { "target": "behold" }]
 }
