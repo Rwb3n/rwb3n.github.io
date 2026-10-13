@@ -21,23 +21,26 @@ answers in structured blocks — diagrams, metrics, tables — and offers the ne
 questions. The deeper they go, the closer the "how would this work in my
 business?" prompt moves to the top.
 
-## Landing: one idea per screen
+## Landing: one path
 
-The landing used to hold everything on one screen: headline, examples, three
-facts, six links, the lens and the ask bar, about 200 words at once. Now it is
-a sequence, read by scrolling:
+The landing reads as one path, top to bottom, one idea per screen:
 
 1. The headline and the lens. Nothing else, apart from one line saying what
    is below.
-2. What this looks like: the examples, large.
-3. Before we work together: first step, cost, reply time.
-4. Where to start: the topics, the cost estimate, the one-page view.
+2. Where the time goes: three examples, each with what happens today, what I
+   would build and what changes. They are labelled as illustrations.
+3. How we would start: four steps.
+4. Next step: one filled button, "Book the free call", which opens an email
+   to me (there is no booking system yet); price, reply time and location;
+   then, for readers who want more, the topic list, the cost estimate and
+   the one-page view.
 
 The ask bar stays hidden while the headline screen is in view (pressing "/"
 brings it back). Each later screen rises once as it scrolls into view, only
 in Full motion. If a link is chosen below the headline screen, the lens
-"fix" is skipped, because it would play off screen. Headings and text for
-the screens are in `site.json` → `landing.steps` and `landing.cue`.
+"fix" is skipped, because it would play off screen. The text for the path
+is in `site.json` → `landing.path`, and the line under the headline in
+`landing.cue`.
 
 ## Topics: room to read
 
@@ -53,22 +56,26 @@ every screen size.
 
 ## System
 
-Black and white. One ink, one paper, a high-contrast serif and a lot of
-space. The reference is a fashion house, not a software product: restraint,
+Black and white. One ink, one paper, heavy type and a lot of space. The reference is a fashion house, not a software product: restraint,
 exact type, and motion that is slow, deliberate and finished.
 
-**Type.** Three voices, each with one job.
+**Type.** Two voices and a system face, all from Fontshare.
 
 | Role | Face | Used for |
 | --- | --- | --- |
-| Display | Bodoni Moda (optical sizes, + italic) | headline, topic titles, big numbers, callouts |
-| Text | Geist | body copy; small labels set in capitals, tracked 0.22em |
-| Diagram | Geist Mono | diagram boxes and code only (flow layout measures mono widths) |
+| Claim | Supreme, weight 800, tracked tight | headline, topic titles, big numbers |
+| Voice | Sentient, light italic | the spoken line under the headline, callouts, quotes, each example's result |
+| System | Azeret Mono | small labels, diagram boxes, code (flow layout measures mono widths) |
 
-Earlier type directions (Supreme, Sentient, Azeret Mono and others) are kept on `/type/` for reference; `/components/` shows every block in the current system.
+Supreme and Sentient have no → or ↓, so Azeret Mono is second in their
+font stacks and draws the arrows (`/components/#glyphs`). Body text is
+Supreme. `/type/` compares the type directions that were tried.
 
-The display step (`--step-display`) runs from 44px to 120px. One word in the
-headline is set in italic; that is the only emphasis on the page.
+The display step (`--step-display`) runs from about 42px to 100px. The
+headline is two lines: the claim in Supreme, then the promise in Sentient
+italic at half the size, in secondary grey. That change of voice is the
+emphasis; the accent word (`landing.accent`) is marked up but not styled
+differently.
 
 **Colour.** `#000` on `#fff`, and the reverse in dark mode. No accent colour:
 emphasis is italic, weight, or solid ink (the key step in a diagram is a black
@@ -107,7 +114,7 @@ Runway moments (full motion):
 | X-ray | Under the lens, the copy becomes outlines with measured cap height, x-height, baseline and descender. |
 | Found | Magnetic pull, spring kick, ticks lock to the diagonals, crosshair, annotation draws and types in. |
 | Fix | Choosing a question opens the lens over the screen; the tangle snaps onto a grid; the question morphs into the first turn. |
-| Ask | Every later question flies from where it was asked (chip or ask bar) to its heading, sans to serif, with the scroll in step. |
+| Ask | Every later question flies from where it was asked (chip or ask bar) to its heading, with the scroll in step. |
 | Answer | Scan line, clip-and-rise blocks, odometer numbers, springy diagram nodes, staggered parts, a printing brief. |
 | Theme | The new theme spreads from the toggle as a circle. |
 
