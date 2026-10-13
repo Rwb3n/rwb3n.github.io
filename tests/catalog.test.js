@@ -75,7 +75,7 @@ test('the validator catches mistakes', () => {
 test('usage maps every non-session type used in content', () => {
   const u = usage(nodes);
   assert.ok(u.flow.includes('haios'));
-  assert.ok(u.metric.includes('callsheet_scheduler'), 'nested split blocks are counted');
+  assert.ok(u.metricRow.includes('about'), 'nested split blocks are counted');
 });
 
 test('fixtures are valid, follow the writing rules, and stay off the site', () => {

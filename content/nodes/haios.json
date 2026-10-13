@@ -88,6 +88,6 @@
       },
       { "type": "text", "content": "Each work session writes all three kinds of notes. Over time, the notes build up into useful knowledge." }
     ],
-    "chips": [{ "target": "haios_architecture" }, { "target": "callsheet" }, { "target": "projects" }]
+    "chips": [{ "target": "haios_architecture" }, { "target": "projects" }]
   }
 ]
