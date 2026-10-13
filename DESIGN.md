@@ -47,6 +47,24 @@ other link is quieter than it.
 - After booking, the visitor sees Cal.com's confirmation and gets its email.
   The page adds nothing.
 
+**Intake and booking, on the page** (copy in `_model/target/copy.md`):
+
+- Each field has its label above it, in body text, and one example line under
+  the label in `--fg-2`. No placeholder text inside the field: it disappears
+  when typing starts. Both fields are optional and say so once, above them.
+- "Choose a time for the call" (step 5) is an outlined button. It moves to
+  step 6 and opens the embed with the answers. Focus moves to step 6's
+  heading.
+- Step 6 has the page's only filled button, "Show available times". It loads
+  Cal.com's script and opens the embed in place. The space the embed will
+  take is kept free while it loads, so nothing below it jumps.
+- While it loads, one line says "Loading available times from Cal.com." If
+  the script does not load (blocked or offline) within 10 seconds, that line
+  is replaced by a link to the Cal.com booking page, with the answers filled
+  in, and the email address.
+- "Book the free call" is the label of every quiet link to step 6, so the
+  visitor always knows where it goes.
+
 ## Cut
 
 These parts of the live site are removed by the funnel. Their code and notes

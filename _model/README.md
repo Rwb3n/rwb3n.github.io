@@ -25,7 +25,7 @@ Each phase ends with the operator's sign-off. Nothing goes to `main` without it.
 ```
  0 model current     npm run model → current/
  1 model target      target/: funnel, keep/cut list    signed off 2026-10-13
- 2 design            DESIGN.md for the funnel (draft); copy draft    ◀ here
+ 2 design            DESIGN.md for the funnel; target/copy.md         ◀ here
  3 build             one branch; cut content; intake form; Cal.com embed
  4 local UAT         U1 flow   every path to the call works
                      U2 copy   npm test + read aloud; honesty pass
