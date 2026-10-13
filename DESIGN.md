@@ -1,8 +1,8 @@
 # mindunder.dev — design notes
 
 > **Draft, phase 2** (2026-10-13). This file describes the **target** site,
-> the funnel in `_model/target/funnel.md`, not the site that is live. It is
-> signed off with that model. Until the build lands, the live site is
+> the funnel in `_model/target/funnel.md` (signed off 2026-10-13), not the
+> site that is live. Until the build lands, the live site is
 > described by this file at `057d4d7` (`git show 057d4d7:DESIGN.md`).
 
 ## Idea
@@ -37,12 +37,15 @@ but is never required for it.
 **The one action** (booking) is the only filled button on the page. Every
 other link is quieter than it.
 
-**Open** (in `_model/target/funnel.md`, not decided here):
+**Booking and intake** (decided in `_model/target/funnel.md`):
 
-- How intake splits between a short form before booking and Cal.com's own
-  booking questions. It depends on what Cal.com can do.
-- How Cal.com sits on the page (embedded or linked), and what the visitor
-  sees after booking.
+- Cal.com, hosted. Step 6 is its inline embed, loaded only when the visitor
+  acts. Without JavaScript, the intake form opens the Cal.com page instead.
+- Intake is two optional fields on the page. They are Cal.com booking
+  questions, so the answers arrive with the booking. Nothing else stores
+  them.
+- After booking, the visitor sees Cal.com's confirmation and gets its email.
+  The page adds nothing.
 
 ## Cut
 
@@ -113,7 +116,7 @@ decisive arrival.
 | Sections | Each heading and block rises as it scrolls into view (`animation-timeline: view()`, as `/#/all` does today). Paragraphs are shown whole | kept: the spine of the page |
 | Ink fill | Hovering a row floods it with black from the left; the words turn white | kept, for links and rows that remain |
 | Theme | The new theme spreads from the toggle as a circle | kept |
-| Curtain | On the first page of a visit, the black lifts away (1 s) | open |
+| Curtain | On the first page of a visit, the black lifts away (1 s) | cut: it delays the page and moves no one toward a call |
 | Boot, search, x-ray, found, fix | The lens | cut with the lens |
 | Ask, answer | Questions fly to headings; answers arrive from behind a mask | cut with the conversation |
 

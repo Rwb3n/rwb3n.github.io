@@ -24,16 +24,16 @@ Each phase ends with the operator's sign-off. Nothing goes to `main` without it.
 
 ```
  0 model current     npm run model → current/
- 1 model target      target/: funnel, intake, states, keep/cut list    ◀ here
- 2 design            DESIGN.md for the funnel (draft); copy draft
- 3 build             one branch; cut content; intake; Cal.com embed;
-                     intake Worker (wrangler dev)
+ 1 model target      target/: funnel, keep/cut list    signed off 2026-10-13
+ 2 design            DESIGN.md for the funnel (draft); copy draft    ◀ here
+ 3 build             one branch; cut content; intake form; Cal.com embed
  4 local UAT         U1 flow   every path to the call works
                      U2 copy   npm test + read aloud; honesty pass
                      U3 reach  phone, keyboard, screen reader, motion Off
-                     U4 intake intake → Worker → Cal.com, end to end
+                     U4 intake intake fields → Cal.com booking holds the answers,
+                               with and without JavaScript
  5 Cloudflare        project from this repo; preview per branch behind
-                     Access; Turnstile; Web Analytics; repo goes private
+                     Access; Web Analytics; repo goes private
  6 live UAT          U1–U4 again on the preview URL, on real devices
  7 cutover           DNS to Cloudflare (mail records first: MX, SPF,
                      DKIM) → verify mail and site → retire GitHub Pages

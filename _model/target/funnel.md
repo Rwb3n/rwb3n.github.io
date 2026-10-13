@@ -1,6 +1,6 @@
 # Target: the funnel
 
-> **Draft** (2026-10-11). Hand-written. Compare with `../current/`.
+> **Signed off** (operator, 2026-10-13). Hand-written. Compare with `../current/`.
 
 One page, read top to bottom, ending at a booked call.
 
@@ -51,7 +51,28 @@ Every step has a way straight to the booking. Intake helps the call but is never
 | one page `/#/all` | becomes the whole site |
 | lens | cut for now |
 
-## Open
+## Decided (2026-10-13)
 
-- Intake: **both**, a short form before the booking and Cal.com's booking questions. The split depends on what Cal.com can do (evaluate it locally first).
-- What does the visitor see after booking?
+The operator signed off phase 1 and asked for these to be decided.
+
+**Cal.com is hosted, not installed.** The site is static, so Cal.com cannot run on it. The hosted free plan covers what the funnel needs: an event type, booking questions, prefill and the embed.
+
+**Intake is one set of questions, in two places.** The fields on the page are Cal.com booking questions. Each field's name is the question's identifier in Cal.com, so the answers are carried into the booking and arrive in the booking email.
+
+- Two fields, both optional: *Which job takes up your team's time?* (`job`, long text) and *How many people do it, and how often?* (`scale`, short text).
+- Cal.com asks for name and email itself. The page does not.
+- Booking questions, not `metadata[...]`: metadata is stored but not shown on the booking.
+- No intake Worker, no Turnstile, no storage of our own. Answers exist only inside a booking.
+
+**How the page reaches Cal.com.**
+
+- Without JavaScript: the intake is a plain form (`method="get"`) whose action is the Cal.com booking page, so the fields prefill it there.
+- With JavaScript: the same form opens Cal.com's inline embed in step 6, with the answers in its `config`.
+- Cal.com's script loads only when the visitor acts (opens the booking step or sends the form), never on page load.
+- Every "skip" link goes to step 6 (`#book`).
+
+**After booking:** Cal.com's own confirmation, inside the embed, and Cal.com's confirmation email. No redirect and no success page of our own. What happens after the call is already said in step 3.
+
+**Honesty.** The page never says "sent" or "received". If the visitor fills in the fields and leaves, nothing was sent, and nothing on the page suggests it was. "I reply the same day" stays a fact about email, not about booking.
+
+**Needs the operator:** a Cal.com account with a 30-minute event type and the two questions (`job`, `scale`). Phase 3 and U4 cannot be tested without it.
