@@ -53,7 +53,7 @@
       { "type": "text", "content": "You hear about changes early, while there is time to act." },
       {
         "type": "text",
-        "content": "My own system reads UK company records, insolvency notices and contract awards every night. It reports changes the same morning."
+        "content": "A system can read UK company records, insolvency notices and contract awards every night, and report changes the same morning."
       },
       { "type": "text", "content": "Yours would read the sources that matter in your market." }
     ],
@@ -191,7 +191,7 @@
       { "type": "callout", "text": "Example. A company heard about a public tender late. The winner had already met the buyer twice." },
       {
         "type": "text",
-        "content": "Whoever hears first usually has a system checking public notices daily. Mine checks five public registers every night. Yours would check the sources in your market."
+        "content": "Whoever hears first usually has a system checking public notices daily. Yours would check the sources in your market."
       }
     ],
     "chips": [{ "target": "signal_instinct" }, { "target": "method" }, { "target": "signals" }]
@@ -233,10 +233,9 @@
         ],
         "edges": [{ "from": "yd", "to": "sg" }, { "from": "sg", "to": "ck" }, { "from": "ck", "to": "rn" }]
       },
-      { "type": "text", "content": "One stage at a time. No skipping. If mistakes rise, the system moves back a stage automatically." },
-      { "type": "callout", "text": "In one of my systems, two of three tasks now run alone. The third is still checked." }
+      { "type": "text", "content": "One stage at a time. No skipping. If mistakes rise, the system moves back a stage automatically." }
     ],
-    "chips": [{ "target": "callsheet_zero_ops" }, { "target": "proof" }, { "target": "process" }]
+    "chips": [{ "target": "proof" }, { "target": "process" }]
   },
   {
     "id": "proof",

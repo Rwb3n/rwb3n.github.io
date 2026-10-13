@@ -36,7 +36,7 @@ test('routing: disclosure goes to L3, general to L2', () => {
   assert.equal(E.route(content.intents, 'we spend Mondays in spreadsheets').target, 'signal_monday', 'a described problem that matches a topic opens that topic');
   assert.equal(E.route(content.intents, 'our team of 40 people is struggling').layer, 3);
   assert.equal(E.route(content.intents, 'do you use llm agents').layer, 2);
-  assert.equal(E.route(content.intents, 'CALLSHEET').layer, 1);
+  assert.equal(E.route(content.intents, 'HAIOS').layer, 1);
 });
 
 test('gravity surfaces the engagement chip as depth grows', () => {
@@ -51,8 +51,8 @@ test('gravity surfaces the engagement chip as depth grows', () => {
 
 test('brief and mailto carry the session', () => {
   let s = E.newSession();
-  s = E.record(s, { nodeId: 'callsheet' });
-  s = E.record(s, { nodeId: 'callsheet_arch' });
+  s = E.record(s, { nodeId: 'haios' });
+  s = E.record(s, { nodeId: 'haios_architecture' });
   s = E.record(s, { nodeId: null, query: 'we have 12 staff re-keying invoices', isFreeQuestion: true, isDisclosure: true });
   const d = E.briefData(content, s);
   assert.ok(d.journey.includes(' → '), 'journey lists topics in order');

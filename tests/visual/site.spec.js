@@ -45,7 +45,7 @@ test('the component library covers every class used on the site', async ({ page 
   await page.goto('/#/all');
   await page.waitForSelector('.page-section');
   for (const c of await classes('.page')) used.set(c, '/#/all');
-  for (const id of ['method', 'signals', 'process', 'callsheet_domains', 'callsheet_graduation', 'estimate']) {
+  for (const id of ['method', 'signals', 'process', 'haios', 'haios_architecture', 'about', 'estimate']) {
     await page.goto('about:blank');
     await page.goto(`/#/${id}`);
     await page.waitForSelector('.turn .chips', { timeout: 15000 });
