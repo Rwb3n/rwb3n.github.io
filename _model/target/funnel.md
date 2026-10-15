@@ -102,114 +102,120 @@ They are the first block of step 3, "What I look for", before "How we would star
 - Full name and a photograph for step 4 (`person.fullName` is empty).
 - A price range, when you have one. Until then the page says how price is agreed.
 
-## Changed (2026-10-15, evening): the site talks in UI components, live
+## Changed (2026-10-15, evening): the site talks in UI components, chosen by a decision model
 
 > **Draft, awaiting the operator's sign-off.** Nothing here is built.
 > Operator, 2026-10-15: "the whole concept was this website is supposed to
 > showcase the new age of websites. AI generated, a performance." "Instead of
-> talking in simply words, you talk in COMPONENTS… UI components." Chosen:
-> **live AI** (a real model answers each visitor), over a scripted
-> performance or the site-as-exhibit.
+> talking in simply words, you talk in COMPONENTS… UI components." "We would
+> use the new class of models emerging: decision models" (Jev, TypeSafe, on
+> OpenRouter). Chosen over a scripted performance and over the site as the
+> exhibit.
 
 This reverses four decisions of 2026-10-13: *no Worker*, *no Turnstile*,
-*nothing stored*, *no API key*. It is the site's first running cost.
+*nothing stored*, *no API key*. It is the site's first running cost (close
+to nothing; see below).
 
 ### The idea
 
 The visitor writes one sentence about their work. The site does not answer in
-paragraphs. It answers in **UI components**, chosen and filled in for that
-visitor by a model, and drawn by the site's own renderers, in front of them:
+paragraphs. It answers in **UI components**. A decision model reads the
+sentence and **decides**: which job it is, which systems it touches, how
+often, how many people, whether it is repeated work at all. Each decision
+picks or fills a component the site already has. The page assembles itself
+for this visitor, in front of them, one component at a time.
 
 ```
   You: two of us rebuild the sales report every Monday
 
-  ▸ reading…                                         (status line, mono)
+  ▸ deciding…                                 (status line, mono; ~0.2 s)
   ┌ stats ─────────────────────────────────────────┐
-  │ The job   Weekly sales report, rebuilt by hand │
-  │ Who       2 people   How often  Every Monday   │
+  │ The job    A report, rebuilt by hand   (0.94)  │  Choice: job type
+  │ Systems    Accounts · Spreadsheet · Email      │  Noul per system
+  │ How often  Every week                          │  Score: frequency
   └────────────────────────────────────────────────┘
-  ┌ compare: Today ⇄ Automated ────────────────────┐
-  │ 3 systems → person → spreadsheet → report      │
-  │ 3 systems → report → person checks             │  (steps move)
+  ┌ compare: Today ⇄ Automated ────────────────────┐  template for "report",
+  │ Accounts → person → spreadsheet → email        │  slots filled with the
+  │ Accounts → report → person checks → email      │  systems it found
   └────────────────────────────────────────────────┘
   ┌ metricRow ─────────────────────────────────────┐
-  │ £70,000 their pay │ £7,467 on this job │ 9.8 wk │  (our maths, not the model's)
+  │ £70,000 their pay │ £7,467 on this job │ 9.8 wk │  our maths, their numbers
   └────────────────────────────────────────────────┘
-  ┌ layers: What I would automate first ───────────┐
-  │ 1 Pull the three exports overnight              │
-  │ 2 Build the report; flag what looks wrong       │
-  │ 3 A person checks it before Monday 9am          │
+  ┌ layers: What I would automate first ───────────┐  written by Ruben for
+  │ 1 …   2 …   3 …                                │  "report", not by a model
   └────────────────────────────────────────────────┘
-  Written by AI for this page, from your sentence. A first guess, not a diagnosis.
+  Chosen by a decision model from your sentence. The words are mine.
   [ Book the free call with this ]
 ```
 
-Each component arrives as it is generated and animates in (the renderers
-already have entrance motion). That is the performance: the page composes
-itself for this visitor.
+**When it is unsure, it asks back, in a component.** Below a confidence
+threshold, the page shows the top two or three choices as buttons ("Which is
+closer?") instead of guessing. That is still a component, not a sentence.
 
-### The contract: components, never free text
+### Why a decision model, not a writing model
 
-- The model can only reply by calling one tool, `compose`, whose input is a
-  list of blocks: `{ type, ...props }`. Allowed types: `stats`, `compare`,
-  `flow`, `layers`, `timeline`, `table`, `pills`, `callout` (one line).
-  Not `text` paragraphs. Not `estimate`, `fact`, `grid`, `badge`.
-- The Worker validates every block against `src/catalog.js` (the same
-  validator `npm test` uses) and the writing rules (`src/lint.js`). A block
-  that fails is dropped. The page never shows unchecked model text.
-- **Numbers are ours.** Money and time come from the visitor's own figures,
-  computed in the browser (`src/job.js`), never from the model. The model
-  may read "2 people, every Monday" out of the sentence to prefill the
-  numbers; the visitor can change them.
-- One sentence in, one composition out. No chat, no follow-up turns.
+- **Honest by construction.** Jev returns typed answers with probabilities,
+  never text. Every word on the page is written by Ruben in advance and
+  passes the writing rules. Nothing to check after the fact, nothing to
+  hallucinate.
+- **Fast:** about 0.2 seconds (P50 0.18 s, P99 0.48 s, OpenRouter, 2026-10-15).
+- **Cheap:** $0.042 per million input tokens, output free. A visitor's request
+  is about 2,000 tokens: **about a hundredth of a penny each.**
+- It is the point of the site: a working example of the kind of system Ruben
+  builds (software that decides, and a person who checks).
 
-### What the model may and may not say (system prompt + checks)
+### The questions (one request per visitor)
 
-- Only about the job the visitor described. Anything else: one honest
-  `callout`, "I can only describe the work you put in the box."
-- Never a price, a date, a promise of savings, a client name, or a claim
-  that Ruben has done this exact job.
-- Every composition ends with the label line (fixed, from `site.json`, not
-  the model): "Written by AI for this page, from your sentence. A first
-  guess, not a diagnosis."
-- Plain words: the site's writing rules are in the prompt and checked after.
+All in one call to `POST https://openrouter.ai/api/alpha/decisions`, model
+`typesafe/jev-1.14`, with the sentence as `state`:
 
-### Model, cost, speed
+| Question | Primitive | Options | Drives |
+|---|---|---|---|
+| Is this a job someone does by hand, again and again? | Noul | yes / no | everything else; if no, one honest component back |
+| Which kind of job is it? | Choice | report · new client or customer · invoices and payments · copying between systems · scheduling and bookings · approvals · chasing people · other | which template |
+| Does it involve {system}? (one per system) | Noul | spreadsheet · email · accounts · CRM · bank · paper · website or portal · phone | the steps in `compare` / `flow` |
+| How often? | Score | daily · weekly · monthly · quarterly | prefills "hours each, per week" |
+| How many people? | Choice | one · two or three · four to ten · more | prefills "people doing it" |
 
-- Model: **Claude Opus 5.5** (`claude-opus-5-5`) by default, effort `low`,
-  streaming, the catalogue and rules as a cached system prompt.
-  Roughly: ~5,000 cached input tokens (about $0.001), ~1,500 output tokens
-  (about $0.03). **About 3p a visitor who presses the button.**
-- Cheaper, if he chooses: Sonnet 5.5 (about 1.5p) or Haiku 5.5 (about 0.1p).
-  Faster too; the components are simple. Decided by trying all three on 20
-  real sentences, not by guessing.
-- A hard monthly ceiling (operator sets it, e.g. £20). Past it, the site
-  falls back to step 1 as it is today, without saying anything is wrong.
+Prefilled numbers are marked as guesses and stay editable; `scale` goes into
+the booking only if the visitor confirms or changes them.
+
+### The templates (written by Ruben, in `content/`)
+
+One set per job type: a `compare` (today / automated) with slots for the
+systems, a `layers` "What I would automate first", and the nearest example
+case. Eight job types × three components, all linted like the rest of the
+site. Adding a job type is content, not code.
 
 ### Infrastructure
 
-- A Cloudflare Worker, `POST /compose`: holds the Anthropic API key (a
-  Worker secret, never in the repo or the page), checks Turnstile, rate
-  limits (5 a visitor a day, per IP), streams the blocks back.
-- Nothing stored: no logs of sentences beyond Cloudflare's defaults, no
-  database. (Beer's point stands: we will not know what people type. A
-  count of compositions and bookings only, no content, is the most we keep.)
-- Cloudflare is phase 5 anyway (hosting, Access, Web Analytics). The Worker
-  can come first, on a `workers.dev` address, while the site stays on
-  GitHub Pages.
-- Without JavaScript, or if the Worker is down, slow (8 seconds) or over its
-  ceiling: step 1 works exactly as it does now (numbers, answer, booking).
+- A Cloudflare Worker, `POST /decide`: holds the OpenRouter key (a Worker
+  secret), checks Turnstile, rate limits (20 a visitor a day), forwards the
+  sentence and the fixed questions, returns the typed answers. The page
+  does the rest.
+- Nothing stored by us. The sentence goes to OpenRouter and TypeSafe; their
+  data policy is to be checked before launch and named in the privacy note.
+- A hard monthly ceiling on the OpenRouter key (e.g. $5). Past it, or if the
+  Worker is down or slow (2 seconds), or without JavaScript: step 1 works as
+  it does now.
+- Cloudflare is phase 5 anyway. The Worker can come first, on `workers.dev`,
+  while the site stays on GitHub Pages.
+
+### Later, if wanted
+
+A writing model (Claude) could add one line of words for an unusual job.
+Not in the first version: the decision model and Ruben's words come first.
 
 ### Needs the operator
 
-1. Sign off this section: the idea, the contract, the limits on what it says.
-2. An Anthropic API key for the site (a separate key, with a spending limit).
-3. A Cloudflare account (free plan) and a monthly ceiling in pounds.
-4. Which model, after the 20-sentence trial.
+1. Sign off this section.
+2. An OpenRouter API key for the site, with a spending limit.
+3. A Cloudflare account (free plan).
+4. The words for the templates: I draft them, he edits.
 
 ### Order
 
-1. Sign-off. 2. Twenty sample sentences (operator's words where possible) and
-the system prompt, tried offline against the three models. 3. The Worker on
-`workers.dev`. 4. The page: the streaming renderer and the label. 5. Local
-UAT, then live.
+1. Sign-off. 2. Twenty real sentences, tried against Jev offline: are the
+decisions right, and where should the thresholds sit? 3. Templates for the
+eight job types. 4. The Worker. 5. The page: components arriving in order,
+the ask-back, the label. 6. Local UAT, then live.
