@@ -37,24 +37,29 @@ never required for it.
 **Two filled buttons, one per action:** "Show what it costs" (step 1) and
 "Show available times" (step 5). Every other link is quieter.
 
-**Step 1, the job: taps, not typing** (2026-10-15, late; operator: "nobody
-is going to write anything useful"). Copy not final; the shape first.
+**Step 1, the job: a bench** (2026-10-15; operator: "nobody is going to
+write anything useful", then "the layout is all over the place"). Copy not
+final.
 
-- With JavaScript there is no text box. "Which sounds like your week?" with
-  eight kinds of job as buttons.
-- A tap brings the job as Today ⇄ Automated (`compare`, from that kind's
-  template). It turns to Automated by itself the first time.
-- "Which systems does it touch?" (several; the kind's usual ones start
-  pressed). Each tap redraws the diagram; the systems are one step.
-- "How often?" then "How many people?" bring the money, from numbers guessed
-  from the taps ("Guessed from your taps. Change them to match."), then "What
-  I would automate first", the nearest example, and "Book the free call with
-  these answers" (`job`: the taps in words; `scale`: the numbers).
-- Changing an earlier tap updates what follows. Numbers changed by hand stay.
-- A pressed option is filled and has a tick. Parts rise in one by one; with
-  motion Calm or Off, at once.
+- The headline is facts: his name, and what he does in one line.
+- With JavaScript the form goes and the bench shows, **already set to one
+  example job** (a report, weekly, two or three people), so the page shows
+  something at once.
+- **Left, what the visitor sets:** the job (eight kinds), the systems it
+  touches (several), how often, people doing it, then hours and pay.
+- **Right, what it makes,** in view while they tap (sticky): the job as
+  Today ⇄ Automated (turns to Automated by itself once), what they pay and how
+  much of it goes on this job, the grid of weeks, what I would automate
+  first, the nearest example, "Book the free call with these answers".
+- Every tap redraws the right side. Numbers changed by hand stay.
+- Nothing goes into the booking until the visitor changes something; then
+  `job` is their taps in words and `scale` their numbers.
+- Under 1000px: one column, inputs first.
 - **Without JavaScript:** the job field and a plain `scale` text field, and
   "Choose a time for the call": a GET form to the Cal.com page.
+
+**Words:** names, labels, figures and short facts. No slogans, no italic
+voice lines.
 
 **Step 4:** the photograph sits beside the lines on wide screens and above
 them on narrow ones, in black and white. Its `alt` says who it is.

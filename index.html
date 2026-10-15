@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <!-- sync:meta -->
     <title>mindunder.dev — business process automation, London</title>
-    <meta name="description" content="Put in the job your team does by hand every week, and see what it costs you in a year. Then book a free 30-minute call. Based in London." />
+    <meta name="description" content="Ruben Pires: business process automation, London. Pick the job your team repeats and see what it costs you. The first call is free." />
     <meta property="og:title" content="mindunder.dev — business process automation, London" />
-    <meta property="og:description" content="Put in the job your team does by hand every week, and see what it costs you in a year. Then book a free 30-minute call. Based in London." />
+    <meta property="og:description" content="Ruben Pires: business process automation, London. Pick the job your team repeats and see what it costs you. The first call is free." />
     <!-- /sync:meta -->
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
@@ -96,11 +96,10 @@
         <div class="copy" data-copy>
           <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Business process automation · London</p>
           <h1 class="display" id="job-h">
-            <span class="display-line">Your week, </span>
-            <span class="display-line"><em class="is-accent">automated</em>.</span>
+            <span class="display-line">Ruben Pires.</span>
+            <span class="display-line">I automate the work your team repeats.</span>
           </h1>
         </div>
-        <p class="pg-intro">Tap what fits. The page builds your job as you go, then shows what it costs you.</p>
         <form class="pg-job" method="get" action="https://cal.com/rwb3n/30min" data-job>
           <div class="pg-field">
             <label class="pg-label" for="f-job">The job your team does by hand</label>
@@ -116,24 +115,14 @@
             <button class="btn btn-ghost pg-job-go" type="submit">Choose a time for the call</button>
           </div>
         </form>
-        <div class="pg-answer pg-taps" data-answer hidden>
-          <div class="pg-q" data-q="kind"><h3 class="pg-q-h">Which sounds like your week?</h3><div class="pg-options" data-opts></div></div>
-          <div class="pg-part" data-compare hidden></div>
-          <div class="pg-q pg-part" data-q="systems" hidden><h3 class="pg-q-h">Which systems does it touch?</h3><div class="pg-options" data-opts></div></div>
-          <div class="pg-q pg-part" data-q="frequency" hidden><h3 class="pg-q-h">How often?</h3><div class="pg-options" data-opts></div></div>
-          <div class="pg-q pg-part" data-q="people" hidden><h3 class="pg-q-h">How many people do it?</h3><div class="pg-options" data-opts></div></div>
-          <div class="pg-part pg-money" data-money hidden>
-            <p class="pg-share" data-answer-share></p>
-            <dl class="est-dl">
-              <div><dt class="micro">Their pay, a year</dt><dd><span class="est-num" data-answer-pay></span></dd></div>
-              <div><dt class="micro">Spent on this job</dt><dd><span class="est-num is-accent" data-answer-cost></span></dd></div>
-            </dl>
-            <p class="est-weeks" data-answer-weeks></p>
-            <div class="est-grid-wrap"><div class="est-grid" data-answer-grid aria-hidden="true"></div></div>
-            <p class="est-key">One square is one working week of 37.5 hours.</p>
-            <div class="pg-numbers-box">
-              <h3 class="micro">Your numbers</h3>
-              <p class="pg-small" data-numbers-note>Guessed from your taps. Change them to match.</p>
+        <div class="pg-bench" data-answer hidden>
+          <div class="pg-bench-in">
+            <div class="pg-q" data-q="kind"><h3 class="pg-q-h">The job</h3><div class="pg-options" data-opts></div></div>
+            <div class="pg-q" data-q="systems"><h3 class="pg-q-h">Systems it touches</h3><div class="pg-options" data-opts></div></div>
+            <div class="pg-q" data-q="frequency"><h3 class="pg-q-h">How often</h3><div class="pg-options" data-opts></div></div>
+            <div class="pg-q" data-q="people"><h3 class="pg-q-h">People doing it</h3><div class="pg-options" data-opts></div></div>
+            <div class="pg-q pg-numbers-box">
+              <h3 class="pg-q-h">Hours and pay</h3>
               <div class="est-fields pg-numbers">
                 <div class="est-field">
                   <label class="est-label" for="n-people">People doing it</label>
@@ -164,21 +153,34 @@
               </div>
             </div>
           </div>
-          <div class="pg-part" data-first hidden>
-            <h3 class="micro">What I would automate first</h3>
-            <div data-first-list></div>
-          </div>
-          <div class="pg-part pg-end" data-end hidden>
-            <p class="pg-nearest" data-answer-nearest></p>
-            <p class="pg-small">An estimate, not a quote. It counts salary only. A system rarely removes a job completely. It does the routine part, and a person checks the result.</p>
-            <button class="btn btn-ghost pg-answer-book" type="button" data-answer-book>Book the free call with these answers <span aria-hidden="true">↓</span></button>
+          <div class="pg-bench-out">
+            <div class="pg-part" data-compare></div>
+            <div class="pg-part pg-money" data-money>
+              <p class="pg-share" data-answer-share></p>
+              <dl class="est-dl">
+                <div><dt class="micro">Their pay, a year</dt><dd><span class="est-num" data-answer-pay></span></dd></div>
+                <div><dt class="micro">Spent on this job</dt><dd><span class="est-num is-accent" data-answer-cost></span></dd></div>
+              </dl>
+              <p class="est-weeks" data-answer-weeks></p>
+              <div class="est-grid-wrap"><div class="est-grid" data-answer-grid aria-hidden="true"></div></div>
+              <p class="est-key">One square is one working week of 37.5 hours.</p>
+            </div>
+            <div class="pg-part" data-first>
+              <h3 class="pg-q-h">What I would automate first</h3>
+              <div data-first-list></div>
+            </div>
+            <div class="pg-part pg-end" data-end>
+              <p class="pg-nearest" data-answer-nearest></p>
+              <p class="pg-small">An estimate, not a quote. It counts salary only. A system rarely removes a job completely. It does the routine part, and a person checks the result.</p>
+              <button class="btn btn-ghost pg-answer-book" type="button" data-answer-book>Book the free call with these answers <span aria-hidden="true">↓</span></button>
+            </div>
           </div>
           <p class="visually-hidden" aria-live="polite" data-answer-live></p>
         </div>
       </section>
       <section class="pg-section is-cases" id="cases" aria-labelledby="cases-h">
         <h2 class="pg-head" id="cases-h">Where the time goes</h2>
-        <p class="pg-intro">Three situations I see often. They are illustrations, not named clients.</p>
+        <p class="pg-intro">Illustrations, not named clients.</p>
         <div class="pg-cases">
           <article class="pg-case" id="case-monday-report">
             <p class="pg-case-tag">Example · Wholesale, 40 staff</p>
@@ -212,7 +214,6 @@
       </section>
       <section class="pg-section is-start" id="start" aria-labelledby="start-h">
         <h2 class="pg-head" id="start-h">What I look for</h2>
-        <p class="pg-intro">The same few problems are in every team, mine included.</p>
         <ul class="pg-look" role="list">
           <li>Decisions made in a rush, because the money coming in and going out was seen too late.</li>
           <li>Work that does not earn money directly, like admin and reports, left half-built. It then takes time from the work that does.</li>
@@ -227,7 +228,6 @@
           <li><span class="pg-step-n" aria-hidden="true">4</span><h3 class="pg-step-title">A first system, checked by a person.</h3> <p class="pg-step-detail">It does the work and someone checks every result. It runs alone only once the results are consistently right.</p></li>
           <li><span class="pg-step-n" aria-hidden="true">5</span><h3 class="pg-step-title">It runs, and reports.</h3> <p class="pg-step-detail">You get a regular report of what it did, and of anything it could not do.</p></li>
         </ol>
-        <p class="pg-note">No sales pitch. If there is nothing worth fixing, I will say so.</p>
         <ul class="pg-facts" role="list">
           <li><b>First call:</b> Free, 30 minutes.</li>
           <li><b>Price:</b> Agreed in writing before any work starts. The call and the plan cost nothing.</li>
@@ -239,14 +239,13 @@
       <section class="pg-section is-who" id="who" aria-labelledby="who-h">
         <h2 class="pg-head" id="who-h">Who you would talk to</h2>
         <div class="pg-who-body">
-          <img class="pg-photo" src="img/ruben.jpg" width="500" height="620" alt="Ruben Pires, walking along a chalk cliff above the sea." loading="lazy" decoding="async" />
+          <img class="pg-photo" src="img/ruben.jpg" width="500" height="620" alt="Ruben Pires, walking along a chalk cliff above the sea." decoding="async" />
           <div class="pg-who-lines">
             <p class="pg-who-name">Ruben Pires</p>
-            <p class="pg-who is-lead">I am Ruben. I work alone, in London. I have spent years automating work for other organisations.</p>
-            <p class="pg-who">Today I run Salesforce at London &amp; Partners, as an employee. Salesforce is software that companies use to track customers. A project with you would be my full-time work.</p>
-            <p class="pg-who">I run my own work on a system I built. I use it every day.</p>
-            <p class="pg-who">When automation fails, the cause is usually how people work together, not the software.</p>
-            <p class="pg-who">Salesforce certifications: Salesforce Administrator. Salesforce Platform App Builder. Salesforce Agentforce Specialist.</p>
+            <p class="pg-who">I work alone, in London, and have automated work for other organisations for years.</p>
+            <p class="pg-who">Today I run Salesforce at London &amp; Partners, as an employee. A project with you would be my full-time work.</p>
+            <p class="pg-who">I run my own work on a system I built, every day.</p>
+            <p class="pg-who">Salesforce certifications: Administrator, Platform App Builder, Agentforce Specialist.</p>
           </div>
         </div>
       </section>
@@ -270,7 +269,7 @@
     </footer>
 
     <!-- sync:booking -->
-    <script type="application/json" id="booking-config">{"calLink":"rwb3n/30min","origin":"https://cal.com","embedScript":"https://app.cal.com/embed/embed.js","timeoutSeconds":10,"fields":["job","scale"],"job":{"field":"job","numbers":[{"key":"people","label":"People doing it","min":1,"max":500,"step":1,"value":2,"less":"One person fewer","more":"One person more"},{"key":"hours","label":"Hours each, per week","min":0.5,"max":37.5,"step":0.5,"value":4,"less":"Half an hour less","more":"Half an hour more"},{"key":"salary","label":"Salary of each person","hint":"A year, before tax. With National Insurance and pension, the real cost is higher.","min":10000,"max":300000,"step":1000,"value":35000,"prefix":"£","less":"£1,000 less","more":"£1,000 more"}],"answer":{"you":"You: {job}","cost":"Spent on this job","weeks":"Equal to {weeks} full working weeks a year.","key":"One square is one working week of 37.5 hours.","nearest":"Nearest example: {title}","note":"An estimate, not a quote. It counts salary only. A system rarely removes a job completely. It does the routine part, and a person checks the result.","book":"Book the free call with these answers","scale":"{people} people, {hours} hours each a week, salary {salary} each: about {cost} a year on this job","weeksPerYear":46,"hoursPerWeek":37.5,"share":"Of the {pay} a year you pay them, {cost} goes on this job.","pay":"Their pay, a year"},"cases":[{"id":"monday-report","title":"The Monday report","match":["report","reports","reporting","spreadsheet","spreadsheets","figures","dashboard","numbers","kpi"]},{"id":"new-client","title":"Setting up a new client","match":["client","clients","customer","customers","onboarding","proposal","proposals","crm","copy","copying","data entry","setting up","new starter","new starters"]},{"id":"cash","title":"Seeing the cash coming","match":["cash","invoice","invoices","invoicing","payment","payments","bank","bills","forecast","money","credit control","chasing","debtors","cash flow"]}],"decide":{"$":"Step 1's taps and the components they bring (_model/target/funnel.md). Each kind of job is a template; \"$sys\" in it is replaced by the systems tapped.","none":"None named","compareLabel":"Show the job","states":{"before":"Today","after":"Automated","beforeTitle":"Your job today","afterTitle":"The same job, automated"},"stat":{"before":"steps done by hand","after":"check by a person"},"firstHead":"What I would automate first","numbersHead":"Your numbers","numbersNote":"Guessed from your taps. Change them to match.","frequency":["Every day","Every week","Every month","Every quarter"],"hoursByFrequency":[5,3,1,0.5],"people":{"one":{"label":"One","value":1},"few":{"label":"Two or three","value":2},"team":{"label":"A team","value":5}},"systems":{"spreadsheet":"Spreadsheet","email":"Email","accounts":"Accounts","crm":"Customer database","bank":"Bank","paper":"PDFs and paper","portal":"Website or portal"},"kinds":{"report":{"label":"Building reports","case":"monday-report","defaults":["accounts","spreadsheet"],"before":["$sys",{"id":"p1","label":"Person","variant":"muted"},{"id":"sheet","label":"Spreadsheet"},{"id":"p2","label":"Person","variant":"muted"},{"id":"out","label":"Report"}],"after":["$sys",{"id":"sys","label":"System","variant":"accent","via":"reads"},{"id":"out","label":"Report","via":"builds"},{"id":"chk","label":"Person checks","variant":"muted"}],"first":[{"title":"Collect the figures overnight","detail":"From the same systems, the same way, every time."},{"title":"Build the report","detail":"The same layout each time. Anything unusual is flagged."},{"title":"A person checks it","detail":"Before it goes out. The check takes minutes."}]},"new_client":{"label":"Setting up new clients","case":"new-client","defaults":["accounts","crm"],"before":[{"id":"in","label":"New client"},{"id":"p1","label":"Person","variant":"muted"},"$sys"],"after":[{"id":"in","label":"New client"},{"id":"sys","label":"System","variant":"accent","via":"reads"},{"sys":true,"via":"fills in"},{"id":"chk","label":"Person checks gaps","variant":"muted"}],"first":[{"title":"One form starts it","detail":"The details are typed once."},{"title":"The records appear everywhere","detail":"Every system is filled in from that one form."},{"title":"Gaps go to a person","detail":"Anything missing is flagged, not guessed."}]},"invoices":{"label":"Invoices and payments","case":"cash","defaults":["bank","accounts"],"before":["$sys",{"id":"p1","label":"Person","variant":"muted"},{"id":"sheet","label":"Spreadsheet"},{"id":"out","label":"Cash position"}],"after":["$sys",{"id":"sys","label":"System","variant":"accent","via":"reads"},{"id":"out","label":"Cash position","via":"daily"},{"id":"chk","label":"Person checks mismatches","variant":"muted"}],"first":[{"title":"Read the bank and the accounts each day","detail":"Payments in and out are matched where they agree."},{"title":"Flag what does not match","detail":"A short list for a person, not the whole statement."},{"title":"Show the next eight weeks","detail":"Money due in and out, so decisions are not rushed."}]},"copying":{"label":"Copying between systems","case":null,"defaults":["email","paper"],"before":["$sys",{"id":"p1","label":"Person","variant":"muted"},{"id":"out","label":"Your system"}],"after":["$sys",{"id":"sys","label":"System","variant":"accent","via":"reads"},{"id":"out","label":"Your system","via":"writes"},{"id":"chk","label":"Person checks odd ones","variant":"muted"}],"first":[{"title":"Read the source","detail":"The email, the form, the PDF or the portal."},{"title":"Write it into your system","detail":"Once, the same way, with a record of what was copied."},{"title":"Odd ones wait for a person","detail":"Anything unclear is not guessed."}]},"scheduling":{"label":"Rotas and bookings","case":null,"defaults":["email","spreadsheet"],"before":["$sys",{"id":"p1","label":"Person","variant":"muted"},{"id":"out","label":"Schedule"},{"id":"p2","label":"Person","variant":"muted"},{"id":"told","label":"Everyone told"}],"after":["$sys",{"id":"sys","label":"System","variant":"accent","via":"reads"},{"id":"out","label":"Schedule","via":"drafts"},{"id":"ok","label":"Person approves","variant":"muted"},{"id":"told","label":"Everyone told","via":"sends"}],"first":[{"title":"Collect who is free","detail":"From the calendars and lists you already use."},{"title":"Draft the schedule","detail":"Following your rules. Clashes are flagged."},{"title":"A person approves it","detail":"Then it is sent to everyone."}]},"approvals":{"label":"Getting approval","case":null,"defaults":["email"],"before":[{"id":"req","label":"Request"},"$sys",{"id":"p1","label":"Person chases","variant":"muted"},{"id":"ok","label":"Approved"}],"after":[{"id":"req","label":"Request"},{"id":"sys","label":"System","variant":"accent","via":"routes"},{"id":"ok","label":"Approved","via":"reminds"},{"id":"rec","label":"Record kept"}],"first":[{"title":"One place for requests","detail":"Each request has an owner and a status."},{"title":"Remind the approver","detail":"Until it is approved or turned down."},{"title":"Keep the record","detail":"Who approved what, and when."}]},"chasing":{"label":"Chasing people","case":null,"defaults":["email"],"before":[{"id":"list","label":"Who owes what"},{"id":"p1","label":"Person","variant":"muted"},"$sys",{"id":"rep","label":"Replies"},{"id":"p2","label":"Person updates list","variant":"muted"}],"after":[{"id":"list","label":"Who owes what"},{"id":"sys","label":"System","variant":"accent","via":"reads"},{"sys":true,"via":"sends"},{"id":"rep","label":"Replies"},{"id":"chk","label":"Person sees what is missing","variant":"muted"}],"first":[{"title":"Know who has not replied","detail":"From the system, not from memory."},{"title":"Send the reminders","detail":"On a schedule, and stopped once they reply."},{"title":"A person sees what is still missing","detail":"A short list, each morning."}]},"other":{"label":"Something else","case":null,"defaults":[],"before":[{"id":"in","label":"Work arrives"},{"id":"p1","label":"Person","variant":"muted"},"$sys",{"id":"out","label":"Done"}],"after":[{"id":"in","label":"Work arrives"},{"id":"sys","label":"System","variant":"accent","via":"does the routine part"},"$sys",{"id":"out","label":"Done"},{"id":"chk","label":"Person checks","variant":"muted"}],"first":[{"title":"Map how the work moves","detail":"On the call, step by step."},{"title":"Find the repeated part","detail":"The part a system can do the same way every time."},{"title":"Decide what a person checks","detail":"Nothing runs alone until the results are right."}]}},"taps":{"kind":"Which sounds like your week?","systems":"Which systems does it touch?","frequency":"How often?","people":"How many people do it?"},"peopleSummary":"People: {people}"}}}</script>
+    <script type="application/json" id="booking-config">{"calLink":"rwb3n/30min","origin":"https://cal.com","embedScript":"https://app.cal.com/embed/embed.js","timeoutSeconds":10,"fields":["job","scale"],"job":{"field":"job","numbers":[{"key":"people","label":"People doing it","min":1,"max":500,"step":1,"value":2,"less":"One person fewer","more":"One person more"},{"key":"hours","label":"Hours each, per week","min":0.5,"max":37.5,"step":0.5,"value":4,"less":"Half an hour less","more":"Half an hour more"},{"key":"salary","label":"Salary of each person","hint":"A year, before tax. With National Insurance and pension, the real cost is higher.","min":10000,"max":300000,"step":1000,"value":35000,"prefix":"£","less":"£1,000 less","more":"£1,000 more"}],"answer":{"you":"You: {job}","cost":"Spent on this job","weeks":"Equal to {weeks} full working weeks a year.","key":"One square is one working week of 37.5 hours.","nearest":"Nearest example: {title}","note":"An estimate, not a quote. It counts salary only. A system rarely removes a job completely. It does the routine part, and a person checks the result.","book":"Book the free call with these answers","scale":"{people}, {hours} hours each a week, salary {salary} each: about {cost} a year on this job","weeksPerYear":46,"hoursPerWeek":37.5,"share":"Of the {pay} a year you pay them, {cost} goes on this job.","pay":"Their pay, a year"},"cases":[{"id":"monday-report","title":"The Monday report","match":["report","reports","reporting","spreadsheet","spreadsheets","figures","dashboard","numbers","kpi"]},{"id":"new-client","title":"Setting up a new client","match":["client","clients","customer","customers","onboarding","proposal","proposals","crm","copy","copying","data entry","setting up","new starter","new starters"]},{"id":"cash","title":"Seeing the cash coming","match":["cash","invoice","invoices","invoicing","payment","payments","bank","bills","forecast","money","credit control","chasing","debtors","cash flow"]}],"decide":{"$":"Step 1's taps and the components they bring (_model/target/funnel.md). Each kind of job is a template; \"$sys\" in it is replaced by the systems tapped.","none":"None named","compareLabel":"Show the job","states":{"before":"Today","after":"Automated","beforeTitle":"Your job today","afterTitle":"The same job, automated"},"stat":{"before":"steps done by hand","after":"check by a person"},"firstHead":"What I would automate first","numbersHead":"Hours and pay","frequency":["Every day","Every week","Every month","Every quarter"],"hoursByFrequency":[5,3,1,0.5],"people":{"one":{"label":"One","value":1},"few":{"label":"Two or three","value":2},"team":{"label":"A team","value":5}},"systems":{"spreadsheet":"Spreadsheet","email":"Email","accounts":"Accounts","crm":"Customer database","bank":"Bank","paper":"PDFs and paper","portal":"Website or portal"},"kinds":{"report":{"label":"Building reports","case":"monday-report","defaults":["accounts","spreadsheet"],"before":["$sys",{"id":"p1","label":"Person","variant":"muted"},{"id":"sheet","label":"Spreadsheet"},{"id":"p2","label":"Person","variant":"muted"},{"id":"out","label":"Report"}],"after":["$sys",{"id":"sys","label":"System","variant":"accent","via":"reads"},{"id":"out","label":"Report","via":"builds"},{"id":"chk","label":"Person checks","variant":"muted"}],"first":[{"title":"Collect the figures overnight","detail":"From the same systems, the same way, every time."},{"title":"Build the report","detail":"The same layout each time. Anything unusual is flagged."},{"title":"A person checks it","detail":"Before it goes out. The check takes minutes."}]},"new_client":{"label":"Setting up new clients","case":"new-client","defaults":["accounts","crm"],"before":[{"id":"in","label":"New client"},{"id":"p1","label":"Person","variant":"muted"},"$sys"],"after":[{"id":"in","label":"New client"},{"id":"sys","label":"System","variant":"accent","via":"reads"},{"sys":true,"via":"fills in"},{"id":"chk","label":"Person checks gaps","variant":"muted"}],"first":[{"title":"One form starts it","detail":"The details are typed once."},{"title":"The records appear everywhere","detail":"Every system is filled in from that one form."},{"title":"Gaps go to a person","detail":"Anything missing is flagged, not guessed."}]},"invoices":{"label":"Invoices and payments","case":"cash","defaults":["bank","accounts"],"before":["$sys",{"id":"p1","label":"Person","variant":"muted"},{"id":"sheet","label":"Spreadsheet"},{"id":"out","label":"Cash position"}],"after":["$sys",{"id":"sys","label":"System","variant":"accent","via":"reads"},{"id":"out","label":"Cash position","via":"daily"},{"id":"chk","label":"Person checks mismatches","variant":"muted"}],"first":[{"title":"Read the bank and the accounts each day","detail":"Payments in and out are matched where they agree."},{"title":"Flag what does not match","detail":"A short list for a person, not the whole statement."},{"title":"Show the next eight weeks","detail":"Money due in and out, so decisions are not rushed."}]},"copying":{"label":"Copying between systems","case":null,"defaults":["email","paper"],"before":["$sys",{"id":"p1","label":"Person","variant":"muted"},{"id":"out","label":"Your system"}],"after":["$sys",{"id":"sys","label":"System","variant":"accent","via":"reads"},{"id":"out","label":"Your system","via":"writes"},{"id":"chk","label":"Person checks odd ones","variant":"muted"}],"first":[{"title":"Read the source","detail":"The email, the form, the PDF or the portal."},{"title":"Write it into your system","detail":"Once, the same way, with a record of what was copied."},{"title":"Odd ones wait for a person","detail":"Anything unclear is not guessed."}]},"scheduling":{"label":"Rotas and bookings","case":null,"defaults":["email","spreadsheet"],"before":["$sys",{"id":"p1","label":"Person","variant":"muted"},{"id":"out","label":"Schedule"},{"id":"p2","label":"Person","variant":"muted"},{"id":"told","label":"Everyone told"}],"after":["$sys",{"id":"sys","label":"System","variant":"accent","via":"reads"},{"id":"out","label":"Schedule","via":"drafts"},{"id":"ok","label":"Person approves","variant":"muted"},{"id":"told","label":"Everyone told","via":"sends"}],"first":[{"title":"Collect who is free","detail":"From the calendars and lists you already use."},{"title":"Draft the schedule","detail":"Following your rules. Clashes are flagged."},{"title":"A person approves it","detail":"Then it is sent to everyone."}]},"approvals":{"label":"Getting approval","case":null,"defaults":["email"],"before":[{"id":"req","label":"Request"},"$sys",{"id":"p1","label":"Person chases","variant":"muted"},{"id":"ok","label":"Approved"}],"after":[{"id":"req","label":"Request"},{"id":"sys","label":"System","variant":"accent","via":"routes"},{"id":"ok","label":"Approved","via":"reminds"},{"id":"rec","label":"Record kept"}],"first":[{"title":"One place for requests","detail":"Each request has an owner and a status."},{"title":"Remind the approver","detail":"Until it is approved or turned down."},{"title":"Keep the record","detail":"Who approved what, and when."}]},"chasing":{"label":"Chasing people","case":null,"defaults":["email"],"before":[{"id":"list","label":"Who owes what"},{"id":"p1","label":"Person","variant":"muted"},"$sys",{"id":"rep","label":"Replies"},{"id":"p2","label":"Person updates list","variant":"muted"}],"after":[{"id":"list","label":"Who owes what"},{"id":"sys","label":"System","variant":"accent","via":"reads"},{"sys":true,"via":"sends"},{"id":"rep","label":"Replies"},{"id":"chk","label":"Person sees what is missing","variant":"muted"}],"first":[{"title":"Know who has not replied","detail":"From the system, not from memory."},{"title":"Send the reminders","detail":"On a schedule, and stopped once they reply."},{"title":"A person sees what is still missing","detail":"A short list, each morning."}]},"other":{"label":"Something else","case":null,"defaults":[],"before":[{"id":"in","label":"Work arrives"},{"id":"p1","label":"Person","variant":"muted"},"$sys",{"id":"out","label":"Done"}],"after":[{"id":"in","label":"Work arrives"},{"id":"sys","label":"System","variant":"accent","via":"does the routine part"},"$sys",{"id":"out","label":"Done"},{"id":"chk","label":"Person checks","variant":"muted"}],"first":[{"title":"Map how the work moves","detail":"On the call, step by step."},{"title":"Find the repeated part","detail":"The part a system can do the same way every time."},{"title":"Decide what a person checks","detail":"Nothing runs alone until the results are right."}]}},"taps":{"kind":"The job","systems":"Systems it touches","frequency":"How often","people":"People doing it"},"peopleSummary":"People: {people}","start":{"kind":"report","frequency":1,"people":"few"}}}}</script>
     <!-- /sync:booking -->
   </body>
 </html>

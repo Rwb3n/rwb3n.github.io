@@ -38,9 +38,9 @@
   outline: none;
 }
 .pg-sub { margin-top: var(--space-6); font-size: 0.75rem; font-weight: 600; letter-spacing: var(--tracking-micro); text-transform: uppercase; color: var(--fg-2); }
-.pg-intro { max-width: 40rem; font-size: var(--step-2); line-height: 1.4; color: var(--fg-2); text-wrap: pretty; }
+.pg-intro { max-width: 40rem; font-size: var(--step-1); line-height: 1.5; color: var(--fg-2); text-wrap: pretty; }
 .pg-intro a, .pg-email a { color: var(--fg); border-bottom: 1px solid var(--fg); }
-.pg-note { max-width: 40rem; font-family: var(--font-voice); font-style: italic; font-weight: 300; font-size: var(--step-2); line-height: 1.3; }
+.pg-note { max-width: 40rem; color: var(--fg-2); }
 .pg-cue { max-width: 40rem; margin-top: var(--space-6); color: var(--fg-2); }
 
 /* The quiet link to booking, under every section. */
@@ -70,7 +70,7 @@
 .pg-case-body dt { font-size: 0.6875rem; font-weight: 600; letter-spacing: var(--tracking-micro); text-transform: uppercase; color: var(--fg-3); }
 .pg-case-body dd { margin-top: var(--space-1); line-height: 1.55; text-wrap: pretty; }
 .pg-case-body .is-result { padding-top: var(--space-4); border-top: 1px solid var(--line-2); }
-.pg-case-body .is-result dd { font-family: var(--font-voice); font-style: italic; font-weight: 300; font-size: var(--step-2); line-height: 1.25; }
+.pg-case-body .is-result dd { font-weight: 600; }
 .pg-more { display: grid; gap: var(--space-3); max-width: 40rem; }
 .pg-more li { font-size: var(--step-1); line-height: 1.5; color: var(--fg-2); }
 .pg-more b { font-weight: 700; color: var(--fg); }
@@ -86,7 +86,6 @@
 
 /* 4 Who */
 .pg-who { max-width: 40rem; font-size: var(--step-1); line-height: 1.6; }
-.pg-who.is-lead { font-family: var(--font-voice); font-style: italic; font-weight: 300; font-size: var(--step-3); line-height: 1.2; }
 
 /* 1 The job: the question, the visitor's words and numbers, the answer */
 .pg-job { display: grid; gap: var(--space-5); max-width: 52rem; }
@@ -99,9 +98,27 @@
 .pg-answer[hidden] { display: none; }
 .pg-you { font-family: var(--font-voice); font-style: italic; font-weight: 300; font-size: var(--step-2); line-height: 1.3; }
 .pg-you[hidden], .pg-nearest[hidden] { display: none; }
-.pg-share { font-family: var(--font-display); font-weight: var(--weight-display); font-size: var(--step-3); line-height: 1.05; letter-spacing: var(--tracking-display); text-wrap: balance; }
+.pg-share { font-size: var(--step-1); font-weight: 600; line-height: 1.4; }
 .pg-nearest { font-size: var(--step-1); }
 .pg-nearest a { font-weight: 600; border-bottom: 1px solid var(--fg); }
+
+
+/* 1 The job: a bench. Left, what the visitor sets; right, what it makes.
+   The right side stays in view while they tap. One column on narrow screens. */
+.pg-bench { display: grid; grid-template-columns: minmax(0, 26rem) minmax(0, 1fr); gap: var(--space-8); align-items: start; margin-top: var(--space-6); }
+.pg-bench[hidden] { display: none; }
+.pg-bench-in { display: grid; gap: var(--space-6); }
+.pg-bench-out { display: grid; gap: var(--space-6); position: sticky; top: calc(var(--bar-h) + var(--space-5)); padding-left: var(--space-7); border-left: 1px solid var(--line-2); }
+.pg-bench .pg-numbers { grid-template-columns: 1fr; gap: var(--space-4); }
+.pg-bench .pg-chip { padding: var(--space-1) var(--space-3); font-size: var(--step--1); }
+.pg-bench .b-compare .cmp-stat, .pg-bench .b-compare .cmp-title { display: none; }
+.pg-bench .pg-part { opacity: 1; transform: none; }
+/* The headline's second line: plain, not the italic voice. */
+.pg .is-job .display-line + .display-line { font: 600 0.42em/1.2 var(--font-sans, inherit); letter-spacing: -0.01em; color: var(--fg-2); max-width: none; }
+@media (max-width: 1000px) {
+  .pg-bench { grid-template-columns: 1fr; gap: var(--space-7); }
+  .pg-bench-out { position: static; padding-left: 0; border-left: 0; padding-top: var(--space-6); border-top: 1px solid var(--line-2); }
+}
 
 /* Taps: each question is a row of options; a pressed option is filled */
 .pg-taps { border-top: 0; padding-top: 0; gap: var(--space-7); }

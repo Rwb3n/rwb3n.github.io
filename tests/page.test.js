@@ -59,7 +59,7 @@ test('without JavaScript, step 1 is a form to the Cal.com page with the answers 
   const names = [...h.matchAll(/<(?:input|textarea)[^>]*name="([a-z]+)"/g)].map((m) => m[1]);
   assert.deepEqual(names, site.booking.fields);
   // The taps and what they bring need JavaScript, so they start hidden.
-  assert.match(h, /<div class="pg-answer pg-taps" data-answer hidden>/);
+  assert.match(h, /<div class="pg-bench" data-answer hidden>/);
   assert.match(h, /<a class="btn btn-primary pg-show" href="https:\/\/cal\.com\/example\/30min"/);
   assert.equal(bookingUrl(withLink, { job: 'Monday report', scale: '' }), 'https://cal.com/example/30min?job=Monday+report');
 });

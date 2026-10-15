@@ -1,17 +1,13 @@
-// Step 1, the job (DESIGN.md › The page). The visitor taps; nobody types.
+// Step 1, the job: a bench (DESIGN.md › The page). The visitor taps; nobody types.
 //
 // Without JavaScript nothing here runs: the form is a plain GET form to the
-// Cal.com page with two text fields. With JavaScript the form goes, and each
-// tap brings the next component:
-//   1. "Which sounds like your week?" (a kind of job) → the job as
-//      Today ⇄ Automated (compare), from that kind's template;
-//   2. "Which systems does it touch?" (several) → the diagram changes;
-//   3. "How often?" and "How many people?" → what they pay and how much of
-//      it goes on this job, from numbers guessed from the taps, which they
-//      can change;
-//   4. what I would automate first, the nearest example, and the booking.
-// Changing an earlier tap updates everything after it. Every word is in
-// site.json › page.job.decide.
+// Cal.com page with two text fields. With JavaScript the form goes and the
+// bench shows, already set to one example job, so the page shows something
+// at once. Left, what the visitor sets: the job, the systems it touches, how
+// often, how many people, hours and pay. Right, what it makes: the job as
+// Today ⇄ Automated, what they pay and how much of it goes on this job, what
+// I would automate first, and the booking. Every tap redraws the right side.
+// Every word is in site.json › page.job.decide.
 
 import { renderBlock } from './blocks.js';
 import { nearestCase, costOf, composeStates } from './decide.js';
@@ -30,54 +26,46 @@ export function createJob(root = document, { book } = {}) {
   let cfg = null;
   try { cfg = JSON.parse(root.getElementById('booking-config')?.textContent || 'null')?.job; } catch { cfg = null; }
   const form = root.querySelector('[data-job]');
-  const answer = root.querySelector('[data-answer]');
-  if (!cfg || !form || !answer) return null;
+  const bench = root.querySelector('[data-answer]');
+  if (!cfg || !form || !bench) return null;
 
   const A = cfg.answer || {};
   const D = cfg.decide || {};
   const kinds = D.kinds || {};
-  const q = (s) => answer.querySelector(s);
+  const q = (s) => bench.querySelector(s);
   const part = {
-    compare: q('[data-compare]'), money: q('[data-money]'), first: q('[data-first]'), firstList: q('[data-first-list]'),
-    end: q('[data-end]'), nearest: q('[data-answer-nearest]'), live: q('[data-answer-live]'),
+    compare: q('[data-compare]'), firstList: q('[data-first-list]'), nearest: q('[data-answer-nearest]'), live: q('[data-answer-live]'),
     share: q('[data-answer-share]'), pay: q('[data-answer-pay]'), cost: q('[data-answer-cost]'),
-    weeks: q('[data-answer-weeks]'), grid: q('[data-answer-grid]'), numbersNote: q('[data-numbers-note]'),
+    weeks: q('[data-answer-weeks]'), grid: q('[data-answer-grid]'),
   };
-  const ask = Object.fromEntries([...answer.querySelectorAll('[data-q]')].map((n) => [n.dataset.q, n]));
+  const ask = Object.fromEntries([...bench.querySelectorAll('[data-q]')].map((n) => [n.dataset.q, n]));
   const perRow = 23, maxCells = 230;
   for (let i = 0; i < maxCells; i++) part.grid.append(document.createElement('i'));
 
-  // Taps replace the form.
   form.remove();
-  answer.hidden = false;
+  bench.hidden = false;
 
   const values = Object.fromEntries(cfg.numbers.map((n) => [n.key, n.value]));
   const inputs = {};
-  const picked = { kind: null, systems: null, frequency: null, people: null };
-  // `touched`: the visitor changed a number by hand; taps no longer overwrite it.
-  let touched = false;
+  const start = D.start || {};
+  const picked = { kind: start.kind || Object.keys(kinds)[0], systems: null, frequency: start.frequency ?? null, people: start.people ?? null };
+  picked.systems = Object.keys(D.systems || {}).filter((k) => (kinds[picked.kind].defaults || []).includes(k));
+  // `chosen`: the visitor has tapped or changed something, so the bench now
+  // describes their job, not the example. `touched`: they changed a number
+  // by hand; taps no longer overwrite it.
+  let chosen = false, touched = false;
 
-  const reveal = (node) => {
-    if (!node.hidden) return;
-    node.hidden = false;
-    node.classList.remove('is-in');
-    requestAnimationFrame(() => node.classList.add('is-in'));
-  };
-  const scrollTo = (node) => {
-    const r = node.getBoundingClientRect();
-    if (r.top > innerHeight * 0.75) node.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'center' });
-  };
-
-  // A row of tap options. `many`: several can be on (aria-pressed toggles).
-  function options(name, list, { many = false, on = [] } = {}) {
+  // A row of tap options. `many`: several can be on.
+  function options(name, list, { many = false } = {}) {
     const box = ask[name].querySelector('[data-opts]');
+    const on = [].concat(picked[name] ?? []).map(String);
     box.setAttribute('role', 'group');
     box.setAttribute('aria-label', ask[name].querySelector('.pg-q-h').textContent);
     box.replaceChildren(...list.map(([key, label]) => {
       const b = el('button', 'pg-chip', label);
       b.type = 'button';
       b.dataset.key = key;
-      b.setAttribute('aria-pressed', String(on.includes(key)));
+      b.setAttribute('aria-pressed', String(on.includes(String(key))));
       b.addEventListener('click', () => {
         if (many) b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true'));
         else for (const o of box.children) o.setAttribute('aria-pressed', String(o === b));
@@ -88,55 +76,35 @@ export function createJob(root = document, { book } = {}) {
     }));
   }
 
-  // 1 Which sounds like your week?
-  options('kind', Object.entries(kinds).map(([k, v]) => [k, v.label]));
-
   function tapped(name, value) {
-    picked[name] = value;
+    chosen = true;
+    picked[name] = name === 'frequency' ? Number(value) : value;
     if (name === 'kind') {
-      const kind = kinds[value];
-      // The kind's usual systems start pressed; the visitor changes them.
-      picked.systems = Object.keys(D.systems || {}).filter((k) => (kind.defaults || []).includes(k));
-      options('systems', Object.entries(D.systems || {}), { many: true, on: picked.systems });
-      drawJob();
-      reveal(part.compare);
-      reveal(ask.systems);
-      reveal(ask.frequency);
-      if (!ask.frequency.querySelector('[data-opts]').children.length) {
-        options('frequency', (D.frequency || []).map((f, i) => [String(i), f]));
-        options('people', Object.entries(D.people || {}).map(([k, v]) => [k, v.label]));
-      }
-      scrollTo(part.compare);
-      if (picked.frequency != null && picked.people) finish();
-      return;
+      // The kind's usual systems; the visitor changes them.
+      picked.systems = Object.keys(D.systems || {}).filter((k) => (kinds[value].defaults || []).includes(k));
+      options('systems', Object.entries(D.systems || {}), { many: true });
     }
-    if (name === 'systems') { drawJob(); return; }
-    if (name === 'frequency') { reveal(ask.people); scrollTo(ask.people); }
-    if (picked.frequency != null && picked.people) finish();
+    draw();
   }
 
-  // The job, Today ⇄ Automated; turns to Automated by itself the first time.
+  // The right side. The job turns to Automated by itself the first time.
   let drawn = false;
-  function drawJob() {
-    const states = composeStates(kinds[picked.kind], picked.systems || [], D);
+  function draw() {
+    const kind = kinds[picked.kind];
     const state = part.compare.querySelector('.b-compare')?.dataset.state;
-    const start = drawn && state === 'after' ? 1 : 0;
-    part.compare.replaceChildren(renderBlock({ type: 'compare', label: D.compareLabel, states, start }, {}));
+    const startAt = drawn && state === 'after' ? 1 : 0;
+    part.compare.replaceChildren(renderBlock({ type: 'compare', label: D.compareLabel, states: composeStates(kind, picked.systems || [], D), start: startAt }, {}));
     if (!drawn) {
       drawn = true;
-      setTimeout(() => part.compare.querySelectorAll('.cmp-btn')[1]?.click(), reducedMotion() ? 0 : 1100);
+      setTimeout(() => part.compare.querySelectorAll('.cmp-btn')[1]?.click(), reducedMotion() ? 0 : 1200);
     }
-  }
-
-  function finish() {
     if (!touched) {
       const ppl = D.people?.[picked.people]?.value;
       if (ppl) { values.people = ppl; inputs.people.value = String(ppl); }
-      const h = D.hoursByFrequency?.[Number(picked.frequency)];
+      const h = D.hoursByFrequency?.[picked.frequency];
       if (h != null) { values.hours = h; inputs.hours.value = String(h); }
     }
     money();
-    const kind = kinds[picked.kind];
     part.firstList.replaceChildren(renderBlock({ type: 'layers', items: kind.first.map((f, i) => ({ label: String(i + 1), title: f.title, detail: f.detail })) }, {}));
     const near = kind.case && cfg.cases.find((c) => c.id === kind.case);
     part.nearest.replaceChildren();
@@ -147,21 +115,15 @@ export function createJob(root = document, { book } = {}) {
       a.href = `#case-${near.id}`;
       part.nearest.append(before, a, after || '');
     }
-    const first = part.money.hidden;
-    reveal(part.money);
-    reveal(part.first);
-    reveal(part.end);
-    if (first) scrollTo(part.money);
-    part.live.textContent = part.share.textContent;
   }
 
   for (const n of cfg.numbers) {
-    const input = answer.querySelector(`[data-num="${n.key}"]`);
+    const input = bench.querySelector(`[data-num="${n.key}"]`);
     inputs[n.key] = input;
     const set = (v) => {
       const ok = Number.isFinite(v) && v >= n.min && v <= n.max;
       input.setAttribute('aria-invalid', String(!ok));
-      if (ok) { values[n.key] = v; touched = true; part.numbersNote.hidden = true; money(); }
+      if (ok) { values[n.key] = v; touched = true; chosen = true; money(); }
     };
     input.addEventListener('input', () => set(input.value === '' ? NaN : Number(input.value)));
     input.addEventListener('change', () => {
@@ -186,29 +148,36 @@ export function createJob(root = document, { book } = {}) {
     const n = Math.min(maxCells, Math.round(r.weeks));
     const rows = Math.max(2, Math.ceil(n / perRow));
     [...part.grid.children].forEach((c, i) => { c.hidden = i >= rows * perRow; c.classList.toggle('is-on', i < n); });
+    part.live.textContent = part.share.textContent;
   }
 
-  // What goes into the booking: what they tapped, in words, and their numbers.
+  options('kind', Object.entries(kinds).map(([k, v]) => [k, v.label]));
+  options('systems', Object.entries(D.systems || {}), { many: true });
+  options('frequency', (D.frequency || []).map((f, i) => [String(i), f]));
+  options('people', Object.entries(D.people || {}).map(([k, v]) => [k, v.label]));
+  draw();
+
+  // What goes into the booking: what they set, in words, and their numbers.
+  // Nothing if they never touched the bench (it still shows the example).
   function answers() {
-    if (!picked.kind) return {};
+    if (!chosen) return {};
     const job = [
       kinds[picked.kind].label,
       (picked.systems || []).map((s) => D.systems[s]).join(', '),
-      picked.frequency != null ? D.frequency[Number(picked.frequency)] : '',
+      picked.frequency != null ? D.frequency[picked.frequency] : '',
       picked.people ? fill(D.peopleSummary, { people: D.people[picked.people].label }) : '',
     ].filter(Boolean).join('. ') + '.';
-    const a = { [cfg.field]: job };
-    if (!part.money.hidden) {
-      const r = costOf(values, A);
-      a.scale = fill(A.scale, {
-        people: NUM.format(values.people), hours: values.hours.toLocaleString('en-GB'),
+    const r = costOf(values, A);
+    return {
+      [cfg.field]: job,
+      scale: fill(A.scale, {
+        people: `${NUM.format(values.people)} ${values.people === 1 ? 'person' : 'people'}`, hours: values.hours.toLocaleString('en-GB'),
         salary: GBP.format(values.salary), cost: GBP.format(Math.round(r.cost)),
-      });
-    }
-    return a;
+      }),
+    };
   }
 
-  answer.querySelector('[data-answer-book]').addEventListener('click', () => book?.(answers()));
+  bench.querySelector('[data-answer-book]').addEventListener('click', () => book?.(answers()));
 
-  return { answers, tap: tapped, get state() { return { picked: { ...picked }, touched, values: { ...values } }; } };
+  return { answers, tap: tapped, get state() { return { picked: { ...picked }, chosen, touched, values: { ...values } }; } };
 }

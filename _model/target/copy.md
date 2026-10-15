@@ -17,9 +17,7 @@ step 1 and "Show available times" in step 5.
 
 > Business process automation · London
 >
-> Your week, automated.
->
-> Tap what fits. The page builds your job as you go, then shows what it costs you.
+> Ruben Pires. I automate the work your team repeats.
 >
 > The job your team does by hand
 >
@@ -33,7 +31,7 @@ step 1 and "Show available times" in step 5.
 >
 > A year, before tax. With National Insurance and pension, the real cost is higher.
 >
-> Which sounds like your week?
+> The job
 
 The answer, under the button:
 
@@ -62,6 +60,11 @@ Without JavaScript, in place of the three numbers:
 > For example: two people, every Monday morning.
 >
 > Choose a time for the call
+
+Changed 2026-10-15, later (operator: "its still corny. and now the layout is
+all over the place"): step 1 is a bench (taps and numbers left, what they
+make right), set to one example job on arrival. Words stripped to names,
+labels, figures and short facts: no slogan headline, no italic voice lines.
 
 Changed 2026-10-15, late (operator: "nobody is going to write anything
 useful"; chose "taps, not typing"): no text box with JavaScript. The visitor
@@ -92,7 +95,7 @@ The estimate's labels come from the live `estimate` topic, shortened.
 
 > Where the time goes
 >
-> Three situations I see often. They are illustrations, not named clients.
+> Illustrations, not named clients.
 
 > The Monday report
 >
@@ -131,8 +134,6 @@ replaces "Early warning on suppliers". "Two more I often see" is cut. Labels
 
 > What I look for
 >
-> The same few problems are in every team, mine included.
->
 > Decisions made in a rush, because the money coming in and going out was seen too late.
 >
 > Work that does not earn money directly, like admin and reports, left half-built. It then takes time from the work that does.
@@ -153,7 +154,6 @@ replaces "Early warning on suppliers". "Two more I often see" is cut. Labels
 >
 > It runs, and reports. You get a regular report of what it did, and of anything it could not do.
 >
-> No sales pitch. If there is nothing worth fixing, I will say so.
 
 > First call: Free, 30 minutes.
 >
@@ -175,15 +175,13 @@ the site yet".
 
 > Who you would talk to
 >
-> I am Ruben. I work alone, in London. I have spent years automating work for other organisations.
+> I work alone, in London, and have automated work for other organisations for years.
 >
-> Today I run Salesforce at London & Partners, as an employee. Salesforce is software that companies use to track customers. A project with you would be my full-time work.
+> Today I run Salesforce at London & Partners, as an employee. A project with you would be my full-time work.
 >
-> I run my own work on a system I built. I use it every day.
+> I run my own work on a system I built, every day.
 >
-> When automation fails, the cause is usually how people work together, not the software.
->
-> Salesforce certifications: Salesforce Administrator. Salesforce Platform App Builder. Salesforce Agentforce Specialist.
+> Salesforce certifications: Administrator, Platform App Builder, Agentforce Specialist.
 
 Notes: line 2 replaces "My main job is running Salesforce at London &
 Partners" and says what the day job means for a client. Line 3 is new: his

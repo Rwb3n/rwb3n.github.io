@@ -11,7 +11,7 @@
   },
   "meta": {
     "title": "mindunder.dev — business process automation, London",
-    "description": "Put in the job your team does by hand every week, and see what it costs you in a year. Then book a free 30-minute call. Based in London."
+    "description": "Ruben Pires: business process automation, London. Pick the job your team repeats and see what it costs you. The first call is free."
   },
   "facts": {
     "what": {
@@ -73,11 +73,10 @@
     "job": {
       "eyebrow": "Business process automation · London",
       "headline": [
-        "Your week, ",
-        "automated."
+        "Ruben Pires.",
+        "I automate the work your team repeats."
       ],
-      "accent": "automated",
-      "lead": "Tap what fits. The page builds your job as you go, then shows what it costs you.",
+      "accent": "",
       "field": {
         "name": "job",
         "label": "The job your team does by hand",
@@ -131,7 +130,7 @@
         "nearest": "Nearest example: {title}",
         "note": "An estimate, not a quote. It counts salary only. A system rarely removes a job completely. It does the routine part, and a person checks the result.",
         "book": "Book the free call with these answers",
-        "scale": "{people} people, {hours} hours each a week, salary {salary} each: about {cost} a year on this job",
+        "scale": "{people}, {hours} hours each a week, salary {salary} each: about {cost} a year on this job",
         "weeksPerYear": 46,
         "hoursPerWeek": 37.5,
         "share": "Of the {pay} a year you pay them, {cost} goes on this job.",
@@ -152,8 +151,7 @@
           "after": "check by a person"
         },
         "firstHead": "What I would automate first",
-        "numbersHead": "Your numbers",
-        "numbersNote": "Guessed from your taps. Change them to match.",
+        "numbersHead": "Hours and pay",
         "frequency": [
           "Every day",
           "Every week",
@@ -668,17 +666,22 @@
           }
         },
         "taps": {
-          "kind": "Which sounds like your week?",
-          "systems": "Which systems does it touch?",
-          "frequency": "How often?",
-          "people": "How many people do it?"
+          "kind": "The job",
+          "systems": "Systems it touches",
+          "frequency": "How often",
+          "people": "People doing it"
         },
-        "peopleSummary": "People: {people}"
+        "peopleSummary": "People: {people}",
+        "start": {
+          "kind": "report",
+          "frequency": 1,
+          "people": "few"
+        }
       }
     },
     "cases": {
       "head": "Where the time goes",
-      "intro": "Three situations I see often. They are illustrations, not named clients.",
+      "intro": "Illustrations, not named clients.",
       "labels": {
         "before": "Today",
         "build": "What I would build",
@@ -757,7 +760,6 @@
     "start": {
       "look": {
         "head": "What I look for",
-        "intro": "The same few problems are in every team, mine included.",
         "items": [
           "Decisions made in a rush, because the money coming in and going out was seen too late.",
           "Work that does not earn money directly, like admin and reports, left half-built. It then takes time from the work that does.",
@@ -788,7 +790,6 @@
           "detail": "You get a regular report of what it did, and of anything it could not do."
         }
       ],
-      "note": "No sales pitch. If there is nothing worth fixing, I will say so.",
       "facts": [
         {
           "label": "First call",
@@ -815,11 +816,10 @@
         "alt": "Ruben Pires, walking along a chalk cliff above the sea."
       },
       "lines": [
-        "I am Ruben. I work alone, in London. I have spent years automating work for other organisations.",
-        "Today I run Salesforce at London & Partners, as an employee. Salesforce is software that companies use to track customers. A project with you would be my full-time work.",
-        "I run my own work on a system I built. I use it every day.",
-        "When automation fails, the cause is usually how people work together, not the software.",
-        "Salesforce certifications: Salesforce Administrator. Salesforce Platform App Builder. Salesforce Agentforce Specialist."
+        "I work alone, in London, and have automated work for other organisations for years.",
+        "Today I run Salesforce at London & Partners, as an employee. A project with you would be my full-time work.",
+        "I run my own work on a system I built, every day.",
+        "Salesforce certifications: Administrator, Platform App Builder, Agentforce Specialist."
       ]
     },
     "book": {
