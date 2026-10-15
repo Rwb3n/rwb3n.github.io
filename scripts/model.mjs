@@ -4,14 +4,17 @@
 //   npm run model              update _model/current/
 //   npm run model -- --check   exit 1 if _model/current/ is out of date (used by npm test)
 //
-// The site is one page (src/static.js renders it from content/site.json), so
-// almost everything here is read from the rendered page itself. The booking
-// states live in src/book.js; they are described by hand below, and the check
-// fails if book.js gains or loses one, so the description can't drift silently.
+// The site is one page, a conversation: its sections are composed of parts in
+// content/site.json › page.sections (src/parts.js), and the visitor moves
+// between them by replies and typed text (src/talk.js, src/route.js). The
+// booking states live in src/book.js; they are described by hand below, and
+// the check fails if book.js gains or loses one, so the description can't
+// drift silently.
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { renderRegions, bookingUrl } from '../src/static.js';
+import { visibleSections, bookSection, partTypes, parts as PARTS } from '../src/parts.js';
 import { indexContent } from '../src/content.js';
 import { blocks, categories, usage, typeLabel } from '../src/catalog.js';
 
@@ -40,7 +43,7 @@ const STATE_MARKS = { loading: 'opened = true', ready: 'ready = true', failed: '
 // Which domain each part of site.json belongs to (see _model/README.md).
 const SITE_DOMAINS = {
   $comment: '-', brand: 'Platform', timeZone: 'Platform', meta: 'Platform', reading: 'Platform',
-  person: 'Offer', facts: 'Offer', booking: 'Booking', page: 'Story', language: 'Rules',
+  person: 'Offer', facts: 'Offer', booking: 'Booking', page: 'Story', conversation: 'Story', language: 'Rules',
 };
 
 // Load ------------------------------------------------------------------------
@@ -68,20 +71,29 @@ const words = (v) => {
   return 0;
 };
 
-// The sections, read from the rendered page, in order.
-const sections = [...pageHtml.matchAll(/<section class="pg-section is-([a-z]+)" id="([a-z]+)"[\s\S]*?<\/section>/g)].map((m) => {
-  const html = m[0];
+// The sections, from config, with what the rendered page holds for each.
+const shownSections = visibleSections(site);
+const bookId = bookSection(shownSections)?.id;
+const sections = shownSections.map((cfg) => {
+  const html = pageHtml.match(new RegExp(`<section class="pg-section is-[a-z]+" id="${cfg.id}"[\\s\\S]*?</section>`))[0];
   const head = text((html.match(/<h[12][^>]*>([\s\S]*?)<\/h[12]>/) || [])[1] || '');
   return {
-    id: m[2],
+    id: cfg.id,
+    variant: cfg.variant || 'plain',
     head,
-    words: wordCount(text(html)),
-    toBook: html.includes('href="#book"'),
+    reply: cfg.reply,
+    replies: cfg.replies || [],
+    parts: cfg.parts.map((p) => p.type),
+    intents: cfg.intents || [],
+    words: wordCount(text(html.replace(/<ul class="pg-replies"[\s\S]*?<\/ul>/, ''))),
+    toBook: html.includes(`href="#${bookId}"`),
     form: html.includes('data-intake'),
     filled: (html.match(/btn-primary/g) || []).length,
   };
 });
+// What each section is for, by its id (see _model/target/funnel.md).
 const SECTION_JOB = { problem: 'Say what I do', cases: 'Recognition: "that is us"', start: 'Lower the risk', who: 'Trust', intake: 'The job, in the visitor\'s words', book: 'Pick a time' };
+const C = site.conversation || {};
 
 // domains.md --------------------------------------------------------------------
 
@@ -99,17 +111,31 @@ function domainsMd() {
 
 function processMd() {
   const ids = sections.map((s) => s.id);
-  const nodes = sections.map((s, i) => `  S${i}[${q(`${i + 1} ${s.id}: ${s.head}`)}]`).join('\n');
-  const flow = ids.slice(1).map((_, i) => `  S${i} --> S${i + 1}`).join('\n');
-  const book = ids.indexOf('book');
-  const skips = sections.map((s, i) => (s.toBook && i !== book ? `  S${i} -. "${P.bookLink}" .-> S${book}` : null)).filter(Boolean).join('\n');
-  const cal = bookingUrl(site) ? `\n  S${book} --> C["Cal.com: pick a slot"] --> D["booked: Cal.com confirms by email"]` : '';
+  const n = (id) => `S${ids.indexOf(id)}`;
+  const nodes = sections.map((s, i) => `  S${i}[${q(`${s.id}: ${s.head}`)}]`).join('\n');
+  const edges = sections.flatMap((s) => s.replies.filter((r) => ids.includes(r)).map((r) => (r === bookId
+    ? `  ${n(s.id)} -. "${P.bookLink}" .-> ${n(r)}`
+    : `  ${n(s.id)} -- ${q(sections.find((x) => x.id === r).reply)} --> ${n(r)}`))).join('\n');
+  const intake = sections.find((s) => s.form);
+  const typed = [
+    `  T(["typed text"]) -- "describes their work" --> ${intake ? n(intake.id) : n(bookId)}`,
+    '  T -- "a question a fact answers" --> A["the fact, then replies"]',
+    '  T -- "a section\'s intents" --> SEC["that section"]',
+    '  T -- "anything else" --> F["the fallback line, then replies"]',
+  ].join('\n');
+  const cal = bookingUrl(site) ? `\n  ${intake ? `${n(intake.id)} -- ${q(intake && site.page.sections.find((x) => x.id === intake.id).parts.find((p) => p.type === 'intake').submit)} --> ${n(bookId)}\n  ` : '  '}${n(bookId)} --> CAL["Cal.com: pick a slot"] --> D["booked: Cal.com confirms by email"]` : '';
   return [
-    header('Process: one visit', 'Read from the page that `npm run sync` writes into index.html.'),
-    '## The page, top to bottom\n',
-    '```mermaid\nflowchart TD\n' + nodes + '\n' + flow + (skips ? '\n' + skips : '') + cal + '\n```\n',
-    table(['#', 'Section', 'Heading', 'Job', 'Words', 'Links to #book', 'Form'], sections.map((s, i) => [String(i + 1), `\`#${s.id}\``, s.head, SECTION_JOB[s.id] || '', String(s.words), s.toBook ? 'yes' : 'no', s.form ? 'yes' : 'no'])),
+    header('Process: one visit', 'Read from site.json › page and conversation, and the page `npm run sync` writes.'),
+    '## The conversation\n',
+    `The page opens on \`#${C.start || ids[0]}\`. Each reply opens a section under the turn before; only the latest turn offers replies, and never to a section already open. "${C.all}" (or \`/#all\`) shows every section in order, as without JavaScript.\n`,
+    '```mermaid\nflowchart TD\n' + nodes + '\n' + edges + cal + '\n```\n',
+    '## Typed text (`src/route.js`), in this order\n',
+    '```mermaid\nflowchart LR\n' + typed + '\n```\n',
+    table(['Section', 'Variant', 'Heading', 'Job', 'Opened by', 'Parts', 'Words', 'Form'], sections.map((s) => [`\`#${s.id}\``, s.variant, s.head, SECTION_JOB[s.id] || '', s.id === bookId ? `"${P.bookLink}"` : s.reply ? `"${s.reply}"` : 'the start', s.parts.join(', '), String(s.words), s.form ? 'yes' : 'no'])),
+    '\n## Answers to typed questions\n',
+    table(['Words', 'Answer'], (C.answers || []).map((a) => [a.keywords.slice(0, 4).join(', ') + (a.keywords.length > 4 ? ', …' : ''), a.fact ? `fact \`${a.fact}\`${site.facts?.[a.fact]?.value ?? site.facts?.[a.fact]?.missing ? '' : ' (empty: the fallback)'}` : a.text])),
     '\n## Without JavaScript\n',
+    '- Every section shows, in order. Replies are links to the sections; the ask bar is hidden.',
     bookingUrl(site)
       ? `- The intake form is a plain \`GET\` form to \`${bookingUrl(site)}\`, with fields ${(site.booking.fields || []).map((f) => `\`${f}\``).join(', ')}: the answers prefill the Cal.com page.\n- "${P.book?.show}" is a plain link to the same page.`
       : '- No booking link is set (`site.json › booking.calLink` is null): the page shows no form and offers email only.',
@@ -142,14 +168,20 @@ function dataMd() {
   const blockRows = categories.flatMap((c) => Object.entries(blocks).filter(([, b]) => b.category === c.id).sort(([a], [b]) => a.localeCompare(b)).map(([t, b]) => [
     c.label, `\`${t}\``, Object.entries(b.props).map(([p, spec]) => `${p}${spec.required ? '*' : ''}: ${typeLabel(spec)}`).join('; '), String((used[t] || []).length),
   ]));
+  const partRows = partTypes.map((t) => {
+    const usedIn = site.page.sections.filter((s) => s.parts.some((p) => p.type === t)).map((s) => `\`#${s.id}\``);
+    return [`\`${t}\``, Object.entries(PARTS[t].props).map(([k, spec]) => `${k}${spec.required ? '*' : ''}: ${typeLabel(spec)}`).join('; '), usedIn.join(', ') || 'none'];
+  });
   return [
     header('Data'),
-    '```mermaid\nerDiagram\n  SITE ||--o{ FACT : facts\n  SITE ||--|| PAGE : page\n  PAGE ||--o{ SECTION : sections\n  SITE ||--|| BOOKING : booking\n  BOOKING ||--o{ FIELD : "fields (Cal.com question ids)"\n  SECTION }o--o{ FACT : shows\n```\n',
+    '```mermaid\nerDiagram\n  SITE ||--o{ FACT : facts\n  SITE ||--|| PAGE : page\n  PAGE ||--o{ SECTION : sections\n  SECTION ||--o{ PART : parts\n  SECTION }o--o{ SECTION : replies\n  SITE ||--|| BOOKING : booking\n  BOOKING ||--o{ FIELD : "fields (Cal.com question ids)"\n  SECTION }o--o{ FACT : shows\n```\n',
     '## site.json\n',
     table(['Key', 'Holds'], tree),
-    '\n## Intake fields (`site.json › page.intake.fields`)\n',
-    table(['Name (Cal.com identifier)', 'Label', 'Kind'], (P.intake?.fields || []).map((f) => [`\`${f.name}\``, f.label, f.long ? 'long text' : 'short text'])),
-    '\n## Blocks (`src/catalog.js`; * = required). The page does not use them; the library and the fixtures do.\n',
+    '\n## Page parts (`src/parts.js`; * = required)\n',
+    table(['Part', 'Props', 'Used in'], partRows),
+    '\n## Intake fields (the `intake` part)\n',
+    table(['Name (Cal.com identifier)', 'Label', 'Kind'], (P.sections.flatMap((s) => s.parts).find((p) => p.type === 'intake')?.fields || []).map((f) => [`\`${f.name}\``, f.label, f.long ? 'long text' : 'short text'])),
+    '\n## Blocks (`src/catalog.js`; * = required). The page uses parts, not blocks; the library and the fixtures use blocks.\n',
     table(['Category', 'Block', 'Props', 'Fixtures using it'], blockRows),
     '',
   ].join('\n');
@@ -158,13 +190,15 @@ function dataMd() {
 // story.md --------------------------------------------------------------------
 
 function storyMd() {
-  const cases = P.cases?.items || [];
+  const all = P.sections.flatMap((s) => s.parts);
+  const cases = all.filter((p) => p.type === 'cases').flatMap((p) => p.items);
+  const lists = all.filter((p) => p.type === 'list').flatMap((p) => p.items);
   return [
-    header('Story: what the page says, in order'),
+    header('Story: what the page says, in order (without JavaScript, and with "Show the whole page")'),
     ...sections.map((s, i) => `${i + 1}. **${s.head}** (\`#${s.id}\`, ${s.words} words)`),
     '\n## The examples\n',
     table(['Example', 'Tag', 'What changes'], cases.map((c) => [c.title, c.tag, c.result])),
-    `\nAlso listed: ${(P.cases?.more?.items || []).map((m) => m.title.replace(/\.$/, '')).join('; ') || 'none'}.`,
+    `\nAlso listed: ${lists.map((m) => m.title.replace(/\.$/, '')).join('; ') || 'none'}.`,
     '',
   ].join('\n');
 }
@@ -174,15 +208,18 @@ function storyMd() {
 function healthMd() {
   const list = (xs) => (xs.length ? xs.map((x) => `- ${x}`).join('\n') : '- none');
   const missing = Object.entries(site.facts || {}).filter(([, f]) => f.value == null).map(([k, f]) => `\`${k}\` (${f.label})${f.missing ? ': says it is not published' : ': hidden'}`);
-  const noLink = sections.filter((s) => !s.toBook && !['intake', 'book'].includes(s.id)).map((s) => `\`#${s.id}\``);
+  const noLink = sections.filter((s) => !s.toBook && !s.form && s.id !== bookId).map((s) => `\`#${s.id}\``);
+  const unreached = sections.filter((s) => s.id !== (C.start || sections[0].id) && !sections.some((x) => x.replies.includes(s.id))).map((s) => `\`#${s.id}\``);
   const filled = sections.reduce((n, s) => n + s.filled, 0);
   return [
     header('Health: facts for deciding what to change'),
     `- Sections: ${sections.length}; words on the page: ${sections.reduce((n, s) => n + s.words, 0)}`,
     `- Booking link: ${site.booking?.calLink ? `\`${site.booking.calLink}\`` : '**not set**: the page offers email only'}`,
     `- Filled buttons on the page: ${filled} (the design allows one)`,
-    '\n## Sections without a link to #book\n',
+    '\n## Sections without a link to the booking section\n',
     list(noLink),
+    '\n## Sections no reply leads to (only typed text or the whole page reaches them)\n',
+    list(unreached),
     '\n## Facts not filled in\n',
     list(missing),
     '',

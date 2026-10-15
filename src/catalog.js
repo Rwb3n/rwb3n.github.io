@@ -12,6 +12,10 @@ const list = (of, doc, required = false) => ({ type: 'list', of, doc, required }
 const obj = (props, doc, required = false) => ({ type: 'object', props, doc, required });
 const oneOf = (values, doc, required = false) => ({ type: 'enum', values, doc, required });
 const req = (p) => ({ ...p, required: true });
+const bool = (doc, required = false) => ({ type: 'boolean', doc, required });
+
+// Shared with src/parts.js, which describes the page's parts the same way.
+export const prop = { str, num, list, obj, oneOf, req, bool };
 
 export const categories = [
   { id: 'text', label: 'Text', doc: 'Words: paragraphs, headings, quotes, code.' },
@@ -348,7 +352,7 @@ export function validateBlocks(list, path = 'blocks') {
   return list.flatMap((b, i) => validateBlock(b, `${path}[${i}]`));
 }
 
-function checkProps(value, props, path, allowed = new Set()) {
+export function checkProps(value, props, path, allowed = new Set()) {
   const out = [];
   for (const [k, p] of Object.entries(props)) {
     if (value[k] == null) { if (p.required) out.push(`${path}.${k}: required`); continue; }

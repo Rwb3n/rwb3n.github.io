@@ -2,21 +2,59 @@
   "$comment": "Site configuration: everything a visitor reads. The page is one funnel, top to bottom (_model/target/funnel.md); its words come from _model/target/copy.md. Leave a value as null if it is not decided yet: the site will not invent it. Run `npm run sync` after editing, then `npm test`.",
   "brand": "mindunder.dev",
   "timeZone": "Europe/London",
-  "person": { "name": "Ruben", "fullName": null, "email": "lab@mindunder.dev", "location": "London, UK", "links": [] },
+  "person": {
+    "name": "Ruben",
+    "fullName": null,
+    "email": "lab@mindunder.dev",
+    "location": "London, UK",
+    "links": []
+  },
   "meta": {
     "title": "mindunder.dev — business process automation, London",
     "description": "I find the work your team repeats by hand, then build a system that does it. The first call is free. Based in London."
   },
   "facts": {
-    "what": { "label": "What I do", "value": "I find the steps your team repeats by hand. Then I build software that does them." },
-    "who": { "label": "Who it is for", "value": null, "missing": null },
-    "firstStep": { "label": "First step", "value": "A free 30-minute call. Afterwards you get a one-page summary of where time is lost, yours to keep." },
-    "cost": { "label": "Price", "value": null, "missing": "Not on the site yet. Ask in the call or by email." },
-    "timeline": { "label": "How long it takes", "value": null, "missing": null },
-    "reply": { "label": "Reply", "value": "The same day" },
-    "location": { "label": "Based in", "value": "London, UK" },
-    "clients": { "label": "Client work", "value": null, "missing": "No client case studies published yet. The examples here are illustrations." },
-    "handover": { "label": "After the project", "value": null, "missing": null }
+    "what": {
+      "label": "What I do",
+      "value": "I find the steps your team repeats by hand. Then I build software that does them."
+    },
+    "who": {
+      "label": "Who it is for",
+      "value": null,
+      "missing": null
+    },
+    "firstStep": {
+      "label": "First step",
+      "value": "A free 30-minute call. Afterwards you get a one-page summary of where time is lost, yours to keep."
+    },
+    "cost": {
+      "label": "Price",
+      "value": null,
+      "missing": "Not on the site yet. Ask in the call or by email."
+    },
+    "timeline": {
+      "label": "How long it takes",
+      "value": null,
+      "missing": null
+    },
+    "reply": {
+      "label": "Reply",
+      "value": "The same day"
+    },
+    "location": {
+      "label": "Based in",
+      "value": "London, UK"
+    },
+    "clients": {
+      "label": "Client work",
+      "value": null,
+      "missing": "No client case studies published yet. The examples here are illustrations."
+    },
+    "handover": {
+      "label": "After the project",
+      "value": null,
+      "missing": null
+    }
   },
   "booking": {
     "$": "Cal.com, hosted. calLink is the part after cal.com/ (for example \"ruben/30min\"). While it is null, the page offers email only and shows no booking form.",
@@ -24,116 +62,469 @@
     "origin": "https://cal.com",
     "embedScript": "https://app.cal.com/embed/embed.js",
     "timeoutSeconds": 10,
-    "fields": ["job", "scale"]
+    "fields": [
+      "job",
+      "scale"
+    ]
   },
   "page": {
-    "$": "The funnel, in order. Section ids are the page anchors. Every quiet link to #book uses bookLink.",
+    "$": "The page, as a conversation (_model/target/funnel.md). Each section is one turn: the visitor opens it by choosing a reply at the end of the turn before, or by typing words in its intents. Without JavaScript every section shows, in this order. Sections and their parts can be reordered, removed, added or repeated; the part types and what they take are in src/parts.js and on /components/. Every link to the booking section reads bookLink.",
     "bookLink": "Book the free call",
-    "problem": {
-      "eyebrow": "Business process automation · London",
-      "headline": ["I find the work your team repeats by hand.", "Then I build a system that does it."],
-      "accent": "find",
-      "cue": "Below: three examples, how we would start, and who you would talk to."
-    },
-    "cases": {
-      "head": "Where the time goes",
-      "intro": "Three situations I see often. They are illustrations, not named clients. The numbers show the scale, not a promise.",
-      "labels": { "before": "Today", "build": "What I would build", "result": "What changes" },
-      "items": [
-        {
-          "tag": "Example · Wholesale, 40 staff",
-          "title": "The Monday report",
-          "before": "Every Monday the operations manager rebuilds the leadership report by hand. Sales come from the accounts system, stock from the warehouse system, deliveries from the courier's website. It takes most of the morning, and the figures are a day old by the meeting.",
-          "build": "The report builds itself overnight from the same three systems and is in the inbox at 7am. The manager reads it, checks anything flagged, and adds comments.",
-          "result": "About 5 hours a week back. Roughly 230 hours a year."
-        },
-        {
-          "tag": "Example · Professional services, 25 staff",
-          "title": "Setting up a new client",
-          "before": "When a proposal is signed, someone copies the client's details into the customer database (CRM), the billing system and the project tracker. Then they email three colleagues. It takes about 40 minutes a client, and something small is usually missed.",
-          "build": "Signing the proposal starts it. The records appear in all three systems, the right people are told, and anything missing is flagged for a person to fill in.",
-          "result": "At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts."
-        },
-        {
-          "tag": "Example · Illustration",
-          "title": "Early warning on suppliers",
-          "before": "A distributor found out its main supplier had gone into administration when deliveries stopped. The signs had been public for weeks, in Companies House filings and insolvency notices.",
-          "build": "A system reads those public records every night for the companies you depend on. It emails you the morning something changes, such as overdue accounts or a winding-up petition.",
-          "result": "Weeks of warning instead of none."
-        }
-      ],
-      "more": {
-        "head": "Two more I often see",
-        "items": [
-          { "title": "Tenders found too late.", "text": "A competitor met the buyer first." },
-          { "title": "One person holds the knowledge.", "text": "They cannot take two weeks off." }
+    "sections": [
+      {
+        "id": "problem",
+        "variant": "hero",
+        "replies": [
+          "cases",
+          "start",
+          "who",
+          "book"
+        ],
+        "parts": [
+          {
+            "type": "headline",
+            "eyebrow": "Business process automation · London",
+            "lines": [
+              "I find the work your team repeats by hand.",
+              "Then I build a system that does it."
+            ],
+            "accent": "find"
+          },
+          {
+            "type": "text",
+            "style": "cue",
+            "text": "Below: three examples, how we would start, and who you would talk to."
+          }
+        ]
+      },
+      {
+        "id": "cases",
+        "head": "Where the time goes",
+        "reply": "Show me examples",
+        "intents": [
+          "example",
+          "case",
+          "situation",
+          "report",
+          "supplier",
+          "new client",
+          "tender"
+        ],
+        "replies": [
+          "start",
+          "who",
+          "book"
+        ],
+        "parts": [
+          {
+            "type": "text",
+            "style": "intro",
+            "text": "Three situations I see often. They are illustrations, not named clients. The numbers show the scale, not a promise."
+          },
+          {
+            "type": "cases",
+            "labels": {
+              "before": "Today",
+              "build": "What I would build",
+              "result": "What changes"
+            },
+            "items": [
+              {
+                "tag": "Example · Wholesale, 40 staff",
+                "title": "The Monday report",
+                "before": "Every Monday the operations manager rebuilds the leadership report by hand. Sales come from the accounts system, stock from the warehouse system, deliveries from the courier's website. It takes most of the morning, and the figures are a day old by the meeting.",
+                "build": "The report builds itself overnight from the same three systems and is in the inbox at 7am. The manager reads it, checks anything flagged, and adds comments.",
+                "result": "About 5 hours a week back. Roughly 230 hours a year."
+              },
+              {
+                "tag": "Example · Professional services, 25 staff",
+                "title": "Setting up a new client",
+                "before": "When a proposal is signed, someone copies the client's details into the customer database (CRM), the billing system and the project tracker. Then they email three colleagues. It takes about 40 minutes a client, and something small is usually missed.",
+                "build": "Signing the proposal starts it. The records appear in all three systems, the right people are told, and anything missing is flagged for a person to fill in.",
+                "result": "At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts."
+              },
+              {
+                "tag": "Example · Illustration",
+                "title": "Early warning on suppliers",
+                "before": "A distributor found out its main supplier had gone into administration when deliveries stopped. The signs had been public for weeks, in Companies House filings and insolvency notices.",
+                "build": "A system reads those public records every night for the companies you depend on. It emails you the morning something changes, such as overdue accounts or a winding-up petition.",
+                "result": "Weeks of warning instead of none."
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "head": "Two more I often see",
+            "items": [
+              {
+                "title": "Tenders found too late.",
+                "text": "A competitor met the buyer first."
+              },
+              {
+                "title": "One person holds the knowledge.",
+                "text": "They cannot take two weeks off."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "start",
+        "head": "How we would start",
+        "reply": "Show me how we would start",
+        "intents": [
+          "start",
+          "first step",
+          "process",
+          "how would",
+          "how does",
+          "how do",
+          "what happens"
+        ],
+        "replies": [
+          "who",
+          "intake",
+          "book"
+        ],
+        "parts": [
+          {
+            "type": "steps",
+            "items": [
+              {
+                "title": "A 30-minute call, free.",
+                "detail": "You tell me where the time goes. I ask how the work actually moves."
+              },
+              {
+                "title": "A one-page summary.",
+                "detail": "Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together."
+              },
+              {
+                "title": "A design you approve.",
+                "detail": "What stays, what changes, what becomes automatic. Nothing changes until you approve it."
+              },
+              {
+                "title": "A first system, checked by a person.",
+                "detail": "It does the work and someone checks every result. It runs alone only once the results are consistently right."
+              },
+              {
+                "title": "It runs, and reports.",
+                "detail": "You get a regular report of what it did, and of anything it could not do."
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "style": "voice",
+            "text": "No sales pitch. If there is nothing worth fixing, I will say so."
+          },
+          {
+            "type": "facts",
+            "items": [
+              {
+                "label": "First call",
+                "value": "Free, 30 minutes."
+              },
+              {
+                "key": "cost"
+              },
+              {
+                "label": "Reply to email",
+                "value": "The same day."
+              },
+              {
+                "key": "location"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "who",
+        "head": "Who you would talk to",
+        "reply": "Tell me who I would talk to",
+        "intents": [
+          "who",
+          "about you",
+          "ruben",
+          "experience",
+          "background",
+          "salesforce",
+          "certification",
+          "yourself"
+        ],
+        "replies": [
+          "intake",
+          "book"
+        ],
+        "parts": [
+          {
+            "type": "text",
+            "style": "lead",
+            "text": "I am Ruben. I work alone, in London. I have spent years automating work for other organisations."
+          },
+          {
+            "type": "text",
+            "text": "My main job is running Salesforce at London & Partners. Salesforce is software that companies use to track customers."
+          },
+          {
+            "type": "text",
+            "text": "When automation fails, the cause is usually how people work together, not the software."
+          },
+          {
+            "type": "text",
+            "text": "Salesforce certifications: Salesforce Administrator. Salesforce Platform App Builder. Salesforce Agentforce Specialist."
+          }
+        ]
+      },
+      {
+        "id": "intake",
+        "when": "booking",
+        "head": "Before the call",
+        "reply": "Describe our job first",
+        "intents": [
+          "describe",
+          "questions"
+        ],
+        "replies": [],
+        "parts": [
+          {
+            "type": "text",
+            "style": "intro",
+            "text": "Two questions, both optional. Your answers go into the booking, so I can read them before we talk."
+          },
+          {
+            "type": "intake",
+            "fields": [
+              {
+                "name": "job",
+                "label": "The job that takes up your team's time",
+                "example": "For example: the Monday report, or setting up new clients.",
+                "long": true
+              },
+              {
+                "name": "scale",
+                "label": "How many people do it, and how often",
+                "example": "For example: two people, every Monday morning."
+              }
+            ],
+            "submit": "Choose a time for the call",
+            "note": "Nothing is sent until you book."
+          }
+        ]
+      },
+      {
+        "id": "book",
+        "variant": "booking",
+        "head": "Book the free call",
+        "intents": [
+          "book",
+          "call",
+          "meeting",
+          "appointment",
+          "schedule",
+          "available",
+          "calendar",
+          "talk to you"
+        ],
+        "replies": [],
+        "parts": [
+          {
+            "type": "text",
+            "style": "intro",
+            "when": "booking",
+            "text": "30 minutes, free. Choose a time that suits you. Cal.com sends the confirmation by email."
+          },
+          {
+            "type": "booking",
+            "show": "Show available times",
+            "loading": "Loading available times from Cal.com.",
+            "failed": "The booking calendar did not load. You can book on the Cal.com page instead.",
+            "open": "Open the booking page on Cal.com"
+          },
+          {
+            "type": "text",
+            "style": "small",
+            "when": "booking",
+            "text": "Or email {email}. I reply the same day."
+          },
+          {
+            "type": "text",
+            "style": "intro",
+            "when": "unset",
+            "text": "Online booking is not set up yet. Email {email} to book the free call. I reply the same day."
+          }
         ]
       }
+    ]
+  },
+  "conversation": {
+    "$": "The conversation around the sections. Typed text is matched in this order: a description of the visitor's own work opens the intake with their words in its first field; a question in answers gets that fact; words in a section's intents open that section; anything else gets the fallback.",
+    "start": "problem",
+    "you": "You",
+    "ask": {
+      "label": "Ask a question, or describe the job",
+      "example": "For example: the price. Or: two of us rebuild a report every Monday.",
+      "submit": "Ask"
     },
-    "start": {
-      "head": "How we would start",
-      "items": [
-        { "title": "A 30-minute call, free.", "detail": "You tell me where the time goes. I ask how the work actually moves." },
-        {
-          "title": "A one-page summary.",
-          "detail": "Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together."
-        },
-        { "title": "A design you approve.", "detail": "What stays, what changes, what becomes automatic. Nothing changes until you approve it." },
-        {
-          "title": "A first system, checked by a person.",
-          "detail": "It does the work and someone checks every result. It runs alone only once the results are consistently right."
-        },
-        { "title": "It runs, and reports.", "detail": "You get a regular report of what it did, and of anything it could not do." }
+    "all": "Show the whole page",
+    "answers": [
+      {
+        "keywords": [
+          "cost",
+          "price",
+          "pricing",
+          "how much",
+          "fee",
+          "fees",
+          "charge",
+          "budget",
+          "expensive",
+          "rate"
+        ],
+        "fact": "cost"
+      },
+      {
+        "keywords": [
+          "how long",
+          "timeline",
+          "timescale",
+          "weeks",
+          "months",
+          "how quickly",
+          "how soon"
+        ],
+        "fact": "timeline"
+      },
+      {
+        "keywords": [
+          "where are you",
+          "based",
+          "location",
+          "office",
+          "remote"
+        ],
+        "fact": "location"
+      },
+      {
+        "keywords": [
+          "reply",
+          "respond",
+          "response",
+          "get back"
+        ],
+        "fact": "reply"
+      },
+      {
+        "keywords": [
+          "clients",
+          "client work",
+          "case study",
+          "case studies",
+          "references",
+          "worked with",
+          "portfolio"
+        ],
+        "fact": "clients"
+      },
+      {
+        "keywords": [
+          "after the project",
+          "support",
+          "maintain",
+          "maintenance",
+          "handover",
+          "look after"
+        ],
+        "fact": "handover"
+      },
+      {
+        "keywords": [
+          "what do you do",
+          "what is this",
+          "what is automation"
+        ],
+        "fact": "what"
+      }
+    ],
+    "fallback": "I do not have an answer to that on this page. Ask me in the call, or by email.",
+    "describe": "That is the kind of thing the call is for. I have put your words in the first field below. Change them if you like.",
+    "describeUnset": "That is the kind of thing the call is for. Email it to me, and I will reply the same day.",
+    "disclosure": {
+      "strong": [
+        "work together",
+        "hire you",
+        "proposal",
+        "quote for",
+        "help us",
+        "help me with"
       ],
-      "note": "No sales pitch. If there is nothing worth fixing, I will say so.",
-      "facts": [
-        { "label": "First call", "value": "Free, 30 minutes." },
-        { "key": "cost" },
-        { "label": "Reply to email", "value": "The same day." },
-        { "key": "location" }
-      ]
-    },
-    "who": {
-      "head": "Who you would talk to",
-      "lines": [
-        "I am Ruben. I work alone, in London. I have spent years automating work for other organisations.",
-        "My main job is running Salesforce at London & Partners. Salesforce is software that companies use to track customers.",
-        "When automation fails, the cause is usually how people work together, not the software.",
-        "Salesforce certifications: Salesforce Administrator. Salesforce Platform App Builder. Salesforce Agentforce Specialist."
-      ]
-    },
-    "intake": {
-      "head": "Before the call",
-      "intro": "Two questions, both optional. Your answers go into the booking, so I can read them before we talk.",
-      "fields": [
-        {
-          "name": "job",
-          "label": "The job that takes up your team's time",
-          "example": "For example: the Monday report, or setting up new clients.",
-          "long": true
-        },
-        { "name": "scale", "label": "How many people do it, and how often", "example": "For example: two people, every Monday morning." }
+      "org": [
+        "our team",
+        "my team",
+        "our company",
+        "my company",
+        "we have",
+        "we use",
+        "we run",
+        "we spend",
+        "two of us",
+        "our staff",
+        "our office",
+        "our",
+        "we"
       ],
-      "submit": "Choose a time for the call",
-      "note": "Nothing is sent until you book."
-    },
-    "book": {
-      "head": "Book the free call",
-      "line": "30 minutes, free. Choose a time that suits you. Cal.com sends the confirmation by email.",
-      "show": "Show available times",
-      "loading": "Loading available times from Cal.com.",
-      "failed": "The booking calendar did not load. You can book on the Cal.com page instead.",
-      "open": "Open the booking page on Cal.com",
-      "email": "Or email {email}. I reply the same day.",
-      "unset": "Online booking is not set up yet. Email {email} to book the free call. I reply the same day."
+      "problem": [
+        "by hand",
+        "manually",
+        "copy",
+        "copying",
+        "retype",
+        "rekey",
+        "spreadsheet",
+        "every week",
+        "every monday",
+        "every day",
+        "takes hours",
+        "takes ages",
+        "hours",
+        "struggling",
+        "broken",
+        "keeps",
+        "chase",
+        "chasing",
+        "report",
+        "invoices",
+        "orders"
+      ],
+      "need": [
+        "we need",
+        "we are looking",
+        "we are trying",
+        "looking for someone",
+        "need help",
+        "want to automate",
+        "automate our"
+      ],
+      "threshold": 2
     }
   },
-  "reading": { "motion": "full", "text": "standard" },
+  "reading": {
+    "motion": "full",
+    "text": "standard"
+  },
   "language": {
     "maxSentenceWords": 25,
     "minSentenceWords": 1,
-    "maxGrade": { "business": 9, "technical": 12 },
-    "knownAcronyms": ["UK", "AI", "TV", "PDF"],
+    "maxGrade": {
+      "business": 9,
+      "technical": 12
+    },
+    "knownAcronyms": [
+      "UK",
+      "AI",
+      "TV",
+      "PDF"
+    ],
     "banned": [
       "sound familiar",
       "you know something",

@@ -7,6 +7,8 @@ erDiagram
   SITE ||--o{ FACT : facts
   SITE ||--|| PAGE : page
   PAGE ||--o{ SECTION : sections
+  SECTION ||--o{ PART : parts
+  SECTION }o--o{ SECTION : replies
   SITE ||--|| BOOKING : booking
   BOOKING ||--o{ FIELD : "fields (Cal.com question ids)"
   SECTION }o--o{ FACT : shows
@@ -18,22 +20,36 @@ erDiagram
 |---|---|
 | `booking` | calLink, origin, embedScript, timeoutSeconds, fields |
 | `brand` | string |
+| `conversation` | start, you, ask, all, answers, fallback, describe, describeUnset, disclosure |
 | `facts` | what, who, firstStep, cost, timeline, reply, location, clients, handover |
 | `language` | maxSentenceWords, minSentenceWords, maxGrade, knownAcronyms, banned, bannedBusiness |
 | `meta` | title, description |
-| `page` | bookLink, problem, cases, start, who, intake, book |
+| `page` | bookLink, sections |
 | `person` | name, fullName, email, location, links |
 | `reading` | motion, text |
 | `timeZone` | string |
 
-## Intake fields (`site.json › page.intake.fields`)
+## Page parts (`src/parts.js`; * = required)
+
+| Part | Props | Used in |
+|---|---|---|
+| `headline` | eyebrow: string; lines*: list of string; accent: string | `#problem` |
+| `text` | text*: string; style: "intro" | "lead" | "body" | "voice" | "cue" | "small" | `#problem`, `#cases`, `#start`, `#who`, `#intake`, `#book` |
+| `cases` | labels*: object; items*: list of objects | `#cases` |
+| `list` | head: string; items*: list of objects | `#cases` |
+| `steps` | items*: list of objects | `#start` |
+| `facts` | items*: list of objects | `#start` |
+| `intake` | fields*: list of objects; submit*: string; note: string | `#intake` |
+| `booking` | show*: string; loading*: string; failed*: string; open*: string | `#book` |
+
+## Intake fields (the `intake` part)
 
 | Name (Cal.com identifier) | Label | Kind |
 |---|---|---|
 | `job` | The job that takes up your team's time | long text |
 | `scale` | How many people do it, and how often | short text |
 
-## Blocks (`src/catalog.js`; * = required). The page does not use them; the library and the fixtures do.
+## Blocks (`src/catalog.js`; * = required). The page uses parts, not blocks; the library and the fixtures use blocks.
 
 | Category | Block | Props | Fixtures using it |
 |---|---|---|---|

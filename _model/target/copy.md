@@ -1,6 +1,7 @@
 # Target: the copy
 
-> **Draft, phase 2** (2026-10-13). Hand-written. Every word a visitor reads is
+> **Signed off, phase 2** (2026-10-13), sections 1–6. The conversation
+> sections at the end are a **draft** (2026-10-15). Hand-written. Every word a visitor reads is
 > on a line starting with `>`; the rest are notes. Checked against the writing
 > rules in `DESIGN.md` by `npm test` (see the end).
 
@@ -148,6 +149,48 @@ Notes: "Show available times" loads Cal.com's embed; the label says what
 happens. The loading line and the fallback (after 10 seconds) are in
 `DESIGN.md › The page`. After booking, the confirmation is Cal.com's own; the page adds
 nothing.
+
+---
+
+## Conversation: replies and ask bar
+
+*New* (draft, 2026-10-15). The page is a conversation (`funnel.md ›
+Changed`). Each turn ends with replies, in the visitor's voice, as
+statements. The booking reply is "Book the free call", as before.
+
+> Show me examples
+>
+> Show me how we would start
+>
+> Tell me who I would talk to
+>
+> Describe our job first
+>
+> Ask a question, or describe the job
+>
+> For example: the price. Or: two of us rebuild a report every Monday.
+>
+> Ask
+>
+> Show the whole page
+
+Notes: the visitor's own words are said back above the turn they open, after
+a small "You". Replies to sections already open are not offered again.
+
+---
+
+## Conversation answers
+
+*New* (draft, 2026-10-15). Shown only after typed text, so they are in
+`site.json › conversation`, not in the page markup. A question one of the
+facts answers gets the fact itself (for example the price line in step 3);
+an empty fact is never offered.
+
+> I do not have an answer to that on this page. Ask me in the call, or by email.
+>
+> That is the kind of thing the call is for. I have put your words in the first field below. Change them if you like.
+>
+> That is the kind of thing the call is for. Email it to me, and I will reply the same day.
 
 ---
 

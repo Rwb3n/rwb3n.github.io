@@ -1,9 +1,11 @@
-// The page: reading settings, theme, the headline's rising words, booking.
+// The page: reading settings, theme, the headline's rising words, the
+// conversation, booking.
 // Everything a visitor reads is already in index.html; this only adds.
 
 import { initPrefs } from './prefs.js';
 import { createSettings } from './settings.js';
 import { createBooking } from './book.js';
+import { createTalk } from './talk.js';
 import { splitWords } from './type.js';
 import { reducedMotion } from './dom.js';
 
@@ -58,4 +60,5 @@ onScroll();
 const display = document.querySelector('.pg .display');
 if (display && !reducedMotion()) splitWords(display);
 
+window.mindunderTalk = createTalk(document);
 window.mindunderBooking = createBooking(document);

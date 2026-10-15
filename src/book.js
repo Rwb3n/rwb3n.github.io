@@ -5,7 +5,7 @@
 // With JavaScript:
 //   - Cal.com's script loads only when the visitor acts (presses "Show
 //     available times" or sends the intake form), never on page load.
-//   - Both open Cal.com's inline embed in #book, with the intake answers as
+//   - Both open Cal.com's inline embed in the booking section, with the intake answers as
 //     prefill (each field name is a Cal.com booking question identifier).
 //   - Focus moves to the "Book the free call" heading.
 //   - One line says the times are loading. If the calendar is not ready
@@ -68,7 +68,8 @@ export function createBooking(root = document) {
   const embed = box.querySelector('[data-book-embed]');
   const fail = box.querySelector('[data-book-fail]');
   const failLink = box.querySelector('[data-book-open]');
-  const heading = root.querySelector('#book-h');
+  const section = box.closest('.pg-section');
+  const heading = section?.querySelector('.pg-head');
   const form = root.querySelector('[data-intake]');
   let opened = false, ready = false, timer = 0;
 
@@ -82,7 +83,9 @@ export function createBooking(root = document) {
     fail.hidden = false;
   }
 
-  function open(answers = {}) {
+  function open(answers = {}, said) {
+    // In the conversation, the booking section may not be open yet.
+    if (section) document.dispatchEvent(new CustomEvent('mu:reveal', { detail: { id: section.id, said } }));
     heading?.focus({ preventScroll: true });
     heading?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
     if (opened) return;
@@ -116,7 +119,7 @@ export function createBooking(root = document) {
   });
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
-    open(readAnswers(form, cfg.fields));
+    open(readAnswers(form, cfg.fields), form.querySelector('[type="submit"]')?.textContent.trim());
   });
 
   return { open, get state() { return { opened, ready, failed: !fail.hidden }; } };

@@ -2,152 +2,34 @@
 // (no DOM), shared by scripts/sync.mjs, the component library and the tests,
 // so the whole page reads without JavaScript and never drifts from config.
 //
-// The page is one funnel, read top to bottom, ending at a booked call
-// (_model/target/funnel.md): problem, cases, start, who, intake, book. Every
-// section has a quiet link straight to #book.
+// The page is a conversation that ends at a booked call
+// (_model/target/funnel.md). Its sections come from site.json › page.sections,
+// rendered by src/parts.js; without JavaScript they read top to bottom.
 
-const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const fill = (t, vars) => String(t ?? '').replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
-const stop = (s) => (/[.!?]$/.test(s) ? s : `${s}.`);
+import { esc, bookingUrl, renderPage, visibleSections, bookSection, validatePage } from './parts.js';
 
-const factText = (site, key) => {
-  const f = site.facts?.[key];
-  return f ? f.value ?? f.missing ?? null : null;
-};
-
-// The Cal.com booking page for a link like "ruben/30min", or null.
-export function bookingUrl(site, answers = {}) {
-  const link = site.booking?.calLink;
-  if (!link) return null;
-  const url = new URL(`${String(site.booking.origin || 'https://cal.com').replace(/\/$/, '')}/${link}`);
-  for (const [k, v] of Object.entries(answers)) if (v) url.searchParams.set(k, v);
-  return url.href;
-}
+export { bookingUrl };
 
 export function renderRegions(site) {
-  const P = site.page || {};
-  const email = site.person?.email;
-  const bookLink = (cls = '') => `<a class="pg-book-link${cls}" href="#book">${esc(P.bookLink)} <span aria-hidden="true">↓</span></a>`;
-  const section = (id, head, body, { headTag = 'h2', link = true } = {}) => [
-    `<section class="pg-section is-${id}" id="${id}" aria-labelledby="${id}-h">`,
-    `  <${headTag} class="pg-head" id="${id}-h"${id === 'book' ? ' tabindex="-1"' : ''}>${esc(head)}</${headTag}>`,
-    ...body.filter(Boolean).map((l) => `  ${l}`),
-    link ? `  ${bookLink()}` : '',
-    '</section>',
-  ].filter(Boolean);
+  const errors = validatePage(site);
+  if (errors.length) throw new Error(`content/site.json › page is not valid:\n  ${errors.join('\n  ')}`);
+  const C = site.conversation || {};
+  const sections = visibleSections(site);
 
-  // 1 The problem --------------------------------------------------------------
-  const pr = P.problem || {};
-  let accented = false;
-  const lines = (pr.headline || []).map((line) => {
-    const e = esc(line);
-    const a = pr.accent && esc(pr.accent);
-    if (!accented && a && e.includes(a)) { accented = true; return e.replace(a, `<em class="is-accent">${a}</em>`); }
-    return e;
-  });
-  const problem = [
-    '<section class="pg-section is-problem" id="problem" aria-labelledby="problem-h">',
-    '  <div class="copy" data-copy>',
-    `    <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>${esc(pr.eyebrow)}</p>`,
-    '    <h1 class="display" id="problem-h">',
-    ...lines.map((l) => `      <span class="display-line">${l}</span>`),
-    '    </h1>',
+  // The ask bar: only useful with JavaScript, so it starts hidden.
+  const ask = C.ask ? [
+    '<form class="pg-ask" data-ask hidden>',
+    `  <label class="pg-label" for="ask">${esc(C.ask.label)}</label>`,
+    C.ask.example && `  <p class="pg-example" id="ask-ex">${esc(C.ask.example)}</p>`,
+    '  <div class="pg-ask-row">',
+    `    <input class="pg-input" id="ask" name="q" type="text" autocomplete="off"${C.ask.example ? ' aria-describedby="ask-ex"' : ''} />`,
+    `    <button class="btn btn-ghost" type="submit">${esc(C.ask.submit)}</button>`,
     '  </div>',
-    pr.cue && `  <p class="pg-cue">${esc(pr.cue)}</p>`,
-    `  ${bookLink(' is-first')}`,
-    '</section>',
-  ].filter(Boolean);
-
-  // 2 Where the time goes ------------------------------------------------------
-  const C = P.cases || {};
-  const lab = C.labels || {};
-  const cases = section('cases', C.head, [
-    C.intro && `<p class="pg-intro">${esc(C.intro)}</p>`,
-    '<div class="pg-cases">',
-    ...(C.items || []).flatMap((c) => [
-      '  <article class="pg-case">',
-      `    <p class="pg-case-tag">${esc(c.tag)}</p>`,
-      `    <h3 class="pg-case-title">${esc(c.title)}</h3>`,
-      '    <dl class="pg-case-body">',
-      `      <div><dt>${esc(lab.before)}</dt><dd>${esc(c.before)}</dd></div>`,
-      `      <div><dt>${esc(lab.build)}</dt><dd>${esc(c.build)}</dd></div>`,
-      `      <div class="is-result"><dt>${esc(lab.result)}</dt><dd>${esc(c.result)}</dd></div>`,
-      '    </dl>',
-      '  </article>',
-    ]),
-    '</div>',
-    C.more && `<h3 class="pg-sub">${esc(C.more.head)}</h3>`,
-    C.more && '<ul class="pg-more" role="list">',
-    ...(C.more?.items || []).map((m) => `  <li><b>${esc(m.title)}</b> ${esc(m.text)}</li>`),
-    C.more && '</ul>',
-  ]);
-
-  // 3 How we would start -------------------------------------------------------
-  const S = P.start || {};
-  const startFacts = (S.facts || []).map((f) => {
-    const label = f.key ? site.facts?.[f.key]?.label : f.label;
-    const value = f.key ? factText(site, f.key) : f.value;
-    return label && value ? `  <li><b>${esc(label)}:</b> ${esc(stop(value))}</li>` : null;
-  }).filter(Boolean);
-  const start = section('start', S.head, [
-    '<ol class="pg-steps" role="list">',
-    ...(S.items || []).map((it, i) => `  <li><span class="pg-step-n" aria-hidden="true">${i + 1}</span><h3 class="pg-step-title">${esc(it.title)}</h3> <p class="pg-step-detail">${esc(it.detail)}</p></li>`),
-    '</ol>',
-    S.note && `<p class="pg-note">${esc(S.note)}</p>`,
-    startFacts.length && '<ul class="pg-facts" role="list">',
-    ...startFacts,
-    startFacts.length && '</ul>',
-  ]);
-
-  // 4 Who you would talk to ----------------------------------------------------
-  const W = P.who || {};
-  const who = section('who', W.head, (W.lines || []).map((l, i) => `<p class="pg-who${i === 0 ? ' is-lead' : ''}">${esc(l)}</p>`));
-
-  // 5 Intake --------------------------------------------------------------------
-  // A plain GET form whose action is the Cal.com booking page: without
-  // JavaScript the fields prefill it there. With JavaScript, src/book.js opens
-  // the embed in #book instead. No booking link yet: no form, nothing to send.
-  const I = P.intake || {};
-  const action = bookingUrl(site);
-  const field = (f) => {
-    const id = `f-${f.name}`;
-    const control = f.long
-      ? `<textarea class="pg-input" id="${id}" name="${esc(f.name)}" rows="4" aria-describedby="${id}-ex"></textarea>`
-      : `<input class="pg-input" id="${id}" name="${esc(f.name)}" type="text" autocomplete="off" aria-describedby="${id}-ex" />`;
-    return [
-      '  <div class="pg-field">',
-      `    <label class="pg-label" for="${id}">${esc(f.label)}</label>`,
-      `    <p class="pg-example" id="${id}-ex">${esc(f.example)}</p>`,
-      `    ${control}`,
-      '  </div>',
-    ];
-  };
-  const intake = !action ? [] : section('intake', I.head, [
-    I.intro && `<p class="pg-intro">${esc(I.intro)}</p>`,
-    `<form class="pg-intake" method="get" action="${esc(action)}" data-intake>`,
-    ...(I.fields || []).flatMap(field),
-    `  <button class="btn btn-ghost pg-intake-go" type="submit">${esc(I.submit)}</button>`,
-    `  <p class="pg-small">${esc(I.note)}</p>`,
+    C.all && `  <button class="pg-all" type="button" data-show-all>${esc(C.all)}</button>`,
     '</form>',
-  ], { link: false });
+  ].filter(Boolean) : [];
 
-  // 6 Book -----------------------------------------------------------------------
-  const B = P.book || {};
-  const bookUrl = bookingUrl(site);
-  const book = section('book', B.head, bookUrl ? [
-    `<p class="pg-intro">${esc(B.line)}</p>`,
-    '<div class="pg-booking" data-booking>',
-    `  <a class="btn btn-primary pg-show" href="${esc(bookUrl)}" data-book-show>${esc(B.show)} <span aria-hidden="true">→</span></a>`,
-    `  <p class="pg-status" data-book-status role="status" hidden>${esc(B.loading)}</p>`,
-    '  <div class="pg-embed" id="cal-embed" data-book-embed hidden></div>',
-    `  <p class="pg-fail" data-book-fail hidden>${esc(B.failed)} <a href="${esc(bookUrl)}" data-book-open>${esc(B.open)}</a></p>`,
-    '</div>',
-    `<p class="pg-email">${esc(fill(B.email, { email: '\u0000' })).replace('\u0000', `<a href="mailto:${esc(email)}">${esc(email)}</a>`)}</p>`,
-  ] : [
-    `<p class="pg-intro">${esc(fill(B.unset, { email: '\u0000' })).replace('\u0000', `<a href="mailto:${esc(email)}">${esc(email)}</a>`)}</p>`,
-  ], { link: false });
-
-  const page = [...problem, ...cases, ...start, ...who, ...intake, ...book];
+  const page = [...renderPage(site), ...ask];
 
   const meta = [
     `<title>${esc(site.meta?.title || site.brand)}</title>`,
@@ -165,9 +47,35 @@ export function renderRegions(site) {
     embedScript: site.booking?.embedScript || 'https://app.cal.com/embed/embed.js',
     timeoutSeconds: site.booking?.timeoutSeconds ?? 10,
     fields: site.booking?.fields || [],
-  }).replace(/</g, '\\u003c')}</script>`];
+  }).replace(/</g, '\\u003c')}</script>`,
+  // What the conversation needs: which section each reply and typed word leads to.
+  `<script type="application/json" id="talk-config">${JSON.stringify(talkConfig(site, sections)).replace(/</g, '\\u003c')}</script>`];
 
   return { meta, reading, page, booking };
+}
+
+// The conversation's settings for src/talk.js. Fact answers are resolved
+// here, so the browser never needs site.json.
+export function talkConfig(site, sections = visibleSections(site)) {
+  const C = site.conversation || {};
+  const fact = (key) => {
+    const f = site.facts?.[key];
+    const v = f?.value ?? f?.missing;
+    return v ? (f.value ? `${f.label}: ${/[.!?]$/.test(v) ? v : `${v}.`}` : v) : null;
+  };
+  return {
+    start: C.start || sections[0]?.id,
+    book: bookSection(sections)?.id,
+    intake: sections.find((s) => s.parts.some((p) => p.type === 'intake'))?.id || null,
+    you: C.you || 'You',
+    bookLink: site.page.bookLink,
+    fallback: C.fallback,
+    describe: C.describe,
+    describeUnset: C.describeUnset,
+    disclosure: C.disclosure || null,
+    answers: (C.answers || []).map((a) => ({ keywords: a.keywords, text: a.fact ? fact(a.fact) : a.text })).filter((a) => a.text),
+    sections: sections.map((s) => ({ id: s.id, reply: s.reply || null, intents: s.intents || [], replies: (s.replies || []).filter((r) => sections.some((x) => x.id === r)) })),
+  };
 }
 
 // Replace each <!-- sync:NAME --> … <!-- /sync:NAME --> region, keeping indentation.

@@ -2,7 +2,8 @@
 
 > **Phase 3, built** on branch `ccr-97d11a0a-6l0u48` (2026-10-15). This file
 > describes the funnel in `_model/target/funnel.md` (signed off 2026-10-13).
-> It is not live until phase 4 (UAT) is signed off. The live site is described
+> Since 2026-10-15 the funnel is delivered as a conversation
+> (`funnel.md › Changed`, draft). It is not live until phase 4 (UAT) is signed off. The live site is described
 > by this file at `057d4d7` (`git show 057d4d7:DESIGN.md`).
 
 ## Idea
@@ -166,9 +167,19 @@ and the tests, never by the site. It covers the blocks the page does not use,
 so the site never shows invented facts to cover a component. Fixtures follow
 the same writing rules.
 
-Decided in the build: **the page uses no blocks.** It is rendered from
-`site.json › page` by `src/static.js`, in its own markup (`styles/page.css`).
+Decided in the build: **the page is made of parts, not blocks.** Its
+sections are `site.json › page.sections`, each a list of parts from
+`src/parts.js` (headline, text, cases, list, steps, facts, intake, booking),
+rendered as plain HTML by `src/static.js` (`styles/page.css`). Each part type
+has documented, validated props and an editable example on `/components/`.
 The block system stays as the library's catalogue, shown with the fixtures.
+
+**The conversation** (`src/talk.js`, `src/route.js`): each section is a turn.
+Replies at the end of a turn are links to sections, in the visitor's voice;
+the visitor's choice or typed words are said back, right-aligned in the
+voice face after a small "You". Only the latest turn offers replies. The ask
+bar sits under the latest turn, never fixed over content. No delays: the site
+does not pretend to think. "Show the whole page" restores the reading order.
 Retired with the conversation: the `brief` and `compose` blocks, and the
 library's chips, entry rows, ask bar and live-state pieces.
 

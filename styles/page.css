@@ -1,5 +1,7 @@
 /* ==========================================================================
-   The page: one funnel, top to bottom (DESIGN.md › The page).
+   The page: a conversation that ends at a booked call (DESIGN.md › The page).
+   Without JavaScript, every section in order; with it (.pg.is-talk), only
+   the turns the visitor has opened.
    Black and white; Supreme for claims, Sentient for the voice, Azeret Mono
    for system text. Sits on tokens.css and the shared parts of main.css
    (bar, settings, buttons, eyebrow, display, word masks).
@@ -16,12 +18,13 @@
   border-top: 1px solid var(--line);
   scroll-margin-top: var(--bar-h);
 }
-.pg-section.is-problem {
+.pg-section.is-hero {
   min-height: calc(100svh - var(--bar-h));
   align-content: end;
   padding-bottom: var(--space-8);
   border-top: 0;
 }
+.pg-head, .pg-h1 { outline: none; }
 .pg-head {
   font-size: 0.75rem;
   font-weight: 600;
@@ -29,7 +32,7 @@
   text-transform: uppercase;
   color: var(--fg);
 }
-.pg-section.is-book .pg-head {
+.pg-section.is-booking .pg-head {
   font-family: var(--font-display);
   font-weight: var(--weight-display);
   font-size: var(--step-4);
@@ -40,14 +43,26 @@
 }
 .pg-sub { margin-top: var(--space-6); font-size: 0.75rem; font-weight: 600; letter-spacing: var(--tracking-micro); text-transform: uppercase; color: var(--fg-2); }
 .pg-intro { max-width: 40rem; font-size: var(--step-2); line-height: 1.4; color: var(--fg-2); text-wrap: pretty; }
-.pg-intro a, .pg-email a { color: var(--fg); border-bottom: 1px solid var(--fg); }
-.pg-note { max-width: 40rem; font-family: var(--font-voice); font-style: italic; font-weight: 300; font-size: var(--step-2); line-height: 1.3; }
+.pg-intro a, .pg-small a { color: var(--fg); border-bottom: 1px solid var(--fg); }
+.pg-voice { max-width: 40rem; font-family: var(--font-voice); font-style: italic; font-weight: 300; font-size: var(--step-2); line-height: 1.3; }
 .pg-cue { max-width: 40rem; margin-top: var(--space-6); color: var(--fg-2); }
 
-/* The quiet link to booking, under every section. */
+/* Replies: what the visitor can say next. The booking one is the quiet
+   "Book the free call", the same in every turn. */
+.pg-replies { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); margin-top: var(--space-3); }
+.pg-replies[hidden], .pg-replies > li[hidden] { display: none; }
+.pg-reply {
+  display: inline-block;
+  padding-bottom: 4px;
+  font-size: var(--step-1);
+  color: var(--fg-2);
+  border-bottom: 1px solid var(--line-2);
+  transition: color 400ms var(--ease-runway), border-color 400ms var(--ease-runway);
+}
+.pg-reply:hover, .pg-reply:focus-visible { color: var(--fg); border-color: var(--fg); }
 .pg-book-link {
+  display: inline-block;
   justify-self: start;
-  margin-top: var(--space-3);
   padding-bottom: 4px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -85,9 +100,9 @@
 .pg-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3) var(--space-7); max-width: 52rem; padding-top: var(--space-5); border-top: 1px solid var(--line-2); }
 .pg-facts b { font-weight: 700; }
 
-/* 4 Who */
-.pg-who { max-width: 40rem; font-size: var(--step-1); line-height: 1.6; }
-.pg-who.is-lead { font-family: var(--font-voice); font-style: italic; font-weight: 300; font-size: var(--step-3); line-height: 1.2; }
+/* Text styles */
+.pg-body { max-width: 40rem; font-size: var(--step-1); line-height: 1.6; }
+.pg-lead { font-family: var(--font-voice); font-style: italic; font-weight: 300; font-size: var(--step-3); line-height: 1.2; }
 
 /* 5 Intake */
 .pg-intake { display: grid; gap: var(--space-5); max-width: 40rem; }
@@ -117,7 +132,41 @@ textarea.pg-input { resize: vertical; min-height: 7.5rem; }
 .pg-embed { width: 100%; min-height: 0; }
 /* The calendar's space is kept while it loads, so nothing below it jumps. */
 .pg-embed.is-loading { min-height: 640px; border: 1px solid var(--line-2); }
-.pg-email { color: var(--fg-2); }
+
+/* The conversation ------------------------------------------------------- */
+.pg.is-talk > .pg-section:not(.is-open) { display: none; }
+.pg-you, .pg-turn, .pg-ask { max-width: 78rem; margin: 0 auto; padding: 0 var(--gutter); }
+.pg-you {
+  padding-top: var(--space-8);
+  font-family: var(--font-voice);
+  font-style: italic;
+  font-weight: 300;
+  font-size: var(--step-2);
+  line-height: 1.3;
+  text-align: right;
+}
+.pg-you-k {
+  margin-right: var(--space-3);
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: var(--step--1);
+  letter-spacing: var(--tracking-micro);
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+.pg.is-talk > .pg-you + .pg-section { border-top: 0; padding-top: var(--space-6); }
+.pg-turn { display: grid; gap: var(--space-5); padding-bottom: var(--space-8); }
+.pg-turn > .pg-you { padding-inline: 0; }
+.pg-answer { max-width: 40rem; font-size: var(--step-2); line-height: 1.4; outline: none; }
+.pg-ask { display: grid; gap: var(--space-2); padding-block: var(--space-8) var(--space-9); border-top: 1px solid var(--line); }
+.pg-ask[hidden] { display: none; }
+.pg-ask-row { display: flex; gap: var(--space-3); max-width: 52rem; margin-top: var(--space-2); }
+.pg-ask-row .pg-input { flex: 1; min-width: 0; }
+.pg-all { justify-self: start; margin-top: var(--space-4); padding: 0 0 2px; border: 0; border-bottom: 1px solid var(--line-2); background: none; color: var(--fg-2); font: inherit; font-size: var(--step--1); cursor: pointer; }
+.pg-all:hover, .pg-all:focus-visible { color: var(--fg); border-color: var(--fg); }
+
+/* A new turn rises in (Full and Calm; Off: no movement). */
+html:not([data-motion='off']) .pg.is-talk .is-entering { animation: rise 700ms var(--ease-runway) both; }
 
 /* Headline: each word rises straight up out of its mask (full motion only). */
 html[data-motion='full'].js .pg .display.is-split .sw-in {
@@ -132,7 +181,7 @@ html[data-motion='full'].js .pg .display.is-split .sw-in {
    only when the visitor scrolls. No backwards fill: before a section enters,
    it keeps its normal, visible style. */
 @supports (animation-timeline: view()) {
-  html[data-motion='full'] .pg-section:not(.is-problem) > * {
+  html[data-motion='full'] .pg:not(.is-talk) > .pg-section:not(.is-hero) > * {
     animation: rise linear forwards;
     animation-timeline: view();
     animation-range: entry 10% entry 70%;
@@ -145,10 +194,11 @@ html[data-motion='full'].js .pg .display.is-split .sw-in {
 }
 @media (max-width: 720px) {
   .pg-section { padding: var(--space-8) var(--gutter); gap: var(--space-4); }
-  .pg-section.is-problem { min-height: calc(88svh - var(--bar-h)); }
+  .pg-section.is-hero { min-height: calc(88svh - var(--bar-h)); }
 }
 @media print {
-  .pg-book-link, .pg-booking, .pg-intake-go, .bar, .settings { display: none !important; }
+  .pg-replies, .pg-booking, .pg-intake-go, .pg-ask, .pg-you, .pg-turn, .bar, .settings { display: none !important; }
+  .pg.is-talk > .pg-section { display: grid !important; }
   .pg-section { padding: var(--space-6) 0; min-height: 0 !important; break-inside: avoid; }
 }
 .pg-small { font-size: var(--step--1); color: var(--fg-2); }

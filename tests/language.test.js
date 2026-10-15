@@ -12,11 +12,11 @@ const json = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url),
 const site = json('content/site.json');
 
 // Every string in site.json › page. Longer text is prose; headings and labels are labels.
-const PROSE = /intro|note|line|before|build|result|detail|text|example|loading|failed|email|unset|lines|cue/;
+const PROSE = /intro|note|line|before|build|result|detail|text|example|loading|failed|email|unset|lines|cue|fallback|describe/;
 function pageStrings(v, where = 'page', key = '') {
   if (typeof v === 'string') return [{ kind: PROSE.test(key) ? 'prose' : 'label', text: v.replace(/\{email\}/g, site.person.email), where }];
   if (Array.isArray(v)) return v.flatMap((x, i) => pageStrings(x, `${where}[${i}]`, key));
-  if (v && typeof v === 'object') return Object.entries(v).filter(([k]) => !k.startsWith('$') && !['name', 'key', 'long'].includes(k)).flatMap(([k, x]) => pageStrings(x, `${where}.${k}`, k));
+  if (v && typeof v === 'object') return Object.entries(v).filter(([k]) => !k.startsWith('$') && !['name', 'key', 'long', 'type', 'style', 'variant', 'when', 'id', 'intents', 'replies', 'keywords', 'fact', 'disclosure', 'start'].includes(k)).flatMap(([k, x]) => pageStrings(x, `${where}.${k}`, k));
   return [];
 }
 
@@ -25,6 +25,7 @@ const report = (issues) => issues.map((i) => `  [${i.scope}] ${i.where}: ${i.msg
 test('the page passes the plain-language rules', () => {
   const strings = [
     ...pageStrings(site.page),
+    ...pageStrings(site.conversation, 'conversation'),
     { kind: 'prose', text: site.meta.description, where: 'meta.description' },
     { kind: 'label', text: site.meta.title, where: 'meta.title' },
     ...Object.entries(site.facts).flatMap(([k, f]) => [
@@ -39,7 +40,8 @@ test('the page passes the plain-language rules', () => {
 });
 
 test('the page names facts that exist', () => {
-  for (const f of site.page.start.facts) if (f.key) assert.ok(site.facts[f.key], f.key);
+  for (const p of site.page.sections.flatMap((s) => s.parts)) if (p.type === 'facts') for (const f of p.items) if (f.key) assert.ok(site.facts[f.key], f.key);
+  for (const a of site.conversation.answers) if (a.fact) assert.ok(site.facts[a.fact], a.fact);
 });
 
 test('facts still to fill in (reported, not a failure)', (t) => {

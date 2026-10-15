@@ -4,13 +4,15 @@
 
 import { test, expect } from '@playwright/test';
 import { blocks, primitives } from '../../src/catalog.js';
+import { partTypes } from '../../src/parts.js';
 
 const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 const parts = [
   'colour', 'type', 'space', 'motion',
   ...primitives.map((p) => `prim-${slug(p.name)}`),
   ...Object.keys(blocks).map((t) => `block-${t}`),
-  'layout-page',
+  ...partTypes.map((t) => `part-${t}`),
+  'layout-page', 'layout-talk',
 ];
 
 test.beforeEach(async ({ page }) => {

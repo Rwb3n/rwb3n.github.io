@@ -18,10 +18,11 @@ flowchart TD
 | `site.json › $comment` | - | 46 |
 | `site.json › booking` | Booking | 4 |
 | `site.json › brand` | Platform | 1 |
+| `site.json › conversation` | Story | 244 |
 | `site.json › facts` | Offer | 84 |
 | `site.json › language` | Rules | 125 |
 | `site.json › meta` | Platform | 30 |
-| `site.json › page` | Story | 692 |
+| `site.json › page` | Story | 779 |
 | `site.json › person` | Offer | 3 |
 | `site.json › reading` | Platform | 2 |
 | `site.json › timeZone` | Platform | 1 |

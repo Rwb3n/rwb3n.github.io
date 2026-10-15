@@ -6,8 +6,10 @@ import { loadContent, loadSiteConfig } from './content.js';
 import { initPrefs, setPref, motion } from './prefs.js';
 import { renderBlock } from './blocks.js';
 import { h, reducedMotion } from './dom.js';
-import { blocks, categories, primitives, validateBlocks, usage, typeLabel } from './catalog.js';
-import { renderRegions } from './static.js';
+import { blocks, categories, primitives, validateBlocks, usage, typeLabel, checkProps } from './catalog.js';
+import { renderRegions, talkConfig } from './static.js';
+import { parts, partTypes, renderPart, bookingUrl } from './parts.js';
+import { createTalk } from './talk.js';
 import { splitWords } from './type.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -298,6 +300,18 @@ function variantStage(type, v) {
     st);
 }
 
+function propsTable(type, props, selects) {
+  return h('table', { class: 'b-table lib-props' },
+    h('thead', null, h('tr', null, h('th', { scope: 'col' }, 'Prop'), h('th', { scope: 'col' }, 'Type'), h('th', { scope: 'col' }, 'What it does'))),
+    h('tbody', null,
+      h('tr', null, h('td', null, h('code', null, 'type'), h('b', { class: 'lib-req', title: 'required' }, '*')), h('td', null, `"${type}"`), h('td', null, selects)),
+      props.map(([k, p]) => h('tr', null,
+        h('td', null, h('code', null, k), p.required && h('b', { class: 'lib-req', title: 'required' }, '*')),
+        h('td', null, typeLabel(p)),
+        h('td', null, md(p.doc), p.type === 'list' && p.of.type === 'object' && h('span', { class: 'lib-sub' }, Object.entries(p.of.props).map(([sk, sp]) => `${sk}${sp.required ? '*' : ''}`).join(' · ')))))),
+  );
+}
+
 function blockCard(type, spec) {
   const stage = h('div', { class: 'lib-stage' });
   const errors = h('ul', { class: 'lib-errors', hidden: true, role: 'status' });
@@ -328,15 +342,7 @@ function blockCard(type, spec) {
     h('div', { class: 'lib-split' },
       h('div', null,
         h('h4', { class: 'micro' }, 'Props'),
-        h('table', { class: 'b-table lib-props' },
-          h('thead', null, h('tr', null, h('th', { scope: 'col' }, 'Prop'), h('th', { scope: 'col' }, 'Type'), h('th', { scope: 'col' }, 'What it does'))),
-          h('tbody', null,
-            h('tr', null, h('td', null, h('code', null, 'type'), h('b', { class: 'lib-req', title: 'required' }, '*')), h('td', null, `"${type}"`), h('td', null, 'Selects this block.')),
-            props.map(([k, p]) => h('tr', null,
-              h('td', null, h('code', null, k), p.required && h('b', { class: 'lib-req', title: 'required' }, '*')),
-              h('td', null, typeLabel(p)),
-              h('td', null, md(p.doc), p.type === 'list' && p.of.type === 'object' && h('span', { class: 'lib-sub' }, Object.entries(p.of.props).map(([sk, sp]) => `${sk}${sp.required ? '*' : ''}`).join(' · ')))))),
-        ),
+        propsTable(type, props, 'Selects this block.'),
         h('h4', { class: 'micro lib-used-h' }, 'Used in'),
         where.length ? h('ul', { class: 'lib-used' }, where.map((id) => h('li', null, fixtureIds.has(id)
             ? h('span', { class: 'lib-fixture', title: 'Test content, not on the site' }, content.nodes[id]?.label || id)
@@ -359,40 +365,126 @@ function blocksSections() {
   });
 }
 
+// Page markup in the library: ids get a prefix, so they do not clash with the
+// library's own or each other's, and the h1 becomes a heading role (one h1 per
+// page: the library's title).
+function demoMarkup(stage, html, prefix) {
+  stage.innerHTML = html;
+  const h1 = stage.querySelector('h1');
+  if (h1) h1.outerHTML = h1.outerHTML.replace(/^<h1/, '<p role="heading" aria-level="2"').replace(/h1>$/, 'p>');
+  for (const el of stage.querySelectorAll('[id]')) el.id = `${prefix}-${el.id}`;
+  for (const el of stage.querySelectorAll('[for]')) el.htmlFor = `${prefix}-${el.htmlFor}`;
+  for (const el of stage.querySelectorAll('[aria-labelledby], [aria-describedby]')) {
+    for (const k of ['aria-labelledby', 'aria-describedby']) if (el.hasAttribute(k)) el.setAttribute(k, `${prefix}-${el.getAttribute(k)}`);
+  }
+  for (const a of stage.querySelectorAll('a[href^="#"]')) a.setAttribute('href', `#${prefix}-${a.getAttribute('href').slice(1)}`);
+  for (const a of stage.querySelectorAll('[data-to]')) a.dataset.to = `${prefix}-${a.dataset.to}`;
+}
+const sampleSite = () => ({ ...config, booking: { ...(config.booking || {}), calLink: config.booking?.calLink || 'example/30min' } });
+// Links and buttons in a demo do not navigate or load anything.
+function quietDemo(stage, { replies = false } = {}) {
+  stage.addEventListener('click', (e) => {
+    const a = e.target.closest('a, button');
+    if (!a || (replies && a.matches('[data-to], [data-show-all]'))) return;
+    e.preventDefault();
+    toast(`On the site: “${a.textContent.replace(/[→↓]/g, '').trim()}”.`);
+  });
+  stage.addEventListener('submit', (e) => {
+    if (replies && e.target.matches('[data-ask]')) return;
+    e.preventDefault();
+    toast('On the site this opens the Cal.com booking with the answers.');
+  });
+}
+
+// Page parts (src/parts.js): what the sections in site.json are made of.
+function partCard(type, spec) {
+  const stage = h('div', { class: 'lib-stage is-part' });
+  const errors = h('ul', { class: 'lib-errors', hidden: true, role: 'status' });
+  const area = h('textarea', { class: 'lib-json', spellcheck: 'false', autocapitalize: 'off', id: `json-part-${type}` });
+  const set = (v) => { area.value = v; area.rows = Math.min(24, v.split('\n').length + 1); run(); };
+  const run = () => {
+    let p;
+    try { p = JSON.parse(area.value); } catch (err) { return show([`JSON: ${err.message}`]); }
+    const problems = p?.type !== type ? [`part.type: must be "${type}" here`] : checkProps(p, { type: { type: 'string' }, when: { type: 'string' }, ...spec.props }, 'part');
+    if (!problems.length && spec.check) problems.push(...spec.check(p, 'part', config));
+    show(problems);
+    if (problems.length) return;
+    const site = sampleSite();
+    const lines = renderPart(p, { site, id: `part-${type}`, email: site.person?.email, bookUrl: bookingUrl(site) });
+    demoMarkup(stage, `<div class="pg"><div class="pg-section is-${type === 'headline' ? 'hero' : type === 'booking' ? 'booking' : 'plain'}">${lines.join('\n')}</div></div>`, `part-${type}`);
+    if (type === 'booking') {
+      stage.querySelector('[data-book-status]')?.removeAttribute('hidden');
+      stage.querySelector('[data-book-fail]')?.removeAttribute('hidden');
+    }
+  };
+  const show = (problems) => {
+    errors.replaceChildren(...problems.map((x) => h('li', null, x)));
+    errors.hidden = !problems.length;
+    area.setAttribute('aria-invalid', String(!!problems.length));
+  };
+  let timer = 0;
+  area.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(run, 250); });
+  quietDemo(stage);
+  replays.push(() => set(pretty(spec.example)));
+  const where = (config.page?.sections || []).filter((sec) => sec.parts.some((x) => x.type === type)).map((sec) => sec.id);
+  return h('article', { class: 'lib-card', id: `part-${type}` },
+    h('header', { class: 'lib-card-head' }, h('h3', { class: 'lib-h3' }, h('code', null, type))),
+    h('p', { class: 'lib-doc' }, md(spec.doc)),
+    h('div', { class: 'lib-tools' }, h('button', { class: 'lib-mini', type: 'button', onclick: () => set(pretty(spec.example)) }, 'Reset example')),
+    stage,
+    h('div', { class: 'lib-split' },
+      h('div', null,
+        h('h4', { class: 'micro' }, 'Props'),
+        propsTable(type, [...Object.entries(spec.props), ['when', { type: 'enum', values: ['booking', 'unset'], doc: '`booking`: only when a Cal.com link is set. `unset`: only while it is not.' }]], 'Selects this part.'),
+        h('h4', { class: 'micro lib-used-h' }, 'Used in'),
+        where.length ? h('ul', { class: 'lib-used' }, where.map((id) => h('li', null, h('a', { href: `/#${id}` }, `#${id}`)))) : h('p', { class: 'lib-doc' }, 'Not used on the page yet.'),
+      ),
+      h('div', null, h('label', { class: 'micro', for: `json-part-${type}` }, 'Edit the example'), area, errors),
+    ),
+  );
+}
+
+function partsSection() {
+  return section('parts', 'Page parts', 'The page',
+    h('p', { class: 'lib-p' }, md('The page is a list of sections in `site.json › page.sections`; each section is a list of these parts. Reorder, remove, add or repeat them there; `npm run sync` refuses a page that does not validate. Sections: `id`, `variant` (`hero`, `plain` or `booking`), `head`, `reply` (what the visitor says to open it), `intents` (typed words that open it), `replies` (section ids offered at its end) and `parts`.')),
+    partTypes.map((t) => partCard(t, parts[t])),
+  );
+}
+
 // The page: the same generator as index.html (src/static.js), with a sample
-// booking link so the intake form and the booking step are shown. Links and
-// buttons here do not navigate or load anything.
+// booking link so the intake form and the booking step are shown. Then the
+// same page as a conversation (src/talk.js), a few turns in.
 function layoutsSection() {
   const stage = h('div', { class: 'lib-stage is-layout is-page-demo' });
+  const talk = h('div', { class: 'lib-stage is-layout is-talk-demo' });
   const render = () => {
-    const sample = { ...config, booking: { ...(config.booking || {}), calLink: config.booking?.calLink || 'example/30min' } };
-    const r = renderRegions(sample);
-    stage.innerHTML = `<div class="pg" aria-label="Example of the page">${r.page.join('\n')}</div>`;
-    // One h1 per page: the library's own title.
-    const h1 = stage.querySelector('h1');
-    if (h1) h1.outerHTML = h1.outerHTML.replace(/^<h1/, '<p role="heading" aria-level="2"').replace(/h1>$/, 'p>');
-    for (const el of stage.querySelectorAll('[id]')) el.id = `demo-${el.id}`;
-    for (const el of stage.querySelectorAll('[for]')) el.htmlFor = `demo-${el.htmlFor}`;
-    for (const el of stage.querySelectorAll('[aria-labelledby], [aria-describedby]')) {
-      for (const k of ['aria-labelledby', 'aria-describedby']) if (el.hasAttribute(k)) el.setAttribute(k, `demo-${el.getAttribute(k)}`);
-    }
+    const site = sampleSite();
+    const r = renderRegions(site);
+    demoMarkup(stage, `<div class="pg" aria-label="Example of the page">${r.page.join('\n')}</div>`, 'demo');
     const display = stage.querySelector('.display');
     if (display && !reducedMotion()) splitWords(display);
     // The states the booking step can be in, shown at once.
     stage.querySelector('[data-book-status]')?.removeAttribute('hidden');
     stage.querySelector('[data-book-fail]')?.removeAttribute('hidden');
+
+    // The conversation, on the same markup with its ids prefixed.
+    demoMarkup(talk, `<div class="pg" aria-label="Example of the conversation">${r.page.join('\n')}</div>`, 'talk');
+    const cfg = talkConfig(site);
+    const id = (x) => x && `talk-${x}`;
+    const demoCfg = { ...cfg, start: id(cfg.start), book: id(cfg.book), intake: id(cfg.intake), sections: cfg.sections.map((x) => ({ ...x, id: id(x.id), replies: x.replies.map(id) })) };
+    const t = createTalk(document, { cfg: demoCfg, pg: talk.querySelector('.pg'), urls: false });
+    t.openSection(id('cases'), { said: cfg.sections.find((x) => x.id === 'cases')?.reply, focus: false });
+    t.answer('How much does it cost?', cfg.answers[0]?.text || cfg.fallback, { focus: false });
+    t.describe('Two of us rebuild a report every Monday by hand.', { focus: false });
   };
-  stage.addEventListener('click', (e) => {
-    const a = e.target.closest('a, button');
-    if (!a) return;
-    e.preventDefault();
-    toast(`On the site: “${a.textContent.replace(/[→↓]/g, '').trim()}”.`);
-  });
-  stage.addEventListener('submit', (e) => { e.preventDefault(); toast('On the site this opens the Cal.com booking with the answers.'); });
+  quietDemo(stage);
+  quietDemo(talk, { replies: true });
   replays.push(render);
   return section('layouts', 'The page', 'Layouts',
-    h('p', { class: 'lib-p' }, md('The whole site: one page, read top to bottom, ending at a booked call. Markup from `src/static.js` (the same text as `index.html`), booking from `src/book.js`. Here it uses a sample booking link, and the loading line and the fallback are shown together.')),
+    h('p', { class: 'lib-p' }, md('The whole site. Markup from `src/static.js` (the same text as `index.html`), booking from `src/book.js`, with a sample booking link. Without JavaScript, and after "Show the whole page", it reads top to bottom; the loading line and the fallback are shown together here.')),
     h('article', { class: 'lib-card', id: 'layout-page' }, h('h3', { class: 'lib-h3' }, 'One page'), stage),
+    h('p', { class: 'lib-p' }, md('With JavaScript it is a conversation (`src/talk.js`, `src/route.js`): the page opens on the first section, each reply opens the next one, and the ask bar takes typed text. Here, three turns in: a reply, a question a fact answers, and a description of the visitor\'s work, which opens the intake with their words in it. The replies work.')),
+    h('article', { class: 'lib-card', id: 'layout-talk' }, h('h3', { class: 'lib-h3' }, 'Conversation'), talk),
   );
 }
 
@@ -404,6 +496,7 @@ const all = [
   colourSection(), typeSection(), spaceSection(), motionSection(),
   primitivesSection(),
   ...blocksSections(),
+  partsSection(),
   layoutsSection(),
 ];
 $('[data-sections]').replaceChildren(...all);
@@ -411,6 +504,7 @@ replayAll();
 
 const counts = [
   ['Block types', Object.keys(blocks).length],
+  ['Page parts', partTypes.length],
   ['Interface pieces', primitives.length],
   ['Fixture topics', nodes.length],
 ];
@@ -421,7 +515,8 @@ const navGroups = [
   ['Foundations', [['colour', 'Colour'], ['type', 'Type'], ['space', 'Space and shape'], ['motion', 'Motion']]],
   ['Primitives', primitives.map((p) => [`prim-${slug(p.name)}`, p.name])],
   ...categories.map((c) => [c.label, Object.entries(blocks).filter(([, s]) => s.category === c.id).map(([t]) => [`block-${t}`, t, true])]),
-  ['Layouts', [['layout-page', 'The page']]],
+  ['Page parts', partTypes.map((t) => [`part-${t}`, t, true])],
+  ['Layouts', [['layout-page', 'The page'], ['layout-talk', 'Conversation']]],
 ];
 $('[data-nav]').replaceChildren(...navGroups.map(([label, items]) => h('div', { class: 'lib-nav-group' },
   h('p', { class: 'micro' }, label),

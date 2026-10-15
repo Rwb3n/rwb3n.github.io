@@ -8,8 +8,11 @@ styles/           tokens.css (tokens, themes) · main.css (shared parts, blocks)
 components/       /components/: the component library (development tool)
 type/             /type/: type directions that were tried
 src/
+  parts.js        the page's part types and sections: props, examples, validation, HTML
   static.js       renders the page from content/site.json (used by sync, the library and the tests)
-  main.js         the page's script: settings, theme, rising headline, booking
+  main.js         the page's script: settings, theme, rising headline, conversation, booking
+  talk.js         the conversation: replies open sections as turns; the ask bar; whole page
+  route.js        typed text → intake, a fact, a section or the fallback (pure, tested)
   book.js         booking with Cal.com: embed on demand, prefill, loading line, fallback
   prefs.js        reading preferences: motion, text size
   settings.js     the "Settings" panel
@@ -18,7 +21,8 @@ src/
   blocks.js, showpieces.js, flow.js, catalog.js, library.js, copy.js, content.js
                   the block system, now used only by /components/ and its fixtures
 content/
-  site.json             everything a visitor reads: page, facts, booking, writing rules
+  site.json             everything a visitor reads: page sections and parts, conversation,
+                        facts, booking, writing rules
   graphs/fixtures.json  test content for /components/ and tests; not on the site
   nodes/fixtures.json
 scripts/sync.mjs  writes site.json into index.html's sync regions
@@ -29,7 +33,7 @@ tests/            node --test; tests/visual: Playwright (behaviour + screenshots
 
 ## Change what the site says
 
-1. Edit `content/site.json` › `page` (the words), `facts`, or `booking`.
+1. Edit `content/site.json` › `page.sections` (the steps and the parts they are made of; part types are in `src/parts.js` and on `/components/`), `conversation` (replies, ask bar, typed-text answers), `facts`, or `booking`.
    Keys starting with `$` are comments. The signed-off words are in
    `_model/target/copy.md`; `npm test` fails if the page drops one.
 2. `npm run sync` rewrites the `<!-- sync:… -->` regions of index.html.
