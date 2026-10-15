@@ -7,8 +7,8 @@ One page, read top to bottom, ending at a booked call. It opens by asking the vi
 
 ```
   ┌───────────────────────────────────────────┐
-  │ Which job does your team do by hand,      │  1 the job: the visitor puts
-  │ every week?   [ the job ____________ ]    │    in their job and three
+  │ Tell me the job your team does by hand,   │  1 the job: the visitor puts
+  │ every week.   [ the job ____________ ]    │    in their job and three
   │ people [3]  hours each [4]  £/hour [30]   │    numbers; the page answers
   │            [ Show what it costs ]         │    with hours a year, cost a
   │  ↳ You: "the Monday report"               │    year, and the nearest
@@ -71,7 +71,7 @@ They are the first block of step 3, "What I look for", before "How we would star
 ## Who you'd talk to (step 4)
 
 - The day job is said plainly, with what it means for a client: a project becomes his full-time work. No hiding, no apology.
-- His own system (Behold) is one line of proof, about the same problems, not a product: he keeps a record of every decision, and uses it every day. No product pages. Haios stays off the site.
+- His own system (Behold) is one line of proof, about the same problems, not a product: he built it and uses it every day. Nothing more is claimed. No product pages. Haios stays off the site.
 
 ## Keep / cut (from the signed-off version of 2026-10-13)
 

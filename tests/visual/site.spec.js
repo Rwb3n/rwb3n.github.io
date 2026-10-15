@@ -68,11 +68,15 @@ test('step 1 answers the visitor, then opens the calendar with their words and n
   expect(calRequests).toEqual(['https://app.cal.com/embed/embed.js']);
 });
 
-test('no example is named when none is near', async ({ page }) => {
+test('no example is named when none is near, and untouched numbers stay out of the booking', async ({ page }) => {
   await open(page);
   await page.fill('#f-job', 'Booking rooms for the team');
   await page.click('[data-job-show]');
   await expect(page.locator('[data-answer-nearest]')).toBeHidden();
+  // The starting numbers are ours, not the visitor's: only their words go.
+  await page.click('[data-answer-book]');
+  await expect(page.locator('[data-book-status]')).toBeHidden({ timeout: 5000 });
+  expect(await page.evaluate(() => window.__calInline.config)).toEqual({ layout: 'month_view', job: 'Booking rooms for the team' });
 });
 
 test('"Show available times" works without filling in the intake', async ({ page }) => {

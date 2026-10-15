@@ -21,7 +21,7 @@ flowchart TD
 | `site.json › facts` | Offer | 105 |
 | `site.json › language` | Rules | 125 |
 | `site.json › meta` | Platform | 35 |
-| `site.json › page` | Story | 963 |
+| `site.json › page` | Story | 948 |
 | `site.json › person` | Offer | 5 |
 | `site.json › reading` | Platform | 2 |
 | `site.json › timeZone` | Platform | 1 |

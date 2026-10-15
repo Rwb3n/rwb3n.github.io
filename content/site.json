@@ -73,8 +73,8 @@
     "job": {
       "eyebrow": "Business process automation · London",
       "headline": [
-        "Which job does your team do",
-        "by hand, every week?"
+        "Tell me the job your team does",
+        "by hand, every week."
       ],
       "accent": "by hand",
       "lead": "Put it in your own words, with three numbers. You will see what it costs you in a year, and the example below that is nearest to it.",
@@ -280,7 +280,7 @@
       "lines": [
         "I am Ruben. I work alone, in London. I have spent years automating work for other organisations.",
         "Today I run Salesforce at London & Partners, as an employee. Salesforce is software that companies use to track customers. A project with you would be my full-time work.",
-        "I run my own work on a system I built. It keeps a record of every decision, so I do not settle the same question twice. I use it every day.",
+        "I run my own work on a system I built. I use it every day.",
         "When automation fails, the cause is usually how people work together, not the software.",
         "Salesforce certifications: Salesforce Administrator. Salesforce Platform App Builder. Salesforce Agentforce Specialist."
       ]

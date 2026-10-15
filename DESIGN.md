@@ -39,7 +39,8 @@ never required for it.
 
 **Step 1, the job:**
 
-- The headline is the question. Under it, one lead line, then the field
+- The headline asks for the job, as a statement ("Tell me the job…"), not a
+  question. Under it, one lead line, then the field
   *The job your team does by hand* (label above, one example line, no
   placeholder), then three numbers: people doing it, hours each per week,
   cost per hour (− and + buttons, as the estimate). They start at 3, 4 and

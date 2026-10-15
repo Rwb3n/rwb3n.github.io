@@ -12,7 +12,8 @@ const json = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url),
 const site = json('content/site.json');
 
 // Every string in site.json › page. Longer text is prose; headings and labels are labels.
-const PROSE = /^(intro|lead|note|line|lines|before|build|result|detail|text|example|loading|failed|email|unset|cue|items)$/;
+// The headline is held to the prose rules too (statements, not questions).
+const PROSE = /^(headline|intro|lead|note|line|lines|before|build|result|detail|text|example|loading|failed|email|unset|cue|items)$/;
 function pageStrings(v, where = 'page', key = '') {
   if (typeof v === 'string') return [{ kind: PROSE.test(key) ? 'prose' : 'label', text: v.replace(/\{email\}/g, site.person.email), where }];
   if (Array.isArray(v)) return v.flatMap((x, i) => pageStrings(x, `${where}[${i}]`, key));

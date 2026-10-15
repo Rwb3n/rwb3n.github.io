@@ -7,7 +7,7 @@
 
 ```mermaid
 flowchart TD
-  S0["1 job: Which job does your team do by hand , every week?"]
+  S0["1 job: Tell me the job your team does by hand , every week."]
   S1["2 cases: Where the time goes"]
   S2["3 start: What I look for"]
   S3["4 who: Who you would talk to"]
@@ -23,10 +23,10 @@ flowchart TD
 
 | # | Section | Heading | Job | Words | Links to #book | Form |
 |---|---|---|---|---|---|---|
-| 1 | `#job` | Which job does your team do by hand , every week? |  | 165 | no | no |
+| 1 | `#job` | Tell me the job your team does by hand , every week. |  | 166 | no | no |
 | 2 | `#cases` | Where the time goes | Recognition: "that is us" | 316 | yes | no |
 | 3 | `#start` | What I look for | Lower the risk | 236 | yes | no |
-| 4 | `#who` | Who you would talk to | Trust | 108 | no | no |
+| 4 | `#who` | Who you would talk to | Trust | 92 | no | no |
 | 5 | `#book` | Book the free call | Pick a time | 61 | no | no |
 
 ## Without JavaScript

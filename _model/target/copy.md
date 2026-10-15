@@ -17,7 +17,7 @@ step 1 and "Show available times" in step 5.
 
 > Business process automation · London
 >
-> Which job does your team do by hand, every week?
+> Tell me the job your team does by hand, every week.
 >
 > Put it in your own words, with three numbers. You will see what it costs you in a year, and the example below that is nearest to it.
 >
@@ -63,7 +63,9 @@ Without JavaScript, in place of the three numbers:
 >
 > Choose a time for the call
 
-Notes: all new. Headline and lead are new; the eyebrow stays. "You: the
+Notes: all new. Headline and lead are new; the eyebrow stays. The headline
+is a statement, not a question (`DESIGN.md › Writing`: statements, not
+questions). "You: the
 Monday report" and "15" stand for the visitor's own words and numbers.
 The estimate's labels come from the live `estimate` topic, shortened.
 
@@ -160,7 +162,7 @@ the site yet".
 >
 > Today I run Salesforce at London & Partners, as an employee. Salesforce is software that companies use to track customers. A project with you would be my full-time work.
 >
-> I run my own work on a system I built. It keeps a record of every decision, so I do not settle the same question twice. I use it every day.
+> I run my own work on a system I built. I use it every day.
 >
 > When automation fails, the cause is usually how people work together, not the software.
 >
@@ -168,7 +170,8 @@ the site yet".
 
 Notes: line 2 replaces "My main job is running Salesforce at London &
 Partners" and says what the day job means for a client. Line 3 is new: his
-own system (Behold), as proof, not as a product. No quiet link here: step 5
+own system (Behold), as proof, not as a product. It claims only what is
+true today: he built it and uses it daily. No quiet link here: step 5
 follows.
 
 ---

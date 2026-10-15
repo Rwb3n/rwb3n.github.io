@@ -63,14 +63,16 @@ export function createJob(root = document, { book } = {}) {
   form.querySelector('[data-js]').hidden = false;
 
   const values = Object.fromEntries(cfg.numbers.map((n) => [n.key, n.value]));
-  let shown = false, liveTimer = 0;
+  // `touched`: the visitor changed a number. Until then the numbers are ours,
+  // not theirs, so they do not go into the booking.
+  let shown = false, touched = false, liveTimer = 0;
 
   for (const n of cfg.numbers) {
     const input = form.querySelector(`[data-num="${n.key}"]`);
     const set = (v) => {
       const ok = Number.isFinite(v) && v >= n.min && v <= n.max;
       input.setAttribute('aria-invalid', String(!ok));
-      if (ok) { values[n.key] = v; if (shown) render(); }
+      if (ok) { values[n.key] = v; touched = true; if (shown) render(); }
     };
     input.addEventListener('input', () => set(input.value === '' ? NaN : Number(input.value)));
     input.addEventListener('change', () => {
@@ -138,14 +140,14 @@ export function createJob(root = document, { book } = {}) {
   jobField?.addEventListener('input', () => { if (shown) render(); });
   answer.querySelector('[data-answer-book]').addEventListener('click', () => book?.(answers()));
 
-  // What goes into the booking: the visitor's words and, once they have seen
-  // the answer, their numbers.
+  // What goes into the booking: the visitor's words and, if they changed any
+  // number, their numbers.
   function answers() {
     const a = {};
     if (words()) a[cfg.field] = words();
-    if (shown) a.scale = scaleText();
+    if (touched) a.scale = scaleText();
     return a;
   }
 
-  return { show, answers, get state() { return { shown, values: { ...values } }; } };
+  return { show, answers, get state() { return { shown, touched, values: { ...values } }; } };
 }
