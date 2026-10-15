@@ -1,78 +1,103 @@
 # Target: the funnel
 
-> **Signed off** (operator, 2026-10-13). Hand-written. Compare with `../current/`.
+> **Revised draft** (2026-10-15), replacing the version signed off on 2026-10-13. Hand-written. Compare with `../current/`.
+> What changed and why: the end of this file. The reasoning: a panel of twelve reviews, summarised in the operator's workspace (`state/flow/inbox/2026-10-15-hive-priorities.md`).
 
-One page, read top to bottom, ending at a booked call.
+One page, read top to bottom, ending at a booked call. It opens by asking the visitor about their own work and answers them.
 
 ```
   ┌───────────────────────────────────────────┐
-  │ I find the work your team repeats…        │  1 problem
+  │ Which job does your team do by hand,      │  1 the job: the visitor puts
+  │ every week?   [ the job ____________ ]    │    in their job and three
+  │ people [3]  hours each [4]  £/hour [30]   │    numbers; the page answers
+  │            [ Show what it costs ]         │    with hours a year, cost a
+  │  ↳ You: "the Monday report"               │    year, and the nearest
+  │    552 hours a year · £16,560 · ▦▦▦▦▦     │    example below
+  │    Nearest example: The Monday report     │
   ├───────────────────────────────────────────┤
   │ Where the time goes   (3 cases)           │  2 recognition: "that's us"
   ├───────────────────────────────────────────┤
-  │ How we'd start · cost · reply time        │  3 lower the risk
+  │ What I look for · How we'd start · facts  │  3 the diagnosis; lower the risk
   ├───────────────────────────────────────────┤
-  │ Who you'd talk to   (Ruben, 3 lines)      │  4 trust
+  │ Who you'd talk to   (Ruben, 4 lines)      │  4 trust; capacity said plainly
   ├───────────────────────────────────────────┤
-  │ Tell me where the time goes: [_________]  │  5 intake
-  │              [ Book the free call ]       │  6 Cal.com slot
+  │ Book the free call    [Cal.com embed]     │  5 Cal.com slot, with the answers
   └───────────────────────────────────────────┘
 ```
 
 ```mermaid
 flowchart TD
-  A[arrive] --> P[1 problem]
-  P --> R[2 recognition: cases]
-  R --> K[3 risk: how we start, cost, reply]
-  K --> T[4 trust: who you'd talk to]
-  T --> I[5 intake: where the time goes]
-  I --> B[6 Cal.com: pick a slot]
-  B --> C[booked: confirmation from Cal.com]
-  P -. skip .-> B
-  R -. skip .-> B
+  A[arrive] --> J[1 the job: their words + three numbers]
+  J -- "Show what it costs" --> R[the answer: hours, cost, nearest example]
+  R -- "Book the free call with these answers" --> B
+  J --> C[2 cases]
+  R -. nearest example .-> C
+  C --> K[3 what I look for, how we start, facts]
+  K --> T[4 who you'd talk to]
+  T --> B[5 Cal.com: pick a slot]
+  B --> D[booked: confirmation from Cal.com]
+  C -. skip .-> B
   K -. skip .-> B
 ```
 
-Every step has a way straight to the booking. Intake helps the call but is never required for it.
+Every step has a way straight to the booking. The job and the numbers help the call but are never required for it.
 
-## Keep / cut (from `../current/story.md`)
+## The one conversational turn
 
-| Today | Becomes |
+The site was a conversation. Now it has exactly one turn, at the top, where the visitor's own words and numbers come back to them as something they could not get by reading. Everything else is a plain page you can scan.
+
+- **The visitor gives:** the job (`job`, long text, optional) and three numbers: people doing it, hours each a week, cost per hour (salary plus other staff costs). The numbers start at 3, 4 and £30.
+- **The page answers** under the button, as one structured block:
+  - their words, said back ("You: …"); if the field is empty, nothing is said back.
+  - hours a year and cost a year, with the grid of working weeks (the `estimate` showpiece), computed in the browser: hours a year = people × hours × 46 weeks; cost a year = hours a year × cost per hour.
+  - the nearest of the three examples, by the words in the job, linked to it. If none is near, no line: the page does not pretend.
+  - "Book the free call with these answers": opens step 5 with `job` = their words and `scale` = "3 people, 4 hours each a week, about 552 hours a year".
+- **Nothing is sent.** The note under the button says so. Everything happens in the browser until the visitor books.
+- **Without JavaScript:** the job field and a plain `scale` text field (people, how often), and a button that opens the Cal.com page with both filled in. No numbers, no answer.
+
+This replaces both the old intake section (step 5) and the turn-by-turn conversation (cloud branch 6312ffa, 8898c9a): options worded as a menu were navigation dressed as a conversation.
+
+## The diagnosis (step 3)
+
+The examples are what a director recognises. What Ruben looks for is why it keeps happening. The same few problems are in every team, his own included:
+
+- decisions rushed, because money due in and out was seen too late;
+- work that does not earn money directly (admin, reports, records) left half-built, so it takes time from the work that does;
+- the same job done two ways by two people;
+- decisions nobody wrote down, so the same question gets settled again.
+
+They are the first block of step 3, "What I look for", before "How we would start".
+
+## Who you'd talk to (step 4)
+
+- The day job is said plainly, with what it means for a client: a project becomes his full-time work. No hiding, no apology.
+- His own system (Behold) is one line of proof, about the same problems, not a product: he keeps a record of every decision, and uses it every day. No product pages. Haios stays off the site.
+
+## Keep / cut (from the signed-off version of 2026-10-13)
+
+| Then | Now |
 |---|---|
-| landing path: cases, how, book | steps 2, 3, 6 |
-| landing path: proof (Callsheet) | cut: Callsheet is not running (claims removed live in PR #22) |
-| method, cost, process, trust_ladder | folded into step 3 as short answers |
-| signals + 4 signal_* | folded into step 2 (the cases) |
-| estimate | cut for now: reads as too sales-y, needs work |
-| about, ruben, philosophy, salesforce | one block, step 4 |
-| projects, callsheet, haios, behold + 13 technical | cut |
-| conversation L1 / L2, gravity | cut |
-| conversation L3 + brief | becomes step 5, intake |
-| one page `/#/all` | becomes the whole site |
-| lens | cut for now |
+| 1 problem: headline about Ruben ("I find…") + cue line | 1 the job: a question about their work, answered. Cue line cut |
+| 2 cases: Monday report, new client, supplier early warning + "Two more I often see" | Monday report, new client, **seeing the cash coming** (new). Supplier example and "Two more" cut |
+| 3 how we would start + facts | "What I look for" first; "A one-page summary" becomes **"A one-page plan"**; Price says how it is agreed |
+| 4 who you'd talk to | day job → capacity; one line on his own system |
+| 5 intake | merged into 1 |
+| 6 book | becomes 5; quiet links only after steps 2 and 3 |
+| estimate: cut as too sales-y | back, as the answer to the visitor's own numbers |
+| lens | still cut |
 
-## Decided (2026-10-13)
+## Decided (2026-10-13), still true
 
-The operator signed off phase 1 and asked for these to be decided.
+**Cal.com is hosted, not installed.** Account `rwb3n`, event `30min` (30 minutes). Booking questions `job` (long text) and `scale` (short text), both optional, added 2026-10-15. `calLink` is `rwb3n/30min`.
 
-**Cal.com is hosted, not installed.** The site is static, so Cal.com cannot run on it. The hosted free plan covers what the funnel needs: an event type, booking questions, prefill and the embed.
+**How the page reaches Cal.com.** Without JavaScript, a plain form (`method="get"`) to the Cal.com booking page, so the fields prefill it. With JavaScript, Cal.com's inline embed in step 5, with the answers in its `config`. Cal.com's script loads only when the visitor acts. Every "skip" link goes to `#book`.
 
-**Intake is one set of questions, in two places.** The fields on the page are Cal.com booking questions. Each field's name is the question's identifier in Cal.com, so the answers are carried into the booking and arrive in the booking email.
+**After booking:** Cal.com's own confirmation and email. No page of our own.
 
-- Two fields, both optional: *Which job takes up your team's time?* (`job`, long text) and *How many people do it, and how often?* (`scale`, short text).
-- Cal.com asks for name and email itself. The page does not.
-- Booking questions, not `metadata[...]`: metadata is stored but not shown on the booking.
-- No intake Worker, no Turnstile, no storage of our own. Answers exist only inside a booking.
+**Honesty.** The page never says "sent" or "received". "I reply the same day" is a fact about email, not about booking.
 
-**How the page reaches Cal.com.**
+## Needs the operator
 
-- Without JavaScript: the intake is a plain form (`method="get"`) whose action is the Cal.com booking page, so the fields prefill it there.
-- With JavaScript: the same form opens Cal.com's inline embed in step 6, with the answers in its `config`.
-- Cal.com's script loads only when the visitor acts (opens the booking step or sends the form), never on page load.
-- Every "skip" link goes to step 6 (`#book`).
-
-**After booking:** Cal.com's own confirmation, inside the embed, and Cal.com's confirmation email. No redirect and no success page of our own. What happens after the call is already said in step 3.
-
-**Honesty.** The page never says "sent" or "received". If the visitor fills in the fields and leaves, nothing was sent, and nothing on the page suggests it was. "I reply the same day" stays a fact about email, not about booking.
-
-**Needs the operator:** a Cal.com account with a 30-minute event type and the two questions (`job`, `scale`). Phase 3 and U4 cannot be tested without it.
+- Cal.com availability: the schedule is Monday–Friday, 09:00–17:00. Is that when you can take calls?
+- Full name and a photograph for step 4 (`person.fullName` is empty).
+- A price range, when you have one. Until then the page says how price is agreed.
