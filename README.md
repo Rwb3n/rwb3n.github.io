@@ -11,8 +11,8 @@ src/
   static.js       renders the page from content/site.json (used by sync, the library and the tests)
   main.js         the page's script: settings, theme, rising headline, booking
   book.js         booking with Cal.com: embed on demand, prefill, loading line, fallback
-  job.js          step 1: one sentence in, the page answers in components (decisions, job automated, money, first steps)
-  decide.js       step 1's decisions without the DOM: thresholds, matching words, templates → compare states
+  job.js          step 1: taps, not typing; each tap brings the next component (job automated, money, first steps)
+  decide.js       step 1 without the DOM: templates → compare states, the money; decision-model thresholds (not used yet)
   prefs.js        reading preferences: motion, text size
   settings.js     the "Settings" panel
   type.js         word masks for the headline

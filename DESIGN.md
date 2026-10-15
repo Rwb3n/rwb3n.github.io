@@ -37,30 +37,26 @@ never required for it.
 **Two filled buttons, one per action:** "Show what it costs" (step 1) and
 "Show available times" (step 5). Every other link is quieter.
 
-**Step 1, the job** (built 2026-10-15, evening; copy not final). The page
-answers in UI components, not paragraphs:
+**Step 1, the job: taps, not typing** (2026-10-15, late; operator: "nobody
+is going to write anything useful"). Copy not final; the shape first.
 
-- The visitor writes one sentence and presses "Show me".
-- **The decisions**, one row at a time, in mono: repeated work, kind of job,
-  how often, who does it, systems. Each decision the model made shows how
-  sure it was (a bar and a number). A status line says how long deciding
-  took, measured. Rows the model is not sure enough of are left out.
-- **The ask-back.** Below the job threshold, "Which is closer?" with the top
-  two or three kinds as buttons. Nothing else is shown until one is chosen.
-- **The job, Today ⇄ Automated** (`compare`), from the template for that
-  kind; the systems found are one step. It turns to Automated by itself.
-- **The money**, from numbers guessed from the sentence ("Guessed from your
-  sentence. Change them to match."). Guesses stay out of the booking; numbers
-  the visitor changes go in as `scale`.
-- **What I would automate first** (`layers`), the nearest example, the label
-  saying how it was decided, and "Book the free call with these answers".
-- Not repeated work: one component, "This box is for a job your team does by
-  hand", with three example sentences as buttons.
-- Without the decision model (no endpoint, an error, or over 4 seconds): the
-  same components from matching words, and the status and label say so.
+- With JavaScript there is no text box. "Which sounds like your week?" with
+  eight kinds of job as buttons.
+- A tap brings the job as Today ⇄ Automated (`compare`, from that kind's
+  template). It turns to Automated by itself the first time.
+- "Which systems does it touch?" (several; the kind's usual ones start
+  pressed). Each tap redraws the diagram; the systems are one step.
+- "How often?" then "How many people?" bring the money, from numbers guessed
+  from the taps ("Guessed from your taps. Change them to match."), then "What
+  I would automate first", the nearest example, and "Book the free call with
+  these answers" (`job`: the taps in words; `scale`: the numbers).
+- Changing an earlier tap updates what follows. Numbers changed by hand stay.
+- A pressed option is filled and has a tick. Parts rise in one by one; with
+  motion Calm or Off, at once.
 - **Without JavaScript:** the job field and a plain `scale` text field, and
   "Choose a time for the call": a GET form to the Cal.com page.
-- Parts arrive one by one (rise and fade); with motion Calm or Off, at once.
+- The decision model (`worker/decide.js`, `src/decide.js`) is not used by
+  this version. Where it fits is open.
 
 **Step 4:** the photograph sits beside the lines on wide screens and above
 them on narrow ones, in black and white. Its `alt` says who it is.

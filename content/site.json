@@ -73,11 +73,11 @@
     "job": {
       "eyebrow": "Business process automation · London",
       "headline": [
-        "Tell me the job your team does",
-        "by hand, every week."
+        "Your week, ",
+        "automated."
       ],
-      "accent": "by hand",
-      "lead": "One sentence, in your own words. A decision model reads it, and the page answers.",
+      "accent": "automated",
+      "lead": "Tap what fits. The page builds your job as you go, then shows what it costs you.",
       "field": {
         "name": "job",
         "label": "The job your team does by hand",
@@ -192,7 +192,7 @@
         },
         "firstHead": "What I would automate first",
         "numbersHead": "Your numbers",
-        "numbersNote": "Guessed from your sentence. Change them to match.",
+        "numbersNote": "Guessed from your taps. Change them to match.",
         "frequency": [
           "Every day",
           "Every week",
@@ -207,20 +207,16 @@
         ],
         "people": {
           "one": {
-            "label": "One person",
+            "label": "One",
             "value": 1
           },
           "few": {
-            "label": "Two or three people",
+            "label": "Two or three",
             "value": 2
           },
           "team": {
             "label": "A team",
             "value": 5
-          },
-          "unknown": {
-            "label": "Not said",
-            "value": null
           }
         },
         "systems": {
@@ -234,7 +230,7 @@
         },
         "kinds": {
           "report": {
-            "label": "A report",
+            "label": "Building reports",
             "case": "monday-report",
             "defaults": [
               "accounts",
@@ -306,7 +302,7 @@
             ]
           },
           "new_client": {
-            "label": "Setting up someone new",
+            "label": "Setting up new clients",
             "case": "new-client",
             "defaults": [
               "accounts",
@@ -512,7 +508,7 @@
             ]
           },
           "scheduling": {
-            "label": "Scheduling",
+            "label": "Rotas and bookings",
             "case": null,
             "defaults": [
               "email",
@@ -802,7 +798,14 @@
               }
             ]
           }
-        }
+        },
+        "taps": {
+          "kind": "Which sounds like your week?",
+          "systems": "Which systems does it touch?",
+          "frequency": "How often?",
+          "people": "How many people do it?"
+        },
+        "peopleSummary": "People: {people}"
       }
     },
     "cases": {

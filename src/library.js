@@ -378,6 +378,15 @@ function layoutsSection() {
     }
     const display = stage.querySelector('.display');
     if (display && !reducedMotion()) splitWords(display);
+    // Step 1 as it starts with JavaScript: the first row of taps, one pressed.
+    const answer = stage.querySelector('[data-answer]');
+    const opts = answer?.querySelector('[data-q="kind"] [data-opts]');
+    if (answer && opts) {
+      answer.hidden = false;
+      stage.querySelector('[data-job]')?.remove();
+      const kinds = Object.values(config?.page?.job?.decide?.kinds || {});
+      opts.replaceChildren(...kinds.map((k, i) => h('button', { class: 'pg-chip', type: 'button', 'aria-pressed': String(i === 0) }, k.label)));
+    }
     // The states the booking step can be in, shown at once.
     stage.querySelector('[data-book-status]')?.removeAttribute('hidden');
     stage.querySelector('[data-book-fail]')?.removeAttribute('hidden');

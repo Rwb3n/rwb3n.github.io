@@ -17,9 +17,9 @@ step 1 and "Show available times" in step 5.
 
 > Business process automation · London
 >
-> Tell me the job your team does by hand, every week.
+> Your week, automated.
 >
-> One sentence, in your own words. A decision model reads it, and the page answers.
+> Tap what fits. The page builds your job as you go, then shows what it costs you.
 >
 > The job your team does by hand
 >
@@ -33,9 +33,7 @@ step 1 and "Show available times" in step 5.
 >
 > A year, before tax. With National Insurance and pension, the real cost is higher.
 >
-> Show me
->
-> Nothing is sent until you press the button. Nothing is kept on this site.
+> Which sounds like your week?
 
 The answer, under the button:
 
@@ -64,6 +62,12 @@ Without JavaScript, in place of the three numbers:
 > For example: two people, every Monday morning.
 >
 > Choose a time for the call
+
+Changed 2026-10-15, late (operator: "nobody is going to write anything
+useful"; chose "taps, not typing"): no text box with JavaScript. The visitor
+taps: which sounds like your week, which systems, how often, how many people.
+Each tap brings the next component. The decision model is not in this
+version; where it fits is open.
 
 Changed 2026-10-15, evening (operator: "you talk in COMPONENTS… UI
 components"; decision models): the answer is built from components chosen by

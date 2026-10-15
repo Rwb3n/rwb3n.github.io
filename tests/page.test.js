@@ -45,10 +45,10 @@ test('steps 2 and 3 each have a quiet link to #book with the same label', () => 
   }
 });
 
-test('two filled buttons, one per action: "Show what it costs" and "Show available times"', () => {
+test('one filled button: "Show available times" (step 1 is taps)', () => {
   const h = html(withLink);
   const filled = [...h.matchAll(/class="btn btn-primary[^"]*"[^>]*>([^<]+)/g)].map((m) => m[1].trim());
-  assert.deepEqual(filled, [site.page.job.show, site.page.book.show]);
+  assert.deepEqual(filled, [site.page.book.show]);
 });
 
 test('without JavaScript, step 1 is a form to the Cal.com page with the answers as booking questions', () => {
@@ -58,9 +58,8 @@ test('without JavaScript, step 1 is a form to the Cal.com page with the answers 
   assert.match(form, /action="https:\/\/cal\.com\/example\/30min"/);
   const names = [...h.matchAll(/<(?:input|textarea)[^>]*name="([a-z]+)"/g)].map((m) => m[1]);
   assert.deepEqual(names, site.booking.fields);
-  // The numbers and the answer need JavaScript, so they start hidden.
-  assert.match(h, /<div class="pg-js" data-js hidden>/);
-  assert.match(h, /<div class="pg-answer" data-answer hidden/);
+  // The taps and what they bring need JavaScript, so they start hidden.
+  assert.match(h, /<div class="pg-answer pg-taps" data-answer hidden>/);
   assert.match(h, /<a class="btn btn-primary pg-show" href="https:\/\/cal\.com\/example\/30min"/);
   assert.equal(bookingUrl(withLink, { job: 'Monday report', scale: '' }), 'https://cal.com/example/30min?job=Monday+report');
 });
@@ -100,8 +99,8 @@ test('honesty: the page never says it sent, received or booked anything', () => 
   for (const w of ['has been sent', 'was sent', 'we received', 'received your', 'is booked', 'booking confirmed', 'confirmed', 'running today', 'runs today']) {
     assert.ok(!page.includes(w), w);
   }
-  // "Nothing is sent until you book." is the one sentence about sending.
-  assert.equal((page.match(/\bsent\b/g) || []).length, 1);
+  // At most one sentence about sending, and it says nothing is sent.
+  assert.ok((page.match(/\bsent\b/g) || []).length <= 1);
 });
 
 test('the Cal.com script is never in the page itself', () => {
