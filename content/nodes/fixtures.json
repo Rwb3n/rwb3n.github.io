@@ -5,34 +5,146 @@
     "label": "Fixture: from order to invoice",
     "parent": null,
     "intents": [],
-    "tags": ["fixture"],
+    "tags": [
+      "fixture"
+    ],
     "blocks": [
-      { "type": "hero", "title": "From order to invoice", "accentWord": "invoice", "subtitle": "Example project, not a client" },
-      { "type": "badge", "status": "Example only", "variant": "default" },
-      { "type": "section", "kicker": "Before", "title": "How the work is done today", "blocks": [
-        { "type": "text", "content": "In this example, a person copies each order from email into a spreadsheet, then into the invoice system." },
-        { "type": "split",
-          "left": [{ "type": "metric", "value": "12", "label": "hours a week of copying" }],
-          "right": [{ "type": "pills", "label": "Systems", "items": ["Email", "Spreadsheet", "Invoice system"] }] }
-      ]},
-      { "type": "section", "kicker": "After", "title": "What the system does", "tone": "raised", "blocks": [
-        { "type": "flow", "layout": "horizontal", "nodes": [{ "id": "e", "label": "Email" }, { "id": "s", "label": "System", "variant": "accent" }, { "id": "i", "label": "Invoice" }], "edges": [{ "from": "e", "to": "s", "label": "reads" }, { "from": "s", "to": "i", "label": "writes" }] },
-        { "type": "progress", "label": "Order types handled", "current": 3, "total": 5 }
-      ]},
-      { "type": "section", "title": "Example plan", "blocks": [
-        { "type": "timeline", "items": [
-          { "date": "Week 1", "event": "Call and written summary" },
-          { "date": "Week 2", "event": "First version runs next to the person", "detail": "A person checks every invoice." },
-          { "date": "Week 4", "event": "Runs alone for routine orders" }
-        ]}
-      ]},
-      { "type": "section", "title": "Facts from site.json", "tone": "accent", "blocks": [
-        { "type": "facts", "keys": ["firstStep", "cost", "reply", "location"] }
-      ]}
+      {
+        "type": "hero",
+        "title": "From order to invoice",
+        "accentWord": "invoice",
+        "subtitle": "Example project, not a client"
+      },
+      {
+        "type": "badge",
+        "status": "Example only",
+        "variant": "default"
+      },
+      {
+        "type": "section",
+        "kicker": "Before",
+        "title": "How the work is done today",
+        "blocks": [
+          {
+            "type": "text",
+            "content": "In this example, a person copies each order from email into a spreadsheet, then into the invoice system."
+          },
+          {
+            "type": "split",
+            "left": [
+              {
+                "type": "metric",
+                "value": "12",
+                "label": "hours a week of copying"
+              }
+            ],
+            "right": [
+              {
+                "type": "pills",
+                "label": "Systems",
+                "items": [
+                  "Email",
+                  "Spreadsheet",
+                  "Invoice system"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "kicker": "After",
+        "title": "What the system does",
+        "tone": "raised",
+        "blocks": [
+          {
+            "type": "flow",
+            "layout": "horizontal",
+            "nodes": [
+              {
+                "id": "e",
+                "label": "Email"
+              },
+              {
+                "id": "s",
+                "label": "System",
+                "variant": "accent"
+              },
+              {
+                "id": "i",
+                "label": "Invoice"
+              }
+            ],
+            "edges": [
+              {
+                "from": "e",
+                "to": "s",
+                "label": "reads"
+              },
+              {
+                "from": "s",
+                "to": "i",
+                "label": "writes"
+              }
+            ]
+          },
+          {
+            "type": "progress",
+            "label": "Order types handled",
+            "current": 3,
+            "total": 5
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "Example plan",
+        "blocks": [
+          {
+            "type": "timeline",
+            "items": [
+              {
+                "date": "Week 1",
+                "event": "Call and written summary"
+              },
+              {
+                "date": "Week 2",
+                "event": "First version runs next to the person",
+                "detail": "A person checks every invoice."
+              },
+              {
+                "date": "Week 4",
+                "event": "Runs alone for routine orders"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "Facts from site.json",
+        "tone": "accent",
+        "blocks": [
+          {
+            "type": "facts",
+            "keys": [
+              "firstStep",
+              "cost",
+              "reply",
+              "location"
+            ]
+          }
+        ]
+      }
     ],
     "chips": [
-      { "target": "fixture_invoice_checks" },
-      { "target": "fixture_how_it_is_built" }
+      {
+        "target": "fixture_invoice_checks"
+      },
+      {
+        "target": "fixture_how_it_is_built"
+      }
     ]
   },
   {
@@ -41,16 +153,38 @@
     "label": "Fixture: how invoices are checked",
     "parent": "fixture_order_to_invoice",
     "intents": [],
-    "tags": ["fixture"],
-    "blocks": [
-      { "type": "text", "content": "In this example, the system checks each invoice against the order before it is sent." },
-      { "type": "layers", "items": [
-        { "label": "Check 1", "title": "The customer exists", "detail": "This check is an example." },
-        { "label": "Check 2", "title": "The prices match the order" },
-        { "label": "Check 3", "title": "A person approves anything unusual" }
-      ]}
+    "tags": [
+      "fixture"
     ],
-    "chips": [{ "target": "fixture_order_to_invoice" }]
+    "blocks": [
+      {
+        "type": "text",
+        "content": "In this example, the system checks each invoice against the order before it is sent."
+      },
+      {
+        "type": "layers",
+        "items": [
+          {
+            "label": "Check 1",
+            "title": "The customer exists",
+            "detail": "This check is an example."
+          },
+          {
+            "label": "Check 2",
+            "title": "The prices match the order"
+          },
+          {
+            "label": "Check 3",
+            "title": "A person approves anything unusual"
+          }
+        ]
+      }
+    ],
+    "chips": [
+      {
+        "target": "fixture_order_to_invoice"
+      }
+    ]
   },
   {
     "$": "A technical topic: marked for developers, and shown in the appendix of the one-page view.",
@@ -59,12 +193,233 @@
     "parent": null,
     "audience": "technical",
     "intents": [],
-    "tags": ["fixture"],
-    "blocks": [
-      { "type": "text", "content": "This example system has three parts. Each part runs on a timetable." },
-      { "type": "table", "headers": ["Part", "Runs", "Time"], "rows": [["Read orders", "Every hour", "2 min"], ["Check invoices", "Every hour", "1 min"], ["Send invoices", "Every day", "5 min"]] },
-      { "type": "code", "language": "timetable", "content": "every hour   read orders, check invoices\nevery day    send invoices" }
+    "tags": [
+      "fixture"
     ],
-    "chips": [{ "target": "fixture_order_to_invoice" }]
+    "blocks": [
+      {
+        "type": "text",
+        "content": "This example system has three parts. Each part runs on a timetable."
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Part",
+          "Runs",
+          "Time"
+        ],
+        "rows": [
+          [
+            "Read orders",
+            "Every hour",
+            "2 min"
+          ],
+          [
+            "Check invoices",
+            "Every hour",
+            "1 min"
+          ],
+          [
+            "Send invoices",
+            "Every day",
+            "5 min"
+          ]
+        ]
+      },
+      {
+        "type": "code",
+        "language": "timetable",
+        "content": "every hour   read orders, check invoices\nevery day    send invoices"
+      }
+    ],
+    "chips": [
+      {
+        "target": "fixture_order_to_invoice"
+      }
+    ]
+  },
+  {
+    "id": "fixture_more_blocks",
+    "label": "Fixture: more blocks",
+    "parent": "fixture_order_to_invoice",
+    "tags": [
+      "fixture"
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "content": "Test content for the component library. It uses the blocks the other fixtures do not."
+      },
+      {
+        "type": "callout",
+        "text": "When the design is simpler, the work is simpler.",
+        "attribution": "Example attribution"
+      },
+      {
+        "type": "metricRow",
+        "items": [
+          {
+            "value": "3",
+            "label": "projects"
+          },
+          {
+            "value": "118",
+            "label": "server functions"
+          },
+          {
+            "value": "0",
+            "label": "staff"
+          }
+        ]
+      },
+      {
+        "type": "stats",
+        "items": [
+          {
+            "label": "Reply time",
+            "value": "The same day"
+          },
+          {
+            "label": "Based in",
+            "value": "London, UK"
+          },
+          {
+            "label": "Email",
+            "value": "lab@mindunder.dev"
+          }
+        ]
+      },
+      {
+        "type": "grid",
+        "items": [
+          {
+            "title": "Project A",
+            "status": "Running",
+            "description": "An example project. It runs without staff.",
+            "target": "fixture_order_to_invoice"
+          },
+          {
+            "title": "Project B",
+            "status": "Research",
+            "description": "An example project that is still being tested.",
+            "target": "fixture_order_to_invoice"
+          },
+          {
+            "title": "Project C",
+            "status": "In daily use",
+            "description": "An example tool used every day.",
+            "target": "fixture_order_to_invoice"
+          }
+        ]
+      },
+      {
+        "type": "compare",
+        "label": "Show the process",
+        "states": [
+          {
+            "key": "before",
+            "label": "Before",
+            "title": "Before: a person copies the data",
+            "stat": {
+              "value": "2",
+              "label": "steps done by hand"
+            },
+            "nodes": [
+              {
+                "id": "in",
+                "label": "Order"
+              },
+              {
+                "id": "p1",
+                "label": "Person",
+                "variant": "muted"
+              },
+              {
+                "id": "sheet",
+                "label": "Spreadsheet"
+              },
+              {
+                "id": "p2",
+                "label": "Person",
+                "variant": "muted"
+              },
+              {
+                "id": "inv",
+                "label": "Invoice"
+              }
+            ]
+          },
+          {
+            "key": "after",
+            "label": "After",
+            "title": "After: the system copies it",
+            "stat": {
+              "value": "0",
+              "label": "steps done by hand"
+            },
+            "text": "Example only.",
+            "nodes": [
+              {
+                "id": "in",
+                "label": "Order"
+              },
+              {
+                "id": "sys",
+                "label": "System",
+                "variant": "accent",
+                "via": "reads"
+              },
+              {
+                "id": "inv",
+                "label": "Invoice",
+                "via": "writes"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "estimate",
+        "title": "Example estimate",
+        "inputs": [
+          {
+            "key": "people",
+            "label": "People who do this task",
+            "min": 1,
+            "max": 500,
+            "step": 1,
+            "value": 3
+          },
+          {
+            "key": "hours",
+            "label": "Hours each person spends on it each week",
+            "min": 0.5,
+            "max": 40,
+            "step": 0.5,
+            "value": 4
+          },
+          {
+            "key": "rate",
+            "label": "Cost of one hour, in pounds",
+            "min": 5,
+            "max": 500,
+            "step": 1,
+            "value": 30,
+            "prefix": "£"
+          }
+        ],
+        "note": "Uses only the numbers you type. Nothing is sent.",
+        "addLabel": "Add this estimate to my summary"
+      },
+      {
+        "type": "fact",
+        "key": "reply"
+      }
+    ],
+    "chips": [
+      {
+        "target": "fixture_order_to_invoice"
+      }
+    ]
   }
 ]

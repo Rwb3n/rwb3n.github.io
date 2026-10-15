@@ -1,34 +1,155 @@
-// Behaviour checks on the real site (no screenshots).
+// Behaviour checks on the real page (no screenshots).
+// Cal.com cannot be reached from the tests: its embed script is stubbed, and a
+// sample booking link is put into the page so the booking step exists.
 
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { renderRegions, applyRegions } from '../../src/static.js';
 
 const site = JSON.parse(readFileSync(new URL('../../content/site.json', import.meta.url), 'utf8'));
+const shell = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+const withLink = { ...site, booking: { ...site.booking, calLink: 'example/30min' } };
+const pageWithLink = applyRegions(shell, renderRegions(withLink));
+const pageNoLink = applyRegions(shell, renderRegions({ ...site, booking: { ...site.booking, calLink: null } }));
 
-test.beforeEach(async ({ page }) => {
+// A stand-in for Cal.com's embed.js: runs the queued calls, draws a box, and
+// reports linkReady.
+const STUB = `(() => { const on = {}; let el;
+  const run = (a) => { const [cmd, o] = a; if (cmd === 'inline') { el = document.querySelector(o.elementOrSelector); window.__calInline = o; } if (cmd === 'on') on[o.action] = o.callback; };
+  (window.Cal.q || []).forEach(run); window.Cal = function () { run(arguments); }; window.Cal.loaded = true;
+  setTimeout(() => { el.innerHTML = '<div style="height:600px">calendar</div>'; on.linkReady && on.linkReady(); }, 200); })();`;
+
+async function open(page, { cal = 'ok', html = pageWithLink, js = true, query = '' } = {}) {
+  const calRequests = [];
+  page.on('request', (r) => { if (/cal\.com/.test(r.url())) calRequests.push(r.url()); });
   await page.route(/fonts\.(googleapis|gstatic)\.com|fontshare\.com/, (r) => r.abort());
-});
+  await page.route((u) => u.pathname === '/' || u.pathname === '/index.html', (r) => r.fulfill({ contentType: 'text/html', body: html }));
+  await page.route('https://app.cal.com/embed/embed.js', (r) => (cal === 'ok' ? r.fulfill({ contentType: 'text/javascript', body: STUB }) : r.abort()));
+  await page.route(/^https:\/\/cal\.com\//, (r) => r.fulfill({ contentType: 'text/html', body: '<title>Cal.com</title>' }));
+  await page.goto(`/${query}`);
+  // With JavaScript, wait until the page's script has wired the buttons;
+  // a click before that follows the plain link, as it should without it.
+  if (js) await page.waitForFunction(() => 'mindunderJob' in window);
+  return calRequests;
+}
 
-test('the one-page view shows every listed topic, and no stray text', async ({ page }) => {
+test('the page loads without errors and asks Cal.com for nothing until the visitor acts', async ({ page }) => {
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/#/all');
-  await page.waitForSelector('.page-section');
-  const ids = await page.locator('.page-section').evaluateAll((l) => l.map((s) => s.id.replace('page-', '')));
-  for (const id of [...site.onePage.sections, ...(site.onePage.appendix || [])]) expect(ids, id).toContain(id);
-  const stray = await page.evaluate(() => [...document.querySelector('.page').childNodes].filter((n) => n.nodeType === 3 && n.textContent.trim()).map((n) => n.textContent.slice(0, 60)));
-  expect(stray).toEqual([]);
-  const invisible = await page.evaluate(() => [...document.querySelectorAll('.page .b-text, .page .b-callout, .page .b-fact')]
-    .filter((e) => [e, ...e.querySelectorAll('*')].some((x) => x.offsetParent !== null && getComputedStyle(x).opacity === '0'))
-    .map((e) => e.textContent.slice(0, 40)));
-  expect(invisible).toEqual([]);
+  const calRequests = await open(page);
+  await page.waitForTimeout(800);
   expect(errors).toEqual([]);
+  expect(calRequests).toEqual([]);
+  expect(await page.locator('.pg-section').evaluateAll((s) => s.map((x) => x.id))).toEqual(['job', 'cases', 'start', 'who', 'book']);
 });
 
-// Everything the site's pages are made of is shown in the component library:
-// every class used on the landing, in the one-page view, in topic answers and
-// in the side column also appears on /components.
-test('the component library covers every class used on the site', async ({ page }) => {
+// Step 1: a bench. It arrives set to one example job; taps change it.
+const tap = (page, q, label) => page.locator(`[data-q="${q}"] .pg-chip`, { hasText: label }).click();
+
+test('step 1 arrives showing an example job; nothing of it goes to the booking until the visitor changes it', async ({ page }) => {
+  const calRequests = await open(page);
+  await expect(page.locator('#f-job')).toHaveCount(0);
+  await expect(page.locator('[data-q="kind"] .pg-chip')).toHaveCount(Object.keys(site.page.job.decide.kinds).length);
+  await expect(page.locator('[data-q="kind"] [aria-pressed="true"]')).toHaveText('Building reports');
+  await expect(page.locator('[data-q="frequency"] [aria-pressed="true"]')).toHaveText('Every week');
+  await expect(page.locator('[data-q="people"] [aria-pressed="true"]')).toHaveText('Two or three');
+  await expect(page.locator('[data-compare] .b-compare')).toHaveAttribute('data-state', 'after');
+  await expect(page.locator('[data-answer-share]')).toHaveText('Of the £70,000 a year you pay them, £5,600 goes on this job.');
+  await expect(page.locator('[data-answer-nearest] a')).toHaveAttribute('href', '#case-monday-report');
+  expect(calRequests).toEqual([]);
+  await page.click('[data-answer-book]');
+  await expect(page.locator('[data-book-status]')).toBeHidden({ timeout: 5000 });
+  expect(await page.evaluate(() => window.__calInline.config)).toEqual({ layout: 'month_view' });
+});
+
+test('each tap redraws the right side, and the booking gets the taps in words and the numbers', async ({ page }) => {
+  await open(page);
+  await tap(page, 'kind', 'Chasing people');
+  await expect(page.locator('[data-compare]')).toContainText('Who owes what');
+  await expect(page.locator('[data-q="systems"] [aria-pressed="true"]')).toHaveText(['Email']);
+  await tap(page, 'systems', 'Spreadsheet');
+  await expect(page.locator('[data-compare]')).toContainText('Spreadsheet · Email');
+  await tap(page, 'frequency', 'Every day');
+  await tap(page, 'people', 'One');
+  await expect(page.locator('#n-people')).toHaveValue('1');
+  await expect(page.locator('#n-hours')).toHaveValue('5');
+  await expect(page.locator('[data-answer-cost]')).toHaveText('£4,667');
+  await expect(page.locator('[data-answer-nearest]')).toBeHidden();
+  await page.click('[data-answer-book]');
+  await expect(page.locator('[data-book-status]')).toBeHidden({ timeout: 5000 });
+  expect(await page.evaluate(() => window.__calInline.config)).toEqual({
+    layout: 'month_view',
+    job: 'Chasing people. Spreadsheet, Email. Every day. People: One.',
+    scale: '1 person, 5 hours each a week, salary £35,000 each: about £4,667 a year on this job',
+  });
+});
+
+test('numbers changed by hand stay when a tap changes', async ({ page }) => {
+  await open(page);
+  await page.click('[aria-label="One person more"]');
+  await expect(page.locator('[data-answer-cost]')).toHaveText('£8,400');
+  await tap(page, 'people', 'A team');
+  await expect(page.locator('#n-people')).toHaveValue('3');
+  await expect(page.locator('[data-answer-cost]')).toHaveText('£8,400');
+});
+
+test('"Show available times" works without filling in the intake', async ({ page }) => {
+  await open(page);
+  await page.click('[data-book-show]');
+  await expect(page.locator('[data-book-embed]')).toContainText('calendar', { timeout: 5000 });
+  expect(await page.evaluate(() => window.__calInline.config)).toEqual({ layout: 'month_view' });
+});
+
+test('if Cal.com does not load, the page offers its booking page with the answers, and email', async ({ page }) => {
+  await open(page, { cal: 'blocked' });
+  await tap(page, 'kind', 'Building reports');
+  await page.click('[data-book-show]');
+  const fail = page.locator('[data-book-fail]');
+  await expect(fail).toBeVisible({ timeout: 12000 });
+  await expect(page.locator('[data-book-status]')).toBeHidden();
+  expect(await page.locator('[data-book-open]').getAttribute('href')).toMatch(/^https:\/\/cal\.com\/example\/30min\?job=Building\+reports\.\+Spreadsheet%2C\+Accounts\.\+Every\+week/);
+  await expect(page.locator('.pg-email a')).toHaveAttribute('href', `mailto:${site.person.email}`);
+});
+
+test('without JavaScript, step 1 goes to the Cal.com page with the answers', async ({ browser }) => {
+  const ctx = await browser.newContext({ javaScriptEnabled: false });
+  const page = await ctx.newPage();
+  await open(page, { js: false });
+  await page.fill('#f-job', 'The Monday report');
+  await page.fill('#f-scale', 'Two people, every Monday');
+  await page.click('.pg-job-go');
+  await page.waitForURL(/cal\.com/);
+  expect(page.url()).toBe('https://cal.com/example/30min?job=The+Monday+report&scale=Two+people%2C+every+Monday');
+  await ctx.close();
+});
+
+test('every "Book the free call" link goes to the booking step', async ({ page }) => {
+  await open(page);
+  const hrefs = await page.locator('.pg-book-link').evaluateAll((l) => l.map((a) => a.getAttribute('href')));
+  expect(hrefs.length).toBe(2);
+  expect(new Set(hrefs)).toEqual(new Set(['#book']));
+});
+
+test('without a booking link, the live page offers email only', async ({ page }) => {
+  await open(page, { html: pageNoLink });
+  await expect(page.locator('form[action]')).toHaveCount(0);
+  await expect(page.locator('#book a[href^="mailto:"]')).toHaveCount(1);
+});
+
+// Scroll reveals must not hide content that has not been scrolled to yet:
+// full-page captures, previews and archives never scroll.
+test('nothing below the fold is hidden before scrolling, with full motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await open(page);
+  expect(await page.evaluate(() => document.documentElement.dataset.motion)).toBe('full');
+  const hidden = await page.evaluate(() => [...document.querySelectorAll('.pg-section > *')]
+    .filter((e) => e.getBoundingClientRect().top > innerHeight && +getComputedStyle(e).opacity < 1)
+    .map((e) => e.className || e.tagName));
+  expect(hidden).toEqual([]);
+});
+
+// Everything the page is made of is shown in the component library.
+test('the component library covers every class used on the page', async ({ page }) => {
   const classes = async (selector) => page.evaluate((sel) => {
     const out = new Set();
     for (const root of document.querySelectorAll(sel)) for (const el of [root, ...root.querySelectorAll('*')]) {
@@ -37,32 +158,22 @@ test('the component library covers every class used on the site', async ({ page 
     }
     return [...out];
   }, selector);
-  const used = new Map();
-  await page.goto('/');
-  await page.waitForTimeout(1500);
-  for (const c of await classes('.landing')) used.set(c, '/');
-  await page.goto('about:blank');
-  await page.goto('/#/all');
-  await page.waitForSelector('.page-section');
-  for (const c of await classes('.page')) used.set(c, '/#/all');
-  for (const id of ['method', 'signals', 'process', 'haios', 'haios_architecture', 'about', 'estimate']) {
-    await page.goto('about:blank');
-    await page.goto(`/#/${id}`);
-    await page.waitForSelector('.turn .chips', { timeout: 15000 });
-    for (const c of await classes('.turn, .rail')) if (!used.has(c)) used.set(c, `/#/${id}`);
-  }
+  await open(page);
+  await page.waitForTimeout(800);
+  const used = await classes('.pg');
   await page.goto('/components/');
-  await page.waitForSelector('#layout-page .page-section');
-  await page.waitForSelector('#layout-landing .xray');
+  await page.waitForSelector('#layout-page .pg-section');
   const lib = new Set(await classes('.lib-main'));
-  const missing = [...used].filter(([c]) => !lib.has(c)).map(([c, where]) => `${c} (${where})`);
-  expect(missing).toEqual([]);
+  expect(used.filter((c) => !lib.has(c))).toEqual([]);
 });
 
 // Diagram boxes are sized from the mono font's measured width; every label
 // must fit inside its box, whatever font is in use.
-test('every diagram label fits inside its box', async ({ page }) => {
-  const check = async () => page.evaluate(() => {
+test('every diagram label in the library fits inside its box', async ({ page }) => {
+  await page.route(/fonts\.(googleapis|gstatic)\.com|fontshare\.com/, (r) => r.abort());
+  await page.goto('/components/');
+  await page.waitForSelector('#block-flow .fl-node');
+  const r = await page.evaluate(() => {
     const bad = [];
     for (const g of document.querySelectorAll('.fl-node')) {
       const rect = g.querySelector('rect');
@@ -72,28 +183,6 @@ test('every diagram label fits inside its box', async ({ page }) => {
     }
     return { count: document.querySelectorAll('.fl-node text').length, bad };
   });
-  await page.goto('/#/all');
-  await page.waitForSelector('.page-section .fl-node');
-  const all = await check();
-  await page.goto('/components/');
-  await page.waitForSelector('#block-flow .fl-node');
-  const lib = await check();
-  expect(all.count + lib.count).toBeGreaterThan(40);
-  expect([...all.bad, ...lib.bad]).toEqual([]);
-});
-
-// Scroll reveals must not hide content that has not been scrolled to yet:
-// full-page captures, previews and archives never scroll.
-test('nothing below the fold is hidden before scrolling, with full motion', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  for (const [url, sel] of [['/', '.land-step > *'], ['/#/all', '.page-heading, .page-body > *']]) {
-    await page.goto('about:blank');
-    await page.goto(url);
-    await page.waitForSelector(sel);
-    expect(await page.evaluate(() => document.documentElement.dataset.motion)).toBe('full');
-    const hidden = await page.evaluate((sel) => [...document.querySelectorAll(sel)]
-      .filter((e) => e.getBoundingClientRect().top > innerHeight && +getComputedStyle(e).opacity < 1)
-      .map((e) => e.className || e.tagName), sel);
-    expect(hidden, url).toEqual([]);
-  }
+  expect(r.count).toBeGreaterThan(10);
+  expect(r.bad).toEqual([]);
 });

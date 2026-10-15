@@ -1,5 +1,5 @@
 // One screenshot per part of /components/: foundations, interface pieces,
-// each block, the composer, each shown alone. Motion is Off and webfonts are blocked, so the
+// each block and the page, each shown alone. Motion is Off and webfonts are blocked, so the
 // result does not depend on timing or on the network.
 
 import { test, expect } from '@playwright/test';
@@ -10,8 +10,7 @@ const parts = [
   'colour', 'type', 'space', 'motion',
   ...primitives.map((p) => `prim-${slug(p.name)}`),
   ...Object.keys(blocks).map((t) => `block-${t}`),
-  'layout-landing', 'layout-turn', 'layout-page',
-  'compose',
+  'layout-page',
 ];
 
 test.beforeEach(async ({ page }) => {
@@ -49,6 +48,6 @@ for (const id of parts) {
     const el = page.locator(`#${id}`);
     await el.scrollIntoViewIfNeeded();
     await page.waitForTimeout(150); // flow diagrams draw after a resize observer fires
-    await expect(el).toHaveScreenshot(`${id}.png`, { mask: [page.locator('.b-brief-head')] });
+    await expect(el).toHaveScreenshot(`${id}.png`);
   });
 }

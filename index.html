@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <!-- sync:meta -->
     <title>mindunder.dev — business process automation, London</title>
-    <meta name="description" content="I find the work your team repeats by hand, then build a system that does it. The first call is free. Based in London." />
+    <meta name="description" content="Ruben Pires: business process automation, London. Pick the job your team repeats and see what it costs you. The first call is free." />
     <meta property="og:title" content="mindunder.dev — business process automation, London" />
-    <meta property="og:description" content="I find the work your team repeats by hand, then build a system that does it. The first call is free. Based in London." />
+    <meta property="og:description" content="Ruben Pires: business process automation, London. Pick the job your team repeats and see what it costs you. The first call is free." />
     <!-- /sync:meta -->
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
@@ -44,21 +44,19 @@
         d.dataset.motion = motion;
         d.dataset.text = r.text || def.text || 'standard';
         d.classList.add('js');
-        // The curtain plays on the first page of a visit only.
-        try { if (!sessionStorage.getItem('mu-seen')) { d.classList.add('is-first'); sessionStorage.setItem('mu-seen', '1'); } } catch (e) {}
       })();
     </script>
 
     <link rel="stylesheet" href="/styles/tokens.css" />
     <link rel="stylesheet" href="/styles/main.css" />
-    <link rel="modulepreload" href="/src/app.js" />
+    <link rel="stylesheet" href="/styles/page.css" />
     <script type="module" src="/src/main.js"></script>
   </head>
-  <body>
+  <body class="is-page">
     <a class="skip" href="#main">Skip to content</a>
 
     <header class="bar">
-      <a class="brand" href="/" data-home aria-label="mindunder.dev — home">
+      <a class="brand" href="/" aria-label="mindunder.dev — home">
         <span class="brand-name">mindunder<span class="brand-tld">.dev</span></span>
       </a>
 
@@ -87,152 +85,191 @@
           <label><input type="radio" name="text" value="standard" /> <span><b>Standard</b></span></label>
           <label><input type="radio" name="text" value="large" /> <span><b>Large</b></span></label>
         </fieldset>
-        <fieldset data-sound-field>
-          <legend>Sound</legend>
-          <label><input type="radio" name="sound" value="false" /> <span><b>Off</b></span></label>
-          <label><input type="radio" name="sound" value="true" /> <span><b>On</b> Quiet sounds when you click.</span></label>
-        </fieldset>
         <button class="btn btn-ghost settings-close" type="button" data-settings-close>Close settings</button>
       </div>
     </header>
 
-    <main id="main">
-      <!-- Landing. Static markup: readable without JS and by crawlers; the script enhances it. -->
-      <section class="landing" data-landing aria-labelledby="landing-title">
-        <div class="landing-hero" data-landing-hero>
-          <canvas class="lens" data-lens aria-hidden="true"></canvas>
-
-          <div class="landing-inner">
-            <!-- sync:landing -->
-            <div class="copy" data-copy>
-              <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Business process automation · London</p>
-              <h1 class="display" id="landing-title">
-                <span class="display-line">I <em class="is-accent">find</em> the work your team repeats by hand.</span>
-                <span class="display-line">Then I build a system that does it.</span>
-              </h1>
-            </div>
-            <a class="land-cue" href="#land-cases">Three examples, and how we would start <span aria-hidden="true">↓</span></a>
-            <!-- /sync:landing -->
+    <!-- The whole site: one page, generated from content/site.json by `npm run sync`. -->
+    <main id="main" class="pg">
+      <!-- sync:page -->
+      <section class="pg-section is-job" id="job" aria-labelledby="job-h">
+        <div class="copy" data-copy>
+          <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Business process automation · London</p>
+          <h1 class="display" id="job-h">
+            <span class="display-line">Ruben Pires.</span>
+            <span class="display-line">I automate the work your team repeats.</span>
+          </h1>
+        </div>
+        <form class="pg-job" method="get" action="https://cal.com/rwb3n/30min" data-job>
+          <div class="pg-field">
+            <label class="pg-label" for="f-job">The job your team does by hand</label>
+            <p class="pg-example" id="f-job-ex">For example: the Monday report, or setting up new clients.</p>
+            <textarea class="pg-input" id="f-job" name="job" rows="3" aria-describedby="f-job-ex"></textarea>
           </div>
-
-          <figure class="lens-caption" data-lens-caption aria-hidden="true">
-            <!-- sync:caption -->
-            <span class="lens-caption-text" data-lens-caption-text>Move the pointer to look underneath.</span>
-            <!-- /sync:caption -->
-          </figure>
-        </div>
-
-        <div class="landing-steps">
-          <!-- sync:steps -->
-          <section class="land-step is-cases" id="land-cases" aria-labelledby="land-cases-h">
-            <h2 class="land-step-head" id="land-cases-h">Where the time goes</h2>
-            <p class="land-intro">Three situations I see often. They are illustrations, not named clients. The numbers show the scale, not a promise.</p>
-            <div class="land-cases">
-              <article class="land-case">
-                <p class="land-case-tag">Example · Wholesale, 40 staff</p>
-                <h3 class="land-case-title">The Monday report</h3>
-                <dl class="land-case-body">
-                  <div><dt>Today</dt><dd>Every Monday the operations manager rebuilds the leadership report by hand. Sales come from the accounts system, stock from the warehouse system, deliveries from the courier's website. It takes most of the morning, and the figures are a day old by the meeting.</dd></div>
-                  <div><dt>What I would build</dt><dd>The report builds itself overnight from the same three systems and is in the inbox at 7am. The manager reads it, checks anything flagged, and adds comments.</dd></div>
-                  <div class="is-result"><dt>What changes</dt><dd>About 5 hours a week back. Roughly 230 hours a year.</dd></div>
-                </dl>
-              </article>
-              <article class="land-case">
-                <p class="land-case-tag">Example · Professional services, 25 staff</p>
-                <h3 class="land-case-title">Setting up a new client</h3>
-                <dl class="land-case-body">
-                  <div><dt>Today</dt><dd>When a proposal is signed, someone copies the client's details into the customer database (CRM), the billing system and the project tracker. Then they email three colleagues. It takes about 40 minutes a client, and something small is usually missed.</dd></div>
-                  <div><dt>What I would build</dt><dd>Signing the proposal starts it. The records appear in all three systems, the right people are told, and anything missing is flagged for a person to fill in.</dd></div>
-                  <div class="is-result"><dt>What changes</dt><dd>At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts.</dd></div>
-                </dl>
-              </article>
-              <article class="land-case">
-                <p class="land-case-tag">Example · Illustration</p>
-                <h3 class="land-case-title">Early warning on suppliers</h3>
-                <dl class="land-case-body">
-                  <div><dt>Today</dt><dd>A distributor found out its main supplier had gone into administration when deliveries stopped. The signs had been public for weeks, in Companies House filings and insolvency notices.</dd></div>
-                  <div><dt>What I would build</dt><dd>A system reads those public records every night for the companies you depend on. It emails you the morning something changes, such as overdue accounts or a winding-up petition.</dd></div>
-                  <div class="is-result"><dt>What changes</dt><dd>Weeks of warning instead of none.</dd></div>
-                </dl>
-              </article>
+          <div class="pg-nojs" data-nojs>
+            <div class="pg-field">
+              <label class="pg-label" for="f-scale">How many people do it, and how often</label>
+              <p class="pg-example" id="f-scale-ex">For example: two people, every Monday morning.</p>
+              <input class="pg-input" id="f-scale" name="scale" type="text" autocomplete="off" aria-describedby="f-scale-ex" />
             </div>
-          </section>
-          <section class="land-step is-how" id="land-how" aria-labelledby="land-how-h">
-            <h2 class="land-step-head" id="land-how-h">How we would start</h2>
-            <ol class="land-how" role="list">
-              <li><span class="land-how-n">1</span><h3 class="land-how-title">A 30-minute call, free</h3><p class="land-how-detail">You tell me where the time goes. I ask how the work actually moves.</p></li>
-              <li><span class="land-how-n">2</span><h3 class="land-how-title">A one-page summary</h3><p class="land-how-detail">Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together.</p></li>
-              <li><span class="land-how-n">3</span><h3 class="land-how-title">A first system, checked by a person</h3><p class="land-how-detail">It does the work and someone checks every result. It runs alone only once the results are consistently right.</p></li>
-              <li><span class="land-how-n">4</span><h3 class="land-how-title">It runs, and reports</h3><p class="land-how-detail">You get a regular report of what it did, and of anything it could not do.</p></li>
-            </ol>
-          </section>
-          <section class="land-step is-book" id="land-book" aria-labelledby="land-book-h">
-            <h2 class="land-step-head" id="land-book-h">Next step</h2>
-            <p class="land-line">Tell me which job takes up your team's week. I reply the same day.</p>
-            <a class="entry-tool is-cta" href="mailto:lab@mindunder.dev" data-target="_book"><span class="entry-tool-label">Book the free call</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-            <dl class="offer">
-              <div class="offer-item"><dt>Price</dt><dd>Not on the site yet. Ask in the call or by email.</dd></div>
-              <div class="offer-item"><dt>Reply</dt><dd>The same day</dd></div>
-              <div class="offer-item"><dt>Based in</dt><dd>London, UK</dd></div>
+            <button class="btn btn-ghost pg-job-go" type="submit">Choose a time for the call</button>
+          </div>
+        </form>
+        <div class="pg-bench" data-answer hidden>
+          <div class="pg-bench-in">
+            <div class="pg-q" data-q="kind"><h3 class="pg-q-h">The job</h3><div class="pg-options" data-opts></div></div>
+            <div class="pg-q" data-q="systems"><h3 class="pg-q-h">Systems it touches</h3><div class="pg-options" data-opts></div></div>
+            <div class="pg-q" data-q="frequency"><h3 class="pg-q-h">How often</h3><div class="pg-options" data-opts></div></div>
+            <div class="pg-q" data-q="people"><h3 class="pg-q-h">People doing it</h3><div class="pg-options" data-opts></div></div>
+            <div class="pg-q pg-numbers-box">
+              <h3 class="pg-q-h">Hours and pay</h3>
+              <div class="est-fields pg-numbers">
+                <div class="est-field">
+                  <label class="est-label" for="n-people">People doing it</label>
+                  <div class="est-control">
+                    <button class="est-step" type="button" data-step="-1" aria-label="One person fewer">−</button>
+                    <input class="est-input" id="n-people" data-num="people" type="number" inputmode="decimal" min="1" max="500" step="1" value="2" />
+                    <button class="est-step" type="button" data-step="1" aria-label="One person more">+</button>
+                  </div>
+                </div>
+                <div class="est-field">
+                  <label class="est-label" for="n-hours">Hours each, per week</label>
+                  <div class="est-control">
+                    <button class="est-step" type="button" data-step="-1" aria-label="Half an hour less">−</button>
+                    <input class="est-input" id="n-hours" data-num="hours" type="number" inputmode="decimal" min="0.5" max="37.5" step="0.5" value="4" />
+                    <button class="est-step" type="button" data-step="1" aria-label="Half an hour more">+</button>
+                  </div>
+                </div>
+                <div class="est-field">
+                  <label class="est-label" for="n-salary">Salary of each person</label>
+                  <div class="est-control">
+                    <button class="est-step" type="button" data-step="-1" aria-label="£1,000 less">−</button>
+                    <span class="est-prefix" aria-hidden="true">£</span>
+                    <input class="est-input" id="n-salary" data-num="salary" type="number" inputmode="decimal" min="10000" max="300000" step="1000" value="35000" aria-describedby="n-salary-hint" />
+                    <button class="est-step" type="button" data-step="1" aria-label="£1,000 more">+</button>
+                  </div>
+                  <span class="est-hint" id="n-salary-hint">A year, before tax. With National Insurance and pension, the real cost is higher.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pg-bench-out">
+            <div class="pg-part" data-compare></div>
+            <div class="pg-part pg-money" data-money>
+              <p class="pg-share" data-answer-share></p>
+              <dl class="est-dl">
+                <div><dt class="micro">Their pay, a year</dt><dd><span class="est-num" data-answer-pay></span></dd></div>
+                <div><dt class="micro">Spent on this job</dt><dd><span class="est-num is-accent" data-answer-cost></span></dd></div>
+              </dl>
+              <p class="est-weeks" data-answer-weeks></p>
+              <div class="est-grid-wrap"><div class="est-grid" data-answer-grid aria-hidden="true"></div></div>
+              <p class="est-key">One square is one working week of 37.5 hours.</p>
+            </div>
+            <div class="pg-part" data-first>
+              <h3 class="pg-q-h">What I would automate first</h3>
+              <div data-first-list></div>
+            </div>
+            <div class="pg-part pg-end" data-end>
+              <p class="pg-nearest" data-answer-nearest></p>
+              <p class="pg-small">An estimate, not a quote. It counts salary only. A system rarely removes a job completely. It does the routine part, and a person checks the result.</p>
+              <button class="btn btn-ghost pg-answer-book" type="button" data-answer-book>Book the free call with these answers <span aria-hidden="true">↓</span></button>
+            </div>
+          </div>
+          <p class="visually-hidden" aria-live="polite" data-answer-live></p>
+        </div>
+      </section>
+      <section class="pg-section is-cases" id="cases" aria-labelledby="cases-h">
+        <h2 class="pg-head" id="cases-h">Where the time goes</h2>
+        <p class="pg-intro">Illustrations, not named clients.</p>
+        <div class="pg-cases">
+          <article class="pg-case" id="case-monday-report">
+            <p class="pg-case-tag">Example · Wholesale, 40 staff</p>
+            <h3 class="pg-case-title">The Monday report</h3>
+            <dl class="pg-case-body">
+              <div><dt>Today</dt><dd>Every Monday the operations manager rebuilds the leadership report by hand. Sales come from the accounts system, stock from the warehouse system, deliveries from the courier's website. It takes most of the morning, and the figures are a day old by the meeting.</dd></div>
+              <div><dt>What I would build</dt><dd>The report builds itself overnight from the same three systems and is in the inbox at 7am. The manager reads it, checks anything flagged, and adds comments.</dd></div>
+              <div class="is-result"><dt>What changes</dt><dd>About 5 hours a week back. Roughly 230 hours a year.</dd></div>
             </dl>
-            <h3 class="land-more-head">Or read more first</h3>
-            <nav class="entry" aria-label="Topics" data-entry>
-              <a class="entry-item" href="#/method" data-target="method"><span class="entry-index">01</span><span class="entry-label">What I do</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-              <a class="entry-item" href="#/signals" data-target="signals"><span class="entry-index">02</span><span class="entry-label">Problems I solve</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-              <a class="entry-item" href="#/proof" data-target="proof"><span class="entry-index">03</span><span class="entry-label">Proof</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-              <a class="entry-item" href="#/process" data-target="process"><span class="entry-index">04</span><span class="entry-label">How we start</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-            </nav>
-            <div class="entry-more">
-              <a class="entry-tool" href="#/estimate" data-target="estimate"><span class="entry-tool-label">Work out what a repeated task costs you</span><span class="entry-tool-note">Three numbers, one minute.</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-              <p class="entry-all"><a href="#/all" data-all-link>Everything on one page <span aria-hidden="true">→</span></a></p>
-            </div>
-          </section>
-          <!-- /sync:steps -->
+          </article>
+          <article class="pg-case" id="case-new-client">
+            <p class="pg-case-tag">Example · Professional services, 25 staff</p>
+            <h3 class="pg-case-title">Setting up a new client</h3>
+            <dl class="pg-case-body">
+              <div><dt>Today</dt><dd>When a proposal is signed, someone copies the client's details into the customer database (CRM), the billing system and the project tracker. Then they email three colleagues. It takes about 40 minutes a client, and something small is usually missed.</dd></div>
+              <div><dt>What I would build</dt><dd>Signing the proposal starts it. The records appear in all three systems, the right people are told, and anything missing is flagged for a person to fill in.</dd></div>
+              <div class="is-result"><dt>What changes</dt><dd>At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts.</dd></div>
+            </dl>
+          </article>
+          <article class="pg-case" id="case-cash">
+            <p class="pg-case-tag">Example · Trades and services, 15 staff</p>
+            <h3 class="pg-case-title">Seeing the cash coming</h3>
+            <dl class="pg-case-body">
+              <div><dt>Today</dt><dd>The bank balance is checked each morning. Unpaid invoices and next month's bills are in three different places. A large bill arrives as a surprise, so a decision gets rushed: a loan, a long contract, a payment delayed.</dd></div>
+              <div><dt>What I would build</dt><dd>Every Monday a forecast builds itself from the accounts system and the bank. Money due in and money due out, for the next eight weeks. Anything late is flagged.</dd></div>
+              <div class="is-result"><dt>What changes</dt><dd>Weeks of notice before a gap, instead of days. Time to choose, instead of a rushed decision.</dd></div>
+            </dl>
+          </article>
+        </div>
+        <a class="pg-book-link" href="#book">Book the free call <span aria-hidden="true">↓</span></a>
+      </section>
+      <section class="pg-section is-start" id="start" aria-labelledby="start-h">
+        <h2 class="pg-head" id="start-h">What I look for</h2>
+        <ul class="pg-look" role="list">
+          <li>Decisions made in a rush, because the money coming in and going out was seen too late.</li>
+          <li>Work that does not earn money directly, like admin and reports, left half-built. It then takes time from the work that does.</li>
+          <li>The same job done two different ways by two people.</li>
+          <li>Decisions nobody wrote down, so the same question gets settled again.</li>
+        </ul>
+        <h3 class="pg-sub">How we would start</h3>
+        <ol class="pg-steps" role="list">
+          <li><span class="pg-step-n" aria-hidden="true">1</span><h3 class="pg-step-title">A 30-minute call, free.</h3> <p class="pg-step-detail">You tell me where the time goes. I ask how the work actually moves.</p></li>
+          <li><span class="pg-step-n" aria-hidden="true">2</span><h3 class="pg-step-title">A one-page plan.</h3> <p class="pg-step-detail">Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together.</p></li>
+          <li><span class="pg-step-n" aria-hidden="true">3</span><h3 class="pg-step-title">A design you approve.</h3> <p class="pg-step-detail">What stays, what changes, what becomes automatic. Nothing changes until you approve it.</p></li>
+          <li><span class="pg-step-n" aria-hidden="true">4</span><h3 class="pg-step-title">A first system, checked by a person.</h3> <p class="pg-step-detail">It does the work and someone checks every result. It runs alone only once the results are consistently right.</p></li>
+          <li><span class="pg-step-n" aria-hidden="true">5</span><h3 class="pg-step-title">It runs, and reports.</h3> <p class="pg-step-detail">You get a regular report of what it did, and of anything it could not do.</p></li>
+        </ol>
+        <ul class="pg-facts" role="list">
+          <li><b>First call:</b> Free, 30 minutes.</li>
+          <li><b>Price:</b> Agreed in writing before any work starts. The call and the plan cost nothing.</li>
+          <li><b>Reply to email:</b> The same day.</li>
+          <li><b>Based in:</b> London, UK.</li>
+        </ul>
+        <a class="pg-book-link" href="#book">Book the free call <span aria-hidden="true">↓</span></a>
+      </section>
+      <section class="pg-section is-who" id="who" aria-labelledby="who-h">
+        <h2 class="pg-head" id="who-h">Who you would talk to</h2>
+        <div class="pg-who-body">
+          <img class="pg-photo" src="img/ruben.jpg" width="500" height="620" alt="Ruben Pires, walking along a chalk cliff above the sea." decoding="async" />
+          <div class="pg-who-lines">
+            <p class="pg-who-name">Ruben Pires</p>
+            <p class="pg-who">I work alone, in London, and have automated work for other organisations for years.</p>
+            <p class="pg-who">Today I run Salesforce at London &amp; Partners, as an employee. A project with you would be my full-time work.</p>
+            <p class="pg-who">I run my own work on a system I built, every day.</p>
+            <p class="pg-who">Salesforce certifications: Administrator, Platform App Builder, Agentforce Specialist.</p>
+          </div>
         </div>
       </section>
-
-      <!-- Session. Rendered by the script once a question is asked. -->
-      <section class="session" data-session hidden aria-labelledby="session-title">
-        <h1 class="visually-hidden" id="session-title">Topics</h1>
-        <aside class="rail" aria-label="Session" data-rail></aside>
-
-        <div class="log" data-log role="log" aria-live="polite" aria-relevant="additions"></div>
+      <section class="pg-section is-book" id="book" aria-labelledby="book-h">
+        <h2 class="pg-head" id="book-h" tabindex="-1">Book the free call</h2>
+        <p class="pg-intro">30 minutes, free. Choose a time that suits you. Cal.com sends the confirmation by email.</p>
+        <div class="pg-booking" data-booking>
+          <a class="btn btn-primary pg-show" href="https://cal.com/rwb3n/30min" data-book-show>Show available times <span aria-hidden="true">→</span></a>
+          <p class="pg-status" data-book-status role="status" hidden>Loading available times from Cal.com.</p>
+          <div class="pg-embed" id="cal-embed" data-book-embed hidden></div>
+          <p class="pg-fail" data-book-fail hidden>The booking calendar did not load. You can book on the Cal.com page instead. <a href="https://cal.com/rwb3n/30min" data-book-open>Open the booking page on Cal.com</a></p>
+        </div>
+        <p class="pg-email">Or email <a href="mailto:lab@mindunder.dev">lab@mindunder.dev</a>. I reply the same day.</p>
       </section>
-
-      <!-- One page: everything in order. Rendered by the script at /#/all. -->
-      <article class="page" data-page hidden aria-labelledby="page-title"></article>
-
-      <noscript>
-        <!-- sync:noscript -->
-        <section class="noscript">
-          <p>JavaScript is off. The essentials:</p>
-          <dl class="offer">
-            <div class="offer-item"><dt>What I do</dt><dd>I find the steps your team repeats by hand. Then I build software that does them.</dd></div>
-            <div class="offer-item"><dt>First step</dt><dd>A free 30-minute call. Afterwards you get a one-page summary of where time is lost, yours to keep.</dd></div>
-            <div class="offer-item"><dt>Price</dt><dd>Not on the site yet. Ask in the call or by email.</dd></div>
-            <div class="offer-item"><dt>Reply</dt><dd>The same day</dd></div>
-            <div class="offer-item"><dt>Based in</dt><dd>London, UK</dd></div>
-            <div class="offer-item"><dt>Client work</dt><dd>No client case studies published yet. The examples here are illustrations.</dd></div>
-          </dl>
-          <p>Email: <a href="mailto:lab@mindunder.dev">lab@mindunder.dev</a></p>
-        </section>
-        <!-- /sync:noscript -->
-      </noscript>
+      <!-- /sync:page -->
     </main>
-
-    <form class="ask" data-ask autocomplete="off" aria-label="Ask a question">
-      <label class="ask-prompt" for="ask-input">Ask</label>
-      <input class="ask-input" id="ask-input" name="q" type="text" enterkeyhint="send" spellcheck="false" placeholder="Type a question" data-ask-input />
-      <kbd class="ask-hint" aria-hidden="true">/</kbd>
-      <button class="ask-send" type="submit" aria-label="Send">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg>
-      </button>
-    </form>
 
     <footer class="foot">
       <span>mindunder.dev · London, UK</span>
-      <a class="foot-link" href="/components/">Components</a>
       <span>© <span data-year>2026</span></span>
     </footer>
+
+    <!-- sync:booking -->
+    <script type="application/json" id="booking-config">{"calLink":"rwb3n/30min","origin":"https://cal.com","embedScript":"https://app.cal.com/embed/embed.js","timeoutSeconds":10,"fields":["job","scale"],"job":{"field":"job","numbers":[{"key":"people","label":"People doing it","min":1,"max":500,"step":1,"value":2,"less":"One person fewer","more":"One person more"},{"key":"hours","label":"Hours each, per week","min":0.5,"max":37.5,"step":0.5,"value":4,"less":"Half an hour less","more":"Half an hour more"},{"key":"salary","label":"Salary of each person","hint":"A year, before tax. With National Insurance and pension, the real cost is higher.","min":10000,"max":300000,"step":1000,"value":35000,"prefix":"£","less":"£1,000 less","more":"£1,000 more"}],"answer":{"you":"You: {job}","cost":"Spent on this job","weeks":"Equal to {weeks} full working weeks a year.","key":"One square is one working week of 37.5 hours.","nearest":"Nearest example: {title}","note":"An estimate, not a quote. It counts salary only. A system rarely removes a job completely. It does the routine part, and a person checks the result.","book":"Book the free call with these answers","scale":"{people}, {hours} hours each a week, salary {salary} each: about {cost} a year on this job","weeksPerYear":46,"hoursPerWeek":37.5,"share":"Of the {pay} a year you pay them, {cost} goes on this job.","pay":"Their pay, a year"},"cases":[{"id":"monday-report","title":"The Monday report","match":["report","reports","reporting","spreadsheet","spreadsheets","figures","dashboard","numbers","kpi"]},{"id":"new-client","title":"Setting up a new client","match":["client","clients","customer","customers","onboarding","proposal","proposals","crm","copy","copying","data entry","setting up","new starter","new starters"]},{"id":"cash","title":"Seeing the cash coming","match":["cash","invoice","invoices","invoicing","payment","payments","bank","bills","forecast","money","credit control","chasing","debtors","cash flow"]}],"decide":{"$":"Step 1's taps and the components they bring (_model/target/funnel.md). Each kind of job is a template; \"$sys\" in it is replaced by the systems tapped.","none":"None named","compareLabel":"Show the job","states":{"before":"Today","after":"Automated","beforeTitle":"Your job today","afterTitle":"The same job, automated"},"stat":{"before":"steps done by hand","after":"check by a person"},"firstHead":"What I would automate first","numbersHead":"Hours and pay","frequency":["Every day","Every week","Every month","Every quarter"],"hoursByFrequency":[5,3,1,0.5],"people":{"one":{"label":"One","value":1},"few":{"label":"Two or three","value":2},"team":{"label":"A team","value":5}},"systems":{"spreadsheet":"Spreadsheet","email":"Email","accounts":"Accounts","crm":"Customer database","bank":"Bank","paper":"PDFs and paper","portal":"Website or portal"},"kinds":{"report":{"label":"Building reports","case":"monday-report","defaults":["accounts","spreadsheet"],"before":["$sys",{"id":"p1","label":"Person","variant":"muted"},{"id":"sheet","label":"Spreadsheet"},{"id":"p2","label":"Person","variant":"muted"},{"id":"out","label":"Report"}],"after":["$sys",{"id":"sys","label":"System","variant":"accent","via":"reads"},{"id":"out","label":"Report","via":"builds"},{"id":"chk","label":"Person checks","variant":"muted"}],"first":[{"title":"Collect the figures overnight","detail":"From the same systems, the same way, every time."},{"title":"Build the report","detail":"The same layout each time. Anything unusual is flagged."},{"title":"A person checks it","detail":"Before it goes out. The check takes minutes."}]},"new_client":{"label":"Setting up new clients","case":"new-client","defaults":["accounts","crm"],"before":[{"id":"in","label":"New client"},{"id":"p1","label":"Person","variant":"muted"},"$sys"],"after":[{"id":"in","label":"New client"},{"id":"sys","label":"System","variant":"accent","via":"reads"},{"sys":true,"via":"fills in"},{"id":"chk","label":"Person checks gaps","variant":"muted"}],"first":[{"title":"One form starts it","detail":"The details are typed once."},{"title":"The records appear everywhere","detail":"Every system is filled in from that one form."},{"title":"Gaps go to a person","detail":"Anything missing is flagged, not guessed."}]},"invoices":{"label":"Invoices and payments","case":"cash","defaults":["bank","accounts"],"before":["$sys",{"id":"p1","label":"Person","variant":"muted"},{"id":"sheet","label":"Spreadsheet"},{"id":"out","label":"Cash position"}],"after":["$sys",{"id":"sys","label":"System","variant":"accent","via":"reads"},{"id":"out","label":"Cash position","via":"daily"},{"id":"chk","label":"Person checks mismatches","variant":"muted"}],"first":[{"title":"Read the bank and the accounts each day","detail":"Payments in and out are matched where they agree."},{"title":"Flag what does not match","detail":"A short list for a person, not the whole statement."},{"title":"Show the next eight weeks","detail":"Money due in and out, so decisions are not rushed."}]},"copying":{"label":"Copying between systems","case":null,"defaults":["email","paper"],"before":["$sys",{"id":"p1","label":"Person","variant":"muted"},{"id":"out","label":"Your system"}],"after":["$sys",{"id":"sys","label":"System","variant":"accent","via":"reads"},{"id":"out","label":"Your system","via":"writes"},{"id":"chk","label":"Person checks odd ones","variant":"muted"}],"first":[{"title":"Read the source","detail":"The email, the form, the PDF or the portal."},{"title":"Write it into your system","detail":"Once, the same way, with a record of what was copied."},{"title":"Odd ones wait for a person","detail":"Anything unclear is not guessed."}]},"scheduling":{"label":"Rotas and bookings","case":null,"defaults":["email","spreadsheet"],"before":["$sys",{"id":"p1","label":"Person","variant":"muted"},{"id":"out","label":"Schedule"},{"id":"p2","label":"Person","variant":"muted"},{"id":"told","label":"Everyone told"}],"after":["$sys",{"id":"sys","label":"System","variant":"accent","via":"reads"},{"id":"out","label":"Schedule","via":"drafts"},{"id":"ok","label":"Person approves","variant":"muted"},{"id":"told","label":"Everyone told","via":"sends"}],"first":[{"title":"Collect who is free","detail":"From the calendars and lists you already use."},{"title":"Draft the schedule","detail":"Following your rules. Clashes are flagged."},{"title":"A person approves it","detail":"Then it is sent to everyone."}]},"approvals":{"label":"Getting approval","case":null,"defaults":["email"],"before":[{"id":"req","label":"Request"},"$sys",{"id":"p1","label":"Person chases","variant":"muted"},{"id":"ok","label":"Approved"}],"after":[{"id":"req","label":"Request"},{"id":"sys","label":"System","variant":"accent","via":"routes"},{"id":"ok","label":"Approved","via":"reminds"},{"id":"rec","label":"Record kept"}],"first":[{"title":"One place for requests","detail":"Each request has an owner and a status."},{"title":"Remind the approver","detail":"Until it is approved or turned down."},{"title":"Keep the record","detail":"Who approved what, and when."}]},"chasing":{"label":"Chasing people","case":null,"defaults":["email"],"before":[{"id":"list","label":"Who owes what"},{"id":"p1","label":"Person","variant":"muted"},"$sys",{"id":"rep","label":"Replies"},{"id":"p2","label":"Person updates list","variant":"muted"}],"after":[{"id":"list","label":"Who owes what"},{"id":"sys","label":"System","variant":"accent","via":"reads"},{"sys":true,"via":"sends"},{"id":"rep","label":"Replies"},{"id":"chk","label":"Person sees what is missing","variant":"muted"}],"first":[{"title":"Know who has not replied","detail":"From the system, not from memory."},{"title":"Send the reminders","detail":"On a schedule, and stopped once they reply."},{"title":"A person sees what is still missing","detail":"A short list, each morning."}]},"other":{"label":"Something else","case":null,"defaults":[],"before":[{"id":"in","label":"Work arrives"},{"id":"p1","label":"Person","variant":"muted"},"$sys",{"id":"out","label":"Done"}],"after":[{"id":"in","label":"Work arrives"},{"id":"sys","label":"System","variant":"accent","via":"does the routine part"},"$sys",{"id":"out","label":"Done"},{"id":"chk","label":"Person checks","variant":"muted"}],"first":[{"title":"Map how the work moves","detail":"On the call, step by step."},{"title":"Find the repeated part","detail":"The part a system can do the same way every time."},{"title":"Decide what a person checks","detail":"Nothing runs alone until the results are right."}]}},"taps":{"kind":"The job","systems":"Systems it touches","frequency":"How often","people":"People doing it"},"peopleSummary":"People: {people}","start":{"kind":"report","frequency":1,"people":"few"}}}}</script>
+    <!-- /sync:booking -->
   </body>
 </html>

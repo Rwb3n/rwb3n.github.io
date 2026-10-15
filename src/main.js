@@ -1,31 +1,22 @@
-// Boot: config → reading preferences → chrome (theme, clock) → landing (type,
-// lens) → topics.
+// The page: reading settings, theme, the headline's rising words, booking.
+// Everything a visitor reads is already in index.html; this only adds.
 
-import { site, config, applyConfig } from './copy.js';
-import { loadContent, loadSiteConfig } from './content.js';
 import { initPrefs } from './prefs.js';
 import { createSettings } from './settings.js';
-import { createApp } from './app.js';
-import { enhanceLanding } from './landing.js';
+import { createBooking } from './book.js';
+import { createJob } from './job.js';
+import { splitWords } from './type.js';
 import { reducedMotion } from './dom.js';
-import { createSound, sfx } from './sound.js';
 
-try {
-  applyConfig(await loadSiteConfig());
-} catch (err) {
-  console.warn('[config] using defaults:', err.message);
-}
-initPrefs(config.reading);
+initPrefs(window.__muReading || {});
 
 const THEME_KEY = 'mu-theme';
 const html = document.documentElement;
 
-// Theme -----------------------------------------------------------------------
-// Switching theme spreads the new one out from the toggle as a circle.
+// Theme: the new one spreads out from the toggle as a circle.
 function setTheme(t) {
   html.dataset.theme = t;
   for (const m of document.querySelectorAll('meta[name="theme-color"]')) m.content = t === 'dark' ? '#000000' : '#ffffff';
-  document.dispatchEvent(new CustomEvent('mu:theme', { detail: t }));
 }
 const toggle = document.querySelector('[data-theme-toggle]');
 toggle?.addEventListener('click', () => {
@@ -36,7 +27,6 @@ toggle?.addEventListener('click', () => {
   const x = b.left + b.width / 2, y = b.top + b.height / 2;
   const rad = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
   html.classList.add('is-theming');
-  sfx('theme');
   const vt = document.startViewTransition(() => setTheme(next));
   vt.ready.then(() => {
     html.animate(
@@ -52,73 +42,26 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
   if (!stored) setTheme(e.matches ? 'dark' : 'light');
 });
 
-// Reading settings and sound -------------------------------------------------
-const hasAudio = config.features.sound !== false && !!(window.AudioContext || window.webkitAudioContext);
-if (hasAudio) createSound();
 createSettings({
   toggle: document.querySelector('[data-settings-toggle]'),
   panel: document.querySelector('[data-settings]'),
-  soundAvailable: hasAudio,
+  soundAvailable: false,
 });
-
-// London clock ----------------------------------------------------------------
-const clock = document.querySelector('[data-clock]');
-const fmt = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: site.timeZone, timeZoneName: 'short' });
-function tick() {
-  if (!clock) return;
-  const parts = fmt.formatToParts(new Date());
-  const get = (t) => parts.find((p) => p.type === t)?.value ?? '';
-  clock.textContent = `${get('hour')}:${get('minute')} ${get('timeZoneName')}`;
-  clock.dateTime = new Date().toISOString();
-}
-tick();
-setInterval(tick, 15_000);
 
 const year = document.querySelector('[data-year]');
 if (year) year.textContent = String(new Date().getFullYear());
 
-// Scrolled state for the bar hairline -----------------------------------------
 const onScroll = () => html.classList.toggle('is-scrolled', window.scrollY > 4);
 addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
-// Landing: rising words, the lens and its x-ray, the entry spotlight ------------
-// Text size changes the layout the lens measured.
-document.addEventListener('mu:prefs', (e) => { if (e.detail.key === 'text') dispatchEvent(new Event('resize')); });
-const lensCanvas = document.querySelector('[data-lens]');
-const lens = enhanceLanding(document, { yieldOver: [...document.querySelectorAll('.ask')] });
-if (lens) {
-  window.mindunderLens = lens; // read-only state for debugging
-  document.addEventListener('mu:session', () => lens.pause());
-  document.addEventListener('mu:landing', () => lens.resume());
-  document.addEventListener('mu:theme', () => lens.refresh());
-}
+// The headline's words rise out of their masks (full motion only).
+const display = document.querySelector('.pg .display');
+if (display && !reducedMotion()) splitWords(display);
 
-// While the headline screen is in view, the ask bar waits below it. Pressing
-// "/" (the ask shortcut) brings it back straight away.
-const hero = document.querySelector('[data-landing-hero]');
-if (hero && 'IntersectionObserver' in window) {
-  new IntersectionObserver(([e]) => document.body.classList.toggle('is-hero', e.intersectionRatio > 0.6), { threshold: [0, 0.6, 1] }).observe(hero);
-  addEventListener('keydown', (e) => { if (e.key === '/') document.body.classList.remove('is-hero'); }, { capture: true });
-  document.querySelector('[data-ask]')?.addEventListener('focusin', () => document.body.classList.remove('is-hero'));
-}
-
-// App ---------------------------------------------------------------------------
-loadContent()
-  .then((content) => {
-    // The fix plays in full the first time in a session; after that, a quick reprise.
-    const seenFix = () => { try { return sessionStorage.getItem('mu-fixed') === '1'; } catch { return false; } };
-    const beforeLeave = () => {
-      // The fix plays over the headline screen; if the visitor has scrolled past it, skip it.
-      if (lensCanvas && lensCanvas.getBoundingClientRect().bottom < innerHeight * 0.4) return;
-      const p = lens?.fix(seenFix() ? 420 : undefined);
-      try { sessionStorage.setItem('mu-fixed', '1'); } catch { /* ignore */ }
-      return p;
-    };
-    window.mindunder = createApp(content, document, { beforeLeave });
-  })
-  .catch((err) => {
-    console.error('[content]', err);
-    const input = document.querySelector('[data-ask-input]');
-    if (input) { input.disabled = true; input.placeholder = `Couldn’t load — email ${site.email}`; }
-  });
+// Step 1 answers the visitor; its answers go into the booking.
+let job = null;
+const booking = createBooking(document, { getAnswers: () => job?.answers() || {} });
+job = createJob(document, { book: (answers) => booking ? booking.open(answers) : location.assign('#book') });
+window.mindunderBooking = booking;
+window.mindunderJob = job;

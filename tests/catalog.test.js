@@ -6,10 +6,11 @@ import { nodeStrings, lintStrings } from '../src/lint.js';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 const load = (p) => JSON.parse(read(`content/${p}`));
-const manifest = load('graphs/default.json');
-const nodes = manifest.nodes.flatMap((n) => [load(`nodes/${n}.json`)].flat());
+// The site has no topics: the blocks live on in the component library, shown
+// with the fixtures (test content, never on the site).
 const site = load('site.json');
 const fixtures = load('graphs/fixtures.json').nodes.flatMap((n) => [load(`nodes/${n}.json`)].flat());
+const nodes = [];
 
 // blocks.js touches `document` on import, so its renderer keys are read from source.
 function rendererKeys() {
@@ -72,23 +73,21 @@ test('the validator catches mistakes', () => {
   assert.deepEqual(validateBlock({ type: 'text', content: 'x', $note: 'comments are fine' }), []);
 });
 
-test('usage maps every non-session type used in content', () => {
-  const u = usage(nodes);
-  assert.ok(u.flow.includes('haios'));
-  assert.ok(u.metricRow.includes('about'), 'nested split blocks are counted');
+test('usage counts nested blocks', () => {
+  const u = usage([{ id: 'x', blocks: [{ type: 'split', left: [{ type: 'metricRow', items: [{ value: '1', label: 'a' }] }] }] }]);
+  assert.deepEqual(u.metricRow, ['x'], 'nested split blocks are counted');
 });
 
 test('fixtures are valid, follow the writing rules, and stay off the site', () => {
   assert.deepEqual(fixtures.flatMap((n) => validateBlocks(n.blocks, n.id)), []);
   const issues = fixtures.flatMap((n) => lintStrings(nodeStrings(n), site.language, { scope: n.id })).filter((i) => i.level === 'error' && i.where !== 'whole topic');
   assert.deepEqual(issues, []);
-  const onSite = new Set(nodes.map((n) => n.id));
-  assert.deepEqual(fixtures.filter((n) => onSite.has(n.id)).map((n) => n.id), []);
+  assert.ok(!JSON.stringify(load('site.json')).includes('fixture_'), 'the site never names a fixture');
 });
 
-test('every block a topic can use is used at least once (topics or fixtures)', () => {
-  const u = usage([...nodes, ...fixtures]);
-  const unused = blockTypes.filter((t) => !blocks[t].runtime && !u[t].length);
+test('every block is used at least once in the fixtures', () => {
+  const u = usage(fixtures);
+  const unused = blockTypes.filter((t) => !u[t].length);
   assert.deepEqual(unused, []);
 });
 

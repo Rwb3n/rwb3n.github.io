@@ -1,121 +1,855 @@
 {
-  "$comment": "Site configuration. Everything a visitor reads outside the topic files lives here. Leave a value as null if it is not decided yet: the site will not invent it. Run `npm run sync` after editing, then `npm test`.",
+  "$comment": "Site configuration: everything a visitor reads. The page is one funnel, top to bottom (_model/target/funnel.md); its words come from _model/target/copy.md. Leave a value as null if it is not decided yet: the site will not invent it. Run `npm run sync` after editing, then `npm test`.",
   "brand": "mindunder.dev",
   "timeZone": "Europe/London",
-  "person": { "name": "Ruben", "fullName": null, "email": "lab@mindunder.dev", "location": "London, UK", "links": [] },
+  "person": {
+    "name": "Ruben",
+    "fullName": "Ruben Pires",
+    "email": "lab@mindunder.dev",
+    "location": "London, UK",
+    "links": []
+  },
   "meta": {
     "title": "mindunder.dev — business process automation, London",
-    "description": "I find the work your team repeats by hand, then build a system that does it. The first call is free. Based in London."
+    "description": "Ruben Pires: business process automation, London. Pick the job your team repeats and see what it costs you. The first call is free."
   },
   "facts": {
-    "what": { "label": "What I do", "value": "I find the steps your team repeats by hand. Then I build software that does them." },
-    "who": { "label": "Who it is for", "value": null, "missing": null },
-    "firstStep": { "label": "First step", "value": "A free 30-minute call. Afterwards you get a one-page summary of where time is lost, yours to keep." },
-    "cost": { "label": "Price", "value": null, "missing": "Not on the site yet. Ask in the call or by email." },
-    "timeline": { "label": "How long it takes", "value": null, "missing": null },
-    "reply": { "label": "Reply", "value": "The same day" },
-    "location": { "label": "Based in", "value": "London, UK" },
+    "what": {
+      "label": "What I do",
+      "value": "I find the steps your team repeats by hand. Then I build software that does them."
+    },
+    "who": {
+      "label": "Who it is for",
+      "value": null,
+      "missing": null
+    },
+    "firstStep": {
+      "label": "First step",
+      "value": "A free 30-minute call. Afterwards you get a one-page plan: where time is lost and what I would automate first. It is yours to keep."
+    },
+    "cost": {
+      "label": "Price",
+      "value": "Agreed in writing before any work starts. The call and the plan cost nothing.",
+      "missing": "Not on the site yet. Ask in the call or by email."
+    },
+    "timeline": {
+      "label": "How long it takes",
+      "value": null,
+      "missing": null
+    },
+    "reply": {
+      "label": "Reply",
+      "value": "The same day"
+    },
+    "location": {
+      "label": "Based in",
+      "value": "London, UK"
+    },
     "clients": {
       "label": "Client work",
       "value": null,
       "missing": "No client case studies published yet. The examples here are illustrations."
     },
-    "handover": { "label": "After the project", "value": null, "missing": null }
+    "handover": {
+      "label": "After the project",
+      "value": null,
+      "missing": null
+    }
   },
-  "landing": {
-    "eyebrow": "Business process automation · London",
-    "headline": ["I find the work your team repeats by hand.", "Then I build a system that does it."],
-    "accent": "find",
-    "facts": ["firstStep", "cost", "reply"],
-    "allLink": "Everything on one page",
-    "tool": { "target": "estimate", "label": "Work out what a repeated task costs you", "note": "Three numbers, one minute." },
-    "lens": {
-      "idle": "Move the pointer to look underneath.",
-      "idleTouch": "Touch and move to look underneath.",
-      "found": "Bottleneck: work waiting for a person.",
-      "note": "bottleneck",
-      "noteLines": ["example"]
-    },
-    "cue": "Three examples, and how we would start",
-    "path": {
-      "$": "The landing, one screen per idea, in this order. Rendered by src/static.js.",
-      "cases": {
-        "head": "Where the time goes",
-        "intro": "Three situations I see often. They are illustrations, not named clients. The numbers show the scale, not a promise.",
-        "labels": { "before": "Today", "build": "What I would build", "result": "What changes" },
-        "items": [
-          {
-            "tag": "Example · Wholesale, 40 staff",
-            "title": "The Monday report",
-            "before": "Every Monday the operations manager rebuilds the leadership report by hand. Sales come from the accounts system, stock from the warehouse system, deliveries from the courier's website. It takes most of the morning, and the figures are a day old by the meeting.",
-            "build": "The report builds itself overnight from the same three systems and is in the inbox at 7am. The manager reads it, checks anything flagged, and adds comments.",
-            "result": "About 5 hours a week back. Roughly 230 hours a year."
+  "booking": {
+    "$": "Cal.com, hosted. calLink is the part after cal.com/ (for example \"ruben/30min\"). While it is null, the page offers email only and shows no booking form.",
+    "calLink": "rwb3n/30min",
+    "origin": "https://cal.com",
+    "embedScript": "https://app.cal.com/embed/embed.js",
+    "timeoutSeconds": 10,
+    "fields": [
+      "job",
+      "scale"
+    ]
+  },
+  "page": {
+    "$": "The funnel, in order (_model/target/funnel.md). Section ids are the page anchors. Every quiet link to #book uses bookLink.",
+    "bookLink": "Book the free call",
+    "job": {
+      "eyebrow": "Business process automation · London",
+      "headline": [
+        "Ruben Pires.",
+        "I automate the work your team repeats."
+      ],
+      "accent": "",
+      "field": {
+        "name": "job",
+        "label": "The job your team does by hand",
+        "example": "For example: the Monday report, or setting up new clients."
+      },
+      "noscript": {
+        "name": "scale",
+        "label": "How many people do it, and how often",
+        "example": "For example: two people, every Monday morning.",
+        "submit": "Choose a time for the call"
+      },
+      "numbers": [
+        {
+          "key": "people",
+          "label": "People doing it",
+          "min": 1,
+          "max": 500,
+          "step": 1,
+          "value": 2,
+          "less": "One person fewer",
+          "more": "One person more"
+        },
+        {
+          "key": "hours",
+          "label": "Hours each, per week",
+          "min": 0.5,
+          "max": 37.5,
+          "step": 0.5,
+          "value": 4,
+          "less": "Half an hour less",
+          "more": "Half an hour more"
+        },
+        {
+          "key": "salary",
+          "label": "Salary of each person",
+          "hint": "A year, before tax. With National Insurance and pension, the real cost is higher.",
+          "min": 10000,
+          "max": 300000,
+          "step": 1000,
+          "value": 35000,
+          "prefix": "£",
+          "less": "£1,000 less",
+          "more": "£1,000 more"
+        }
+      ],
+      "answer": {
+        "you": "You: {job}",
+        "cost": "Spent on this job",
+        "weeks": "Equal to {weeks} full working weeks a year.",
+        "key": "One square is one working week of 37.5 hours.",
+        "nearest": "Nearest example: {title}",
+        "note": "An estimate, not a quote. It counts salary only. A system rarely removes a job completely. It does the routine part, and a person checks the result.",
+        "book": "Book the free call with these answers",
+        "scale": "{people}, {hours} hours each a week, salary {salary} each: about {cost} a year on this job",
+        "weeksPerYear": 46,
+        "hoursPerWeek": 37.5,
+        "share": "Of the {pay} a year you pay them, {cost} goes on this job.",
+        "pay": "Their pay, a year"
+      },
+      "decide": {
+        "$": "Step 1's taps and the components they bring (_model/target/funnel.md). Each kind of job is a template; \"$sys\" in it is replaced by the systems tapped.",
+        "none": "None named",
+        "compareLabel": "Show the job",
+        "states": {
+          "before": "Today",
+          "after": "Automated",
+          "beforeTitle": "Your job today",
+          "afterTitle": "The same job, automated"
+        },
+        "stat": {
+          "before": "steps done by hand",
+          "after": "check by a person"
+        },
+        "firstHead": "What I would automate first",
+        "numbersHead": "Hours and pay",
+        "frequency": [
+          "Every day",
+          "Every week",
+          "Every month",
+          "Every quarter"
+        ],
+        "hoursByFrequency": [
+          5,
+          3,
+          1,
+          0.5
+        ],
+        "people": {
+          "one": {
+            "label": "One",
+            "value": 1
           },
-          {
-            "tag": "Example · Professional services, 25 staff",
-            "title": "Setting up a new client",
-            "before": "When a proposal is signed, someone copies the client's details into the customer database (CRM), the billing system and the project tracker. Then they email three colleagues. It takes about 40 minutes a client, and something small is usually missed.",
-            "build": "Signing the proposal starts it. The records appear in all three systems, the right people are told, and anything missing is flagged for a person to fill in.",
-            "result": "At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts."
+          "few": {
+            "label": "Two or three",
+            "value": 2
           },
-          {
-            "tag": "Example · Illustration",
-            "title": "Early warning on suppliers",
-            "before": "A distributor found out its main supplier had gone into administration when deliveries stopped. The signs had been public for weeks, in Companies House filings and insolvency notices.",
-            "build": "A system reads those public records every night for the companies you depend on. It emails you the morning something changes, such as overdue accounts or a winding-up petition.",
-            "result": "Weeks of warning instead of none."
+          "team": {
+            "label": "A team",
+            "value": 5
           }
-        ]
-      },
-      "how": {
-        "head": "How we would start",
-        "items": [
-          { "title": "A 30-minute call, free", "detail": "You tell me where the time goes. I ask how the work actually moves." },
-          {
-            "title": "A one-page summary",
-            "detail": "Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together."
+        },
+        "systems": {
+          "spreadsheet": "Spreadsheet",
+          "email": "Email",
+          "accounts": "Accounts",
+          "crm": "Customer database",
+          "bank": "Bank",
+          "paper": "PDFs and paper",
+          "portal": "Website or portal"
+        },
+        "kinds": {
+          "report": {
+            "label": "Building reports",
+            "case": "monday-report",
+            "defaults": [
+              "accounts",
+              "spreadsheet"
+            ],
+            "before": [
+              "$sys",
+              {
+                "id": "p1",
+                "label": "Person",
+                "variant": "muted"
+              },
+              {
+                "id": "sheet",
+                "label": "Spreadsheet"
+              },
+              {
+                "id": "p2",
+                "label": "Person",
+                "variant": "muted"
+              },
+              {
+                "id": "out",
+                "label": "Report"
+              }
+            ],
+            "after": [
+              "$sys",
+              {
+                "id": "sys",
+                "label": "System",
+                "variant": "accent",
+                "via": "reads"
+              },
+              {
+                "id": "out",
+                "label": "Report",
+                "via": "builds"
+              },
+              {
+                "id": "chk",
+                "label": "Person checks",
+                "variant": "muted"
+              }
+            ],
+            "first": [
+              {
+                "title": "Collect the figures overnight",
+                "detail": "From the same systems, the same way, every time."
+              },
+              {
+                "title": "Build the report",
+                "detail": "The same layout each time. Anything unusual is flagged."
+              },
+              {
+                "title": "A person checks it",
+                "detail": "Before it goes out. The check takes minutes."
+              }
+            ]
           },
-          {
-            "title": "A first system, checked by a person",
-            "detail": "It does the work and someone checks every result. It runs alone only once the results are consistently right."
+          "new_client": {
+            "label": "Setting up new clients",
+            "case": "new-client",
+            "defaults": [
+              "accounts",
+              "crm"
+            ],
+            "before": [
+              {
+                "id": "in",
+                "label": "New client"
+              },
+              {
+                "id": "p1",
+                "label": "Person",
+                "variant": "muted"
+              },
+              "$sys"
+            ],
+            "after": [
+              {
+                "id": "in",
+                "label": "New client"
+              },
+              {
+                "id": "sys",
+                "label": "System",
+                "variant": "accent",
+                "via": "reads"
+              },
+              {
+                "sys": true,
+                "via": "fills in"
+              },
+              {
+                "id": "chk",
+                "label": "Person checks gaps",
+                "variant": "muted"
+              }
+            ],
+            "first": [
+              {
+                "title": "One form starts it",
+                "detail": "The details are typed once."
+              },
+              {
+                "title": "The records appear everywhere",
+                "detail": "Every system is filled in from that one form."
+              },
+              {
+                "title": "Gaps go to a person",
+                "detail": "Anything missing is flagged, not guessed."
+              }
+            ]
           },
-          { "title": "It runs, and reports", "detail": "You get a regular report of what it did, and of anything it could not do." }
-        ]
-      },
-      "book": {
-        "head": "Next step",
-        "line": "Tell me which job takes up your team's week. I reply the same day.",
-        "cta": "Book the free call",
-        "facts": ["cost", "reply", "location"],
-        "more": "Or read more first"
+          "invoices": {
+            "label": "Invoices and payments",
+            "case": "cash",
+            "defaults": [
+              "bank",
+              "accounts"
+            ],
+            "before": [
+              "$sys",
+              {
+                "id": "p1",
+                "label": "Person",
+                "variant": "muted"
+              },
+              {
+                "id": "sheet",
+                "label": "Spreadsheet"
+              },
+              {
+                "id": "out",
+                "label": "Cash position"
+              }
+            ],
+            "after": [
+              "$sys",
+              {
+                "id": "sys",
+                "label": "System",
+                "variant": "accent",
+                "via": "reads"
+              },
+              {
+                "id": "out",
+                "label": "Cash position",
+                "via": "daily"
+              },
+              {
+                "id": "chk",
+                "label": "Person checks mismatches",
+                "variant": "muted"
+              }
+            ],
+            "first": [
+              {
+                "title": "Read the bank and the accounts each day",
+                "detail": "Payments in and out are matched where they agree."
+              },
+              {
+                "title": "Flag what does not match",
+                "detail": "A short list for a person, not the whole statement."
+              },
+              {
+                "title": "Show the next eight weeks",
+                "detail": "Money due in and out, so decisions are not rushed."
+              }
+            ]
+          },
+          "copying": {
+            "label": "Copying between systems",
+            "case": null,
+            "defaults": [
+              "email",
+              "paper"
+            ],
+            "before": [
+              "$sys",
+              {
+                "id": "p1",
+                "label": "Person",
+                "variant": "muted"
+              },
+              {
+                "id": "out",
+                "label": "Your system"
+              }
+            ],
+            "after": [
+              "$sys",
+              {
+                "id": "sys",
+                "label": "System",
+                "variant": "accent",
+                "via": "reads"
+              },
+              {
+                "id": "out",
+                "label": "Your system",
+                "via": "writes"
+              },
+              {
+                "id": "chk",
+                "label": "Person checks odd ones",
+                "variant": "muted"
+              }
+            ],
+            "first": [
+              {
+                "title": "Read the source",
+                "detail": "The email, the form, the PDF or the portal."
+              },
+              {
+                "title": "Write it into your system",
+                "detail": "Once, the same way, with a record of what was copied."
+              },
+              {
+                "title": "Odd ones wait for a person",
+                "detail": "Anything unclear is not guessed."
+              }
+            ]
+          },
+          "scheduling": {
+            "label": "Rotas and bookings",
+            "case": null,
+            "defaults": [
+              "email",
+              "spreadsheet"
+            ],
+            "before": [
+              "$sys",
+              {
+                "id": "p1",
+                "label": "Person",
+                "variant": "muted"
+              },
+              {
+                "id": "out",
+                "label": "Schedule"
+              },
+              {
+                "id": "p2",
+                "label": "Person",
+                "variant": "muted"
+              },
+              {
+                "id": "told",
+                "label": "Everyone told"
+              }
+            ],
+            "after": [
+              "$sys",
+              {
+                "id": "sys",
+                "label": "System",
+                "variant": "accent",
+                "via": "reads"
+              },
+              {
+                "id": "out",
+                "label": "Schedule",
+                "via": "drafts"
+              },
+              {
+                "id": "ok",
+                "label": "Person approves",
+                "variant": "muted"
+              },
+              {
+                "id": "told",
+                "label": "Everyone told",
+                "via": "sends"
+              }
+            ],
+            "first": [
+              {
+                "title": "Collect who is free",
+                "detail": "From the calendars and lists you already use."
+              },
+              {
+                "title": "Draft the schedule",
+                "detail": "Following your rules. Clashes are flagged."
+              },
+              {
+                "title": "A person approves it",
+                "detail": "Then it is sent to everyone."
+              }
+            ]
+          },
+          "approvals": {
+            "label": "Getting approval",
+            "case": null,
+            "defaults": [
+              "email"
+            ],
+            "before": [
+              {
+                "id": "req",
+                "label": "Request"
+              },
+              "$sys",
+              {
+                "id": "p1",
+                "label": "Person chases",
+                "variant": "muted"
+              },
+              {
+                "id": "ok",
+                "label": "Approved"
+              }
+            ],
+            "after": [
+              {
+                "id": "req",
+                "label": "Request"
+              },
+              {
+                "id": "sys",
+                "label": "System",
+                "variant": "accent",
+                "via": "routes"
+              },
+              {
+                "id": "ok",
+                "label": "Approved",
+                "via": "reminds"
+              },
+              {
+                "id": "rec",
+                "label": "Record kept"
+              }
+            ],
+            "first": [
+              {
+                "title": "One place for requests",
+                "detail": "Each request has an owner and a status."
+              },
+              {
+                "title": "Remind the approver",
+                "detail": "Until it is approved or turned down."
+              },
+              {
+                "title": "Keep the record",
+                "detail": "Who approved what, and when."
+              }
+            ]
+          },
+          "chasing": {
+            "label": "Chasing people",
+            "case": null,
+            "defaults": [
+              "email"
+            ],
+            "before": [
+              {
+                "id": "list",
+                "label": "Who owes what"
+              },
+              {
+                "id": "p1",
+                "label": "Person",
+                "variant": "muted"
+              },
+              "$sys",
+              {
+                "id": "rep",
+                "label": "Replies"
+              },
+              {
+                "id": "p2",
+                "label": "Person updates list",
+                "variant": "muted"
+              }
+            ],
+            "after": [
+              {
+                "id": "list",
+                "label": "Who owes what"
+              },
+              {
+                "id": "sys",
+                "label": "System",
+                "variant": "accent",
+                "via": "reads"
+              },
+              {
+                "sys": true,
+                "via": "sends"
+              },
+              {
+                "id": "rep",
+                "label": "Replies"
+              },
+              {
+                "id": "chk",
+                "label": "Person sees what is missing",
+                "variant": "muted"
+              }
+            ],
+            "first": [
+              {
+                "title": "Know who has not replied",
+                "detail": "From the system, not from memory."
+              },
+              {
+                "title": "Send the reminders",
+                "detail": "On a schedule, and stopped once they reply."
+              },
+              {
+                "title": "A person sees what is still missing",
+                "detail": "A short list, each morning."
+              }
+            ]
+          },
+          "other": {
+            "label": "Something else",
+            "case": null,
+            "defaults": [],
+            "before": [
+              {
+                "id": "in",
+                "label": "Work arrives"
+              },
+              {
+                "id": "p1",
+                "label": "Person",
+                "variant": "muted"
+              },
+              "$sys",
+              {
+                "id": "out",
+                "label": "Done"
+              }
+            ],
+            "after": [
+              {
+                "id": "in",
+                "label": "Work arrives"
+              },
+              {
+                "id": "sys",
+                "label": "System",
+                "variant": "accent",
+                "via": "does the routine part"
+              },
+              "$sys",
+              {
+                "id": "out",
+                "label": "Done"
+              },
+              {
+                "id": "chk",
+                "label": "Person checks",
+                "variant": "muted"
+              }
+            ],
+            "first": [
+              {
+                "title": "Map how the work moves",
+                "detail": "On the call, step by step."
+              },
+              {
+                "title": "Find the repeated part",
+                "detail": "The part a system can do the same way every time."
+              },
+              {
+                "title": "Decide what a person checks",
+                "detail": "Nothing runs alone until the results are right."
+              }
+            ]
+          }
+        },
+        "taps": {
+          "kind": "The job",
+          "systems": "Systems it touches",
+          "frequency": "How often",
+          "people": "People doing it"
+        },
+        "peopleSummary": "People: {people}",
+        "start": {
+          "kind": "report",
+          "frequency": 1,
+          "people": "few"
+        }
       }
+    },
+    "cases": {
+      "head": "Where the time goes",
+      "intro": "Illustrations, not named clients.",
+      "labels": {
+        "before": "Today",
+        "build": "What I would build",
+        "result": "What changes"
+      },
+      "items": [
+        {
+          "tag": "Example · Wholesale, 40 staff",
+          "title": "The Monday report",
+          "before": "Every Monday the operations manager rebuilds the leadership report by hand. Sales come from the accounts system, stock from the warehouse system, deliveries from the courier's website. It takes most of the morning, and the figures are a day old by the meeting.",
+          "build": "The report builds itself overnight from the same three systems and is in the inbox at 7am. The manager reads it, checks anything flagged, and adds comments.",
+          "result": "About 5 hours a week back. Roughly 230 hours a year.",
+          "id": "monday-report",
+          "match": [
+            "report",
+            "reports",
+            "reporting",
+            "spreadsheet",
+            "spreadsheets",
+            "figures",
+            "dashboard",
+            "numbers",
+            "kpi"
+          ]
+        },
+        {
+          "tag": "Example · Professional services, 25 staff",
+          "title": "Setting up a new client",
+          "before": "When a proposal is signed, someone copies the client's details into the customer database (CRM), the billing system and the project tracker. Then they email three colleagues. It takes about 40 minutes a client, and something small is usually missed.",
+          "build": "Signing the proposal starts it. The records appear in all three systems, the right people are told, and anything missing is flagged for a person to fill in.",
+          "result": "At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts.",
+          "id": "new-client",
+          "match": [
+            "client",
+            "clients",
+            "customer",
+            "customers",
+            "onboarding",
+            "proposal",
+            "proposals",
+            "crm",
+            "copy",
+            "copying",
+            "data entry",
+            "setting up",
+            "new starter",
+            "new starters"
+          ]
+        },
+        {
+          "id": "cash",
+          "tag": "Example · Trades and services, 15 staff",
+          "title": "Seeing the cash coming",
+          "before": "The bank balance is checked each morning. Unpaid invoices and next month's bills are in three different places. A large bill arrives as a surprise, so a decision gets rushed: a loan, a long contract, a payment delayed.",
+          "build": "Every Monday a forecast builds itself from the accounts system and the bank. Money due in and money due out, for the next eight weeks. Anything late is flagged.",
+          "result": "Weeks of notice before a gap, instead of days. Time to choose, instead of a rushed decision.",
+          "match": [
+            "cash",
+            "invoice",
+            "invoices",
+            "invoicing",
+            "payment",
+            "payments",
+            "bank",
+            "bills",
+            "forecast",
+            "money",
+            "credit control",
+            "chasing",
+            "debtors",
+            "cash flow"
+          ]
+        }
+      ]
+    },
+    "start": {
+      "look": {
+        "head": "What I look for",
+        "items": [
+          "Decisions made in a rush, because the money coming in and going out was seen too late.",
+          "Work that does not earn money directly, like admin and reports, left half-built. It then takes time from the work that does.",
+          "The same job done two different ways by two people.",
+          "Decisions nobody wrote down, so the same question gets settled again."
+        ]
+      },
+      "head": "How we would start",
+      "items": [
+        {
+          "title": "A 30-minute call, free.",
+          "detail": "You tell me where the time goes. I ask how the work actually moves."
+        },
+        {
+          "title": "A one-page plan.",
+          "detail": "Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together."
+        },
+        {
+          "title": "A design you approve.",
+          "detail": "What stays, what changes, what becomes automatic. Nothing changes until you approve it."
+        },
+        {
+          "title": "A first system, checked by a person.",
+          "detail": "It does the work and someone checks every result. It runs alone only once the results are consistently right."
+        },
+        {
+          "title": "It runs, and reports.",
+          "detail": "You get a regular report of what it did, and of anything it could not do."
+        }
+      ],
+      "facts": [
+        {
+          "label": "First call",
+          "value": "Free, 30 minutes."
+        },
+        {
+          "key": "cost"
+        },
+        {
+          "label": "Reply to email",
+          "value": "The same day."
+        },
+        {
+          "key": "location"
+        }
+      ]
+    },
+    "who": {
+      "head": "Who you would talk to",
+      "photo": {
+        "src": "img/ruben.jpg",
+        "width": 500,
+        "height": 620,
+        "alt": "Ruben Pires, walking along a chalk cliff above the sea."
+      },
+      "lines": [
+        "I work alone, in London, and have automated work for other organisations for years.",
+        "Today I run Salesforce at London & Partners, as an employee. A project with you would be my full-time work.",
+        "I run my own work on a system I built, every day.",
+        "Salesforce certifications: Administrator, Platform App Builder, Agentforce Specialist."
+      ]
+    },
+    "book": {
+      "head": "Book the free call",
+      "line": "30 minutes, free. Choose a time that suits you. Cal.com sends the confirmation by email.",
+      "show": "Show available times",
+      "loading": "Loading available times from Cal.com.",
+      "failed": "The booking calendar did not load. You can book on the Cal.com page instead.",
+      "open": "Open the booking page on Cal.com",
+      "email": "Or email {email}. I reply the same day.",
+      "unset": "Online booking is not set up yet. Email {email} to book the free call. I reply the same day."
     }
   },
-  "onePage": {
-    "title": "Everything, on one page",
-    "intro": "Every topic, in order. Technical detail at the end.",
-    "sections": ["method", "signals", "trust_ladder", "proof", "process", "cost", "ruben", "contact"],
-    "appendix": ["projects"]
-  },
-  "reading": { "motion": "full", "text": "standard", "sound": false },
-  "features": { "map": true, "depthMeter": false, "freeText": true, "sound": true },
-  "copy": {
-    "ui": {
-      "placeholder": "Ask a question. For example: what does it cost?",
-      "placeholderSession": "Ask a question",
-      "thinking": "Loading",
-      "next": "Next",
-      "questionIndex": "Topic",
-      "technical": "Technical detail",
-      "allLink": "Everything on one page",
-      "backToStart": "Back to the start"
-    }
+  "reading": {
+    "motion": "full",
+    "text": "standard"
   },
   "language": {
     "maxSentenceWords": 25,
     "minSentenceWords": 1,
-    "maxGrade": { "business": 9, "technical": 12 },
-    "knownAcronyms": ["UK", "AI", "TV", "PDF"],
+    "maxGrade": {
+      "business": 9,
+      "technical": 12
+    },
+    "knownAcronyms": [
+      "UK",
+      "AI",
+      "TV",
+      "PDF"
+    ],
     "banned": [
       "sound familiar",
       "you know something",

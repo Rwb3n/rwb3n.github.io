@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "python3 -m http.server 8000",
     "sync": "node scripts/sync.mjs",
-    "test": "node scripts/sync.mjs --check && node --test tests/*.test.js",
+    "model": "node scripts/model.mjs",
+    "test": "node scripts/sync.mjs --check && node scripts/model.mjs --check && node --test tests/*.test.js",
     "test:visual": "playwright test"
   },
   "devDependencies": {

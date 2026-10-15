@@ -3,8 +3,7 @@
 
 import { h, reducedMotion } from './dom.js';
 import { renderFlow } from './flow.js';
-import { copy, site, config, factText } from './copy.js';
-import { mailtoHref, briefAsText, briefRows } from './engine.js';
+import { config, factText } from './copy.js';
 import { compare, estimate } from './showpieces.js';
 
 export function renderBlock(block, ctx) {
@@ -147,43 +146,6 @@ const renderers = {
     const el = renderFlow(block);
     el.onReveal = () => el.drawIn();
     return el;
-  },
-
-  brief: ({ data }, ctx) => {
-    const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: site.timeZone });
-    return h('article', { class: 'b-brief', 'aria-label': copy.brief.blockTitle },
-      h('header', { class: 'b-brief-head' },
-        h('span', { class: 'micro' }, copy.brief.blockTitle),
-        h('span', { class: 'micro' }, today),
-      ),
-      h('div', { class: 'b-brief-body' },
-        h('dl', null,
-          briefRows(data).map(([k, v], n) => h('div', { style: { '--i': n } }, h('dt', { class: 'micro' }, k), h('dd', null, v))),
-        ),
-        ctx?.route && h('figure', { class: 'b-brief-map' }, ctx.route(), h('figcaption', { class: 'micro' }, 'Topics you read, in order')),
-      ),
-      h('p', { class: 'b-brief-note' }, copy.booking.privacy),
-    );
-  },
-
-  // Replaces the old simulated calendar. Hands the brief to the visitor's mail client.
-  compose: ({ data }) => {
-    const b = copy.booking;
-    const copyBtn = h('button', { class: 'btn btn-ghost', type: 'button' }, b.copyButton);
-    copyBtn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(`${briefAsText(data)}\n\n${site.email}`);
-        copyBtn.textContent = b.copied;
-        setTimeout(() => (copyBtn.textContent = b.copyButton), 1800);
-      } catch { /* clipboard blocked: the mail button still works */ }
-    });
-    return h('div', { class: 'b-compose' },
-      h('div', { class: 'b-compose-actions' },
-        h('a', { class: 'btn btn-primary', href: mailtoHref(site.email, data) }, b.emailButton, h('span', { 'aria-hidden': 'true' }, '→')),
-        copyBtn,
-      ),
-      h('p', { class: 'b-compose-note' }, 'Goes to ', h('a', { class: 'rail-mail', href: `mailto:${site.email}` }, site.email), '.'),
-    );
   },
 
   // A fact from content/site.json. Renders nothing if the fact is not set and

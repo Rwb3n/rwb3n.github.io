@@ -9,7 +9,6 @@
 //             visit summary.
 
 import { h, reducedMotion, motionOff } from './dom.js';
-import { sfx } from './sound.js';
 
 let uid = 0;
 
@@ -87,7 +86,6 @@ export function compare(block) {
     current = i;
     render(i);
     live.textContent = `${states[i].label}. ${states[i].title || ''} ${states[i].stat ? `${states[i].stat.value} ${states[i].stat.label}.` : ''}`.trim();
-    if (user) sfx('tick');
     if (!animate) return;
 
     list.append(...ghosts);
@@ -258,7 +256,6 @@ export function estimate(block, ctx) {
     ctx.addEstimate(summary());
     addBtn.disabled = true;
     addNote.textContent = block.added || 'Added to your summary.';
-    sfx('found');
   });
 
   update();

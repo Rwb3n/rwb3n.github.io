@@ -1,74 +1,120 @@
 # mindunder.dev — design notes
 
+> **Phase 3, built** on branch `ccr-97d11a0a-6l0u48` (2026-10-15). This file
+> describes the funnel in `_model/target/funnel.md` (signed off 2026-10-13).
+> It is not live until phase 4 (UAT) is signed off. The live site is described
+> by this file at `057d4d7` (`git show 057d4d7:DESIGN.md`).
+
 ## Idea
 
-The copy says *you know something's wrong, you just can't see where*. So the
-landing doesn't describe that — it lets you do it. The page is a calm field of
-dots (the business, from the surface). A lens follows the pointer and shows
-what's underneath: tools, handoffs, re-keyed spreadsheets, and one node where
-it all snags. Put the lens on it and it locks: **found**. On touch screens, or
-when the pointer is idle, the lens searches by itself and periodically settles
-on the fault.
+**The site is for taking in calls.** Every part is judged by whether it moves
+a visitor to a booked call. Project pages go stale, so they are not part of
+it.
 
-The fault and the autopilot's route aren't fixed coordinates: the lens
-measures the landing's text (the headline lines via `Range`, so it's the ink,
-not the box) and searches for the spot — and radius — where the lens and its
-annotation cover the fewest words. It holds from a 390px phone to a 1920px
-desktop and re-plans when webfonts land.
+The reader is a director with little time and energy, who may read words
+literally. They should be able to read the whole offer in one scroll, see
+their own situation in an example, know what the first step costs them, and
+book without reading anything else.
 
-Everything after the landing is a conversation. Visitors ask; the system
-answers in structured blocks — diagrams, metrics, tables — and offers the next
-questions. The deeper they go, the closer the "how would this work in my
-business?" prompt moves to the top.
+## The page
 
-## Landing: one idea per screen
+The site is one page, read top to bottom, ending at a booked call. It opens
+by asking the visitor about their own work and answering them
+(`_model/target/funnel.md`, revised 2026-10-15).
 
-The landing used to hold everything on one screen: headline, examples, three
-facts, six links, the lens and the ask bar, about 200 words at once. Now it is
-a sequence, read by scrolling:
+| # | Section | Job |
+| --- | --- | --- |
+| 1 | The job | The one conversational turn: the visitor gives their job and three numbers; the page answers with hours, cost and the nearest example |
+| 2 | Where the time goes | Recognition: "that is us". Three examples |
+| 3 | How we would start | The diagnosis ("What I look for"), then the steps and the facts: lower the risk |
+| 4 | Who you would talk to | Trust: a photograph, his full name, the day job and what it means for a client, his own system in one line |
+| 5 | Book | Pick a time, with Cal.com |
 
-1. The headline and the lens. Nothing else, apart from one line saying what
-   is below.
-2. What this looks like: the examples, large.
-3. Before we work together: first step, cost, reply time.
-4. Where to start: the topics, the cost estimate, the one-page view.
+**Every section has a way straight to the booking.** Quiet links after steps
+2 and 3; step 1 has its own. The job and the numbers help the call but are
+never required for it.
 
-The ask bar stays hidden while the headline screen is in view (pressing "/"
-brings it back). Each later screen rises once as it scrolls into view, only
-in Full motion. If a link is chosen below the headline screen, the lens
-"fix" is skipped, because it would play off screen. Headings and text for
-the screens are in `site.json` → `landing.steps` and `landing.cue`.
+**Two filled buttons, one per action:** "Show what it costs" (step 1) and
+"Show available times" (step 5). Every other link is quieter.
 
-## Topics: room to read
+**Step 1, the job: a bench** (2026-10-15; operator: "nobody is going to
+write anything useful", then "the layout is all over the place"). Copy not
+final.
 
-Inside a topic, paragraphs sit close together (24px), and anything that is
-not a paragraph (a diagram, numbers, a list, a table, the before/after) gets
-extra space above and below (56px from text), so each one reads as its own
-thing. "Next topics" sits clearly apart from the answer and is quieter than
-it: no rules between rows, secondary text colour, as wide as the answer's
-text. Only the one action (booking) stays a filled button. Facts are shown as
-one list (`facts`), one per row at body size, not as separate paragraphs.
-The map in the side column is closed until "Map: N of 33 read" is chosen, on
-every screen size.
+- The headline is facts: his name, and what he does in one line.
+- With JavaScript the form goes and the bench shows, **already set to one
+  example job** (a report, weekly, two or three people), so the page shows
+  something at once.
+- **Left, what the visitor sets:** the job (eight kinds), the systems it
+  touches (several), how often, people doing it, then hours and pay.
+- **Right, what it makes,** in view while they tap (sticky): the job as
+  Today ⇄ Automated (turns to Automated by itself once), what they pay and how
+  much of it goes on this job, the grid of weeks, what I would automate
+  first, the nearest example, "Book the free call with these answers".
+- Every tap redraws the right side. Numbers changed by hand stay.
+- Nothing goes into the booking until the visitor changes something; then
+  `job` is their taps in words and `scale` their numbers.
+- Under 1000px: one column, inputs first.
+- **Without JavaScript:** the job field and a plain `scale` text field, and
+  "Choose a time for the call": a GET form to the Cal.com page.
+
+**Words:** names, labels, figures and short facts. No slogans, no italic
+voice lines.
+
+**Step 4:** the photograph sits beside the lines on wide screens and above
+them on narrow ones, in black and white. Its `alt` says who it is.
+
+**Booking** (decided in `_model/target/funnel.md`):
+
+- Cal.com, hosted (`rwb3n/30min`). Step 5 is its inline embed, loaded only
+  when the visitor acts. Without JavaScript, "Show available times" is a link
+  to the Cal.com page.
+- `job` and `scale` are Cal.com booking questions, so the answers arrive with
+  the booking. Nothing else stores them.
+- After booking, the visitor sees Cal.com's confirmation and gets its email.
+  The page adds nothing.
+- The space the embed will take is kept free while it loads. One line says
+  "Loading available times from Cal.com." If the script does not load within
+  10 seconds, that line is replaced by a link to the Cal.com page, with the
+  answers filled in, and the email address.
+- "Book the free call" is the label of every quiet link to step 5, so the
+  visitor always knows where it goes.
+
+## Cut
+
+These parts of the live site are removed by the funnel. Their code and notes
+stay in git history.
+
+| Part | Why |
+| --- | --- |
+| Projects (Callsheet, HAIOS, Behold) and the 13 technical topics | Projects go stale. Callsheet is not running |
+| The conversation: topics, chips, ask bar, gravity, the map | The page replaces it; only intake stays |
+| The lens (dots, x-ray, found, fix) | Cut for now |
+| The estimate | Cut for now: reads as too sales-y |
+| Sound | It belonged to the lens and the conversation |
 
 ## System
 
-Black and white. One ink, one paper, a high-contrast serif and a lot of
-space. The reference is a fashion house, not a software product: restraint,
-exact type, and motion that is slow, deliberate and finished.
+Black and white. One ink, one paper, heavy type and a lot of space. The
+reference is a fashion house, not a software product: restraint, exact type,
+and motion that is slow, deliberate and finished.
 
-**Type.** Three voices, each with one job.
+**Type.** Two voices and a system face, all from Fontshare.
 
 | Role | Face | Used for |
 | --- | --- | --- |
-| Display | Bodoni Moda (optical sizes, + italic) | headline, topic titles, big numbers, callouts |
-| Text | Geist | body copy; small labels set in capitals, tracked 0.22em |
-| Diagram | Geist Mono | diagram boxes and code only (flow layout measures mono widths) |
+| Claim | Supreme, weight 800, tracked tight | headline, section titles, big numbers |
+| Voice | Sentient, light italic | the spoken line under the headline, callouts, quotes, each example's result |
+| System | Azeret Mono | small labels, diagram boxes, code (flow layout measures mono widths) |
 
-Earlier type directions (Supreme, Sentient, Azeret Mono and others) are kept on `/type/` for reference; `/components/` shows every block in the current system.
+Supreme and Sentient have no → or ↓, so Azeret Mono is second in their
+font stacks and draws the arrows (`/components/#glyphs`). Body text is
+Supreme. `/type/` compares the type directions that were tried.
 
-The display step (`--step-display`) runs from 44px to 120px. One word in the
-headline is set in italic; that is the only emphasis on the page.
+The display step (`--step-display`) runs from about 42px to 100px. The
+headline is two lines: the claim in Supreme, then the promise in Sentient
+italic at half the size, in secondary grey. That change of voice is the
+emphasis.
 
 **Colour.** `#000` on `#fff`, and the reverse in dark mode. No accent colour:
 emphasis is italic, weight, or solid ink (the key step in a diagram is a black
@@ -82,116 +128,67 @@ box with white text). Greys are for secondary text only:
 
 **Shape.** Square corners, 1px hairlines, no shadows, no glare, no tilt.
 
+**Space.** Paragraphs sit close together (24px). Anything that is not a
+paragraph (an example, a list, a table, a diagram) gets extra space above and
+below (56px from text), so each one reads as its own thing.
+
 **Copy.** Short and literal. Say the thing, then stop. No explaining the
 interface ("Choose one to read more"), no reassurance padding, no idioms.
-Examples are still labelled as examples; missing facts still say they are
-missing (`On request. Not published yet.`).
+Examples are labelled as examples; missing facts say they are missing
+(`On request. Not published yet.`).
 
-**Motion.** Motion carries the story: *surface → underneath → found → fixed*.
-The main curve is `--ease-runway` (`cubic-bezier(0.76, 0, 0.24, 1)`): a slow
-start and a decisive arrival.
+## Motion
 
-Runway moments (full motion):
+The page moves only when the visitor scrolls. The main curve is
+`--ease-runway` (`cubic-bezier(0.76, 0, 0.24, 1)`): a slow start and a
+decisive arrival.
 
-- **Curtain.** On the first page of a visit, the screen is black and the black
-  lifts away (1 s). Later pages in the same visit skip it.
-- **Headline.** Each word rises straight up out of its own mask.
-- **Ink fill.** Hovering a row floods it with black from the left; the words
-  turn white. Rows, next-topic links, cards and the calculator link all share it.
-- **Answers** arrive from behind a mask, top to bottom.
-
-| Moment | What moves |
-| --- | --- |
-| Boot | The curtain lifts; the dot field ripples out from the italic word; headline words rise through masks; the lens irises open; one sonar ping. |
-| Search | The lens follows the pointer (autopilot when idle); dots bulge off its rim; click anywhere to ping. |
-| X-ray | Under the lens, the copy becomes outlines with measured cap height, x-height, baseline and descender. |
-| Found | Magnetic pull, spring kick, ticks lock to the diagonals, crosshair, annotation draws and types in. |
-| Fix | Choosing a question opens the lens over the screen; the tangle snaps onto a grid; the question morphs into the first turn. |
-| Ask | Every later question flies from where it was asked (chip or ask bar) to its heading, sans to serif, with the scroll in step. |
-| Answer | Scan line, clip-and-rise blocks, odometer numbers, springy diagram nodes, staggered parts, a printing brief. |
-| Theme | The new theme spreads from the toggle as a circle. |
+| Moment | What moves | Status |
+| --- | --- | --- |
+| Headline | Each word rises straight up out of its own mask | kept |
+| Sections | Each heading and block rises as it scrolls into view (`animation-timeline: view()`, as `/#/all` does today). Paragraphs are shown whole | kept: the spine of the page |
+| Ink fill | Hovering a row floods it with black from the left; the words turn white | kept, for links and rows that remain |
+| Theme | The new theme spreads from the toggle as a circle | kept |
+| Curtain | On the first page of a visit, the black lifts away (1 s) | cut: it delays the page and moves no one toward a call |
+| Boot, search, x-ray, found, fix | The lens | cut with the lens |
+| Ask, answer | Questions fly to headings; answers arrive from behind a mask | cut with the conversation |
 
 Motion has three settings, chosen in **Reading settings**:
 
 | Setting | What moves |
 | --- | --- |
-| Full (default) | Everything above, with one rule: anything that starts by itself is over within 5 seconds (WCAG 2.2.2 Pause, Stop, Hide). The boot plays, the lens makes one pass to the fault and locks, then the canvas stops drawing. After that, things move only when the visitor moves, scrolls or clicks. When the pointer rests, the lens glides back to the fault once. Sequence: headline (0–1.4 s), dots and lens (1.1–2.1 s), one look elsewhere then the fault (found at about 3.1 s). Measured in Chromium at 390, 1440 and 1920px: the last autonomous frame is at 4.1–4.4 s. The budget is in `src/lens.js` (`BOOT_WAIT`, `BOOT_MS`, the two search legs). |
-| Calm | Nothing starts by itself. The lens is parked on the fault and moves only while the visitor moves it. Short fades and scrolls (≤ 300 ms). |
+| Full (default) | Everything kept above. Anything that starts by itself is over within 5 seconds (WCAG 2.2.2 Pause, Stop, Hide). |
+| Calm | Nothing starts by itself. Short fades and scrolls (≤ 300 ms). |
 | Off | Nothing moves. Scrolls jump. |
 
 `prefers-reduced-motion` maps to Calm unless the visitor chose otherwise.
-Status pulses run twice, not forever. The
-choice (and text size) is stored in `localStorage` and applied before first
-paint as `html[data-motion]` / `html[data-text]`. `?perf`
-records the lens's per-frame cost in `window.__lensFrames`.
-
-**The map.** In the session rail, every topic is a point in a constellation
-(a seeded force layout of the content graph, identical on every visit). Your
-route draws itself across it as you go; click any point to go there. The
-brief prints the same route.
-
-**Sound.** Synthesised with WebAudio, no files: a sonar ping with an echo, a
-two-note chime on lock, a noise sweep for the fix, a whoosh for a flying
-question, barely-there ticks as answers arrive. Off by default; one toggle,
-remembered.
+The choice (and text size) is stored in `localStorage` and applied before
+first paint as `html[data-motion]` / `html[data-text]`. Nothing on the page
+hides content until it is scrolled to: with motion Off, or before the
+animation runs, every paragraph is readable.
 
 ## Components
 
 The library page is `/components/`. `src/catalog.js` is the contract: each
-block's props (type, required, what it does) and an example. Topics in
-`content/nodes` are validated against it by `npm test`. The projects in the
-content are test content that exercises these parts.
-
-Two blocks hold other blocks: `split` (two columns) and `section` (a heading
-over a group, `tone` plain / raised / accent). Sections nest, and each level
-takes the next heading level, so the outline stays correct in the
-conversation (h3 under the turn's h2) and on the one-page view.
-
-Some blocks look different depending on their props: `grid` (two or three
-columns), `layers` (steps or labels), `flow` (horizontal, vertical,
-fan-out), `section` (plain, raised, accent), `badge` (default, active) and
-`fact` (published or not). Each has a `variantKey` and `variants` in the
-catalogue, and the library shows every variant. `npm test` fails if the
-content uses a look the library does not show.
-
-Pages are assembled by shared code, so the library's "Page layouts" section
-is the real thing:
-- `src/layouts.js`: the side column (`createRail`), the conversation turn,
-  "Next topics" and the one-page view, drawn with fixture topics.
-- `src/static.js` + `src/landing.js`: the landing's markup (the same
-  generator that writes `index.html`) and its movement (words, lens, x-ray).
-
-A browser test (`tests/visual/site.spec.js`) checks that every class used on
-the landing, in the one-page view, in topic answers and in the side column
-also appears on `/components/`.
+block's props (type, required, what it does) and an example. Content is
+validated against it by `npm test`, which fails if content uses a block,
+prop or look the library does not show, or if a block is unused.
 
 `content/graphs/fixtures.json` is test content, loaded by `/components/`
-and the tests, never by the site. It uses the blocks no real topic needs yet
-(`npm test` fails if any block is unused), so the site never shows invented
-facts to cover a component. Fixtures follow the same writing rules.
+and the tests, never by the site. It covers the blocks the page does not use,
+so the site never shows invented facts to cover a component. Fixtures follow
+the same writing rules.
 
-`src/blocks.js` renders the content blocks: `text`, `hero`, `callout`, `section`, `split`,
-`metric`, `metricRow`, `stats`, `pills`, `badge`, `grid`, `layers`, `table`,
-`code`, `progress`, `flow`, `brief`, `compose`, `fact`, `facts`, `timeline`,
-and the two interactive blocks in `src/showpieces.js`:
+Decided in the build: **the page uses no blocks.** It is rendered from
+`site.json › page` by `src/static.js`, in its own markup (`styles/page.css`).
+The block system stays as the library's catalogue, shown with the fixtures.
+Retired with the conversation: the `brief` and `compose` blocks, and the
+library's chips, entry rows, ask bar and live-state pieces.
 
-- **`compare`**: one process in two states (Before / After). Steps that exist
-  in both states keep an `id` and move to their new place (FLIP); steps that
-  go away fade out; new ones grow in; the counter rolls. The steps are an
-  ordered list, the toggle is two `aria-pressed` buttons, and the change is
-  announced once. With motion Calm or Off it switches instantly.
-- **`estimate`**: what repeated work costs a year, from three numbers
-  (people, hours a week, cost an hour). Big numbers count to the new value;
-  a grid of working weeks fills in (two rows = one full-time person-year).
-  Every assumption is printed. Nothing is sent. Screen readers hear one
-  sentence after typing stops, not every frame. "Add this estimate to my
-  summary" puts the sentence into the visit summary and the booking email.
-
-The one-page view (`#/all`) uses scroll-driven animation (`animation-timeline:
-view()`): each heading and block rises as it scrolls into view, so it moves
-only when the visitor scrolls. Paragraphs are shown whole there (no
-word-by-word reveal). `tests/visual/site.spec.js` checks that every listed
-topic is on the page and that no paragraph is hidden.
+Pages are assembled by shared code (`src/static.js`, `src/layouts.js`), so
+the library shows the real page parts. A browser test
+(`tests/visual/site.spec.js`) checks that every class used on the page also
+appears on `/components/`.
 
 Flow diagrams (`src/flow.js`) are laid out by hand in SVG. They measure their
 labels, then choose a shape that fits: a horizontal flow folds to vertical, a
@@ -199,30 +196,34 @@ fan-out folds to a trunk. Text is never scaled down to fit.
 
 ## Writing for tired, autistic and ADHD readers
 
-The reader is a director with little time and energy, who may read words
-literally. Sources: GOV.UK "Designing for users on the autistic spectrum"
-and W3C COGA ("Making content usable for people with cognitive and learning
+Sources: GOV.UK "Designing for users on the autistic spectrum" and W3C COGA
+("Making content usable for people with cognitive and learning
 disabilities").
 
-- The offer, first step, price status and reply time are on the landing, in
-  a definition list, readable by scrolling: no click, no JavaScript needed.
+- The offer, first step, price status and reply time are on the page,
+  readable by scrolling: no click, no JavaScript needed.
 - Literal words only: no idioms, metaphors or in-jokes. Banned phrases are
   listed in `site.json` → `language` and checked by `npm test`.
 - Short sentences (≤ 25 words), statements not questions, reading grade ≤ 9.
-- Buttons say where they go, and share a word with the title of the topic
-  they open.
+- Buttons say where they go, or what happens when they are pressed.
 - Abbreviations are written out once, as "Full words (ABBR)".
 - Examples are labelled as examples; illustrations are labelled as
   illustrations. Nothing is presented as a client quote unless it is one.
-- Technical topics are marked as technical and kept out of the main path.
-- Everything is also available on one plain page (`/#/all`).
+- The whole site is one plain page, and it prints.
 
 The linter is an approximation. It is not a substitute for testing with
 autistic and ADHD readers.
 
 ## Honesty
 
+
+Nothing claims to have happened unless it did. Every "booked", "sent" and
+"running today" on the site must be true at the moment it is shown.
+
+- A booking is confirmed by Cal.com, not by the page.
+- Intake is not "sent" until it has been received.
+- No system is described as running unless it is running.
+
 The previous build finished its "book a call" flow with *CONFIRMED — brief
-sent to both parties* without sending anything. The new flow compiles the same
-brief and hands it to the visitor's own mail client (with a copy button as a
-fallback). Nothing claims to have happened unless it did.
+sent to both parties* without sending anything. That is the failure this
+section exists to prevent.

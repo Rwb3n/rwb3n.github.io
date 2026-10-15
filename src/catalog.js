@@ -20,7 +20,6 @@ export const categories = [
   { id: 'diagrams', label: 'Diagrams', doc: 'Processes drawn as boxes and arrows.' },
   { id: 'interactive', label: 'Interactive', doc: 'Blocks the reader changes by using them.' },
   { id: 'facts', label: 'Facts', doc: 'Values from content/site.json, one source of truth.' },
-  { id: 'runtime', label: 'Session', doc: 'Made by the engine from a visit. Not written in topics.' },
 ];
 
 const flowNode = obj({
@@ -278,7 +277,7 @@ export const blocks = {
     example: { type: 'fact', key: 'reply' },
     // Needs the site's facts: a fact with no value shows its "missing" sentence.
     variantKey: (b, facts = {}) => (facts[b.key]?.value != null ? 'value' : 'missing'),
-    variants: [{ name: 'Not published', note: 'The fact has no value yet, so its "missing" sentence is shown, with a rule.', example: { type: 'fact', key: 'cost' } }],
+    variants: [{ name: 'Not published', note: 'The fact has no value yet, so its "missing" sentence is shown, with a rule.', example: { type: 'fact', key: 'clients' } }],
   },
   facts: {
     category: 'facts',
@@ -288,39 +287,18 @@ export const blocks = {
   },
 
   // Session ---------------------------------------------------------------------
-  brief: {
-    category: 'runtime',
-    doc: 'The printed summary of a visit. The engine builds `data` from the topics read.',
-    runtime: true,
-    props: { data: obj({ journey: str(''), interest: str(''), context: str(''), questions: str(''), estimate: str('') }, 'From engine.briefData().', true) },
-    example: { type: 'brief', data: { journey: 'What I do → Problems I solve → Example', interest: 'Project A', context: 'Example: we copy orders by hand', questions: 'What does it cost?', estimate: null } },
-  },
-  compose: {
-    category: 'runtime',
-    doc: 'Hands the summary to the visitor’s own mail client, with a copy button as a fallback. Nothing is sent by the site.',
-    runtime: true,
-    props: { data: obj({ journey: str(''), interest: str(''), context: str(''), questions: str(''), estimate: str('') }, 'Same as brief.', true) },
-    example: { type: 'compose', data: { journey: 'What I do → Example', interest: 'none', context: 'none', questions: 'none', estimate: null } },
-  },
+
 };
 
 // Interface pieces outside the block system, shown on the /components/ page as
 // static markup with the class names from styles/main.css.
 export const primitives = [
-  { name: 'Buttons', doc: 'One primary action per view; everything else is ghost.', html:
-    '<a class="btn btn-primary" href="#">Email the summary <span aria-hidden="true">→</span></a>\n<button class="btn btn-ghost" type="button">Copy the summary</button>' },
-  { name: 'Chips', doc: 'Next topics, under an answer. `is-engage` pulls toward the business question; `is-primary` is the one action.', html:
-    '<nav class="chips" aria-label="Example chips">\n  <span class="chips-heading micro">Next topics</span>\n  <button class="chip" type="button"><span class="chip-label">Problems I solve</span><span class="chip-arrow" aria-hidden="true">→</span></button>\n  <button class="chip is-engage" type="button"><span class="chip-label"><span class="pulse" aria-hidden="true"></span>How this could work in my business</span><span class="chip-arrow" aria-hidden="true">→</span></button>\n  <button class="chip is-primary" type="button"><span class="chip-label">Email this summary to book a call</span><span class="chip-arrow" aria-hidden="true">→</span></button>\n</nav>' },
-  { name: 'Entry rows', doc: 'Numbered links on the landing. The label fills with ink on hover.', html:
-    '<nav class="entry" aria-label="Example entry">\n  <a class="entry-item" href="#"><span class="entry-index">01</span><span class="entry-label">What I do</span><span class="entry-arrow" aria-hidden="true">→</span></a>\n  <a class="entry-item" href="#"><span class="entry-index">02</span><span class="entry-label">Problems I solve</span><span class="entry-arrow" aria-hidden="true">→</span></a>\n</nav>\n<a class="entry-tool" href="#"><span class="entry-tool-label">Work out what repeated work costs you</span><span class="entry-tool-note">Type three numbers.</span><span class="entry-arrow" aria-hidden="true">→</span></a>' },
+  { name: 'Buttons', doc: 'The page has one filled button, "Show available times". Everything else is outlined or a quiet link.', html:
+    '<a class="btn btn-primary" href="#">Show available times <span aria-hidden="true">→</span></a>\n<button class="btn btn-ghost" type="button">Choose a time for the call</button>' },
   { name: 'Offer list', doc: 'Key facts as a definition list, readable before any interaction.', html:
     '<dl class="offer">\n  <div class="offer-item"><dt>First step</dt><dd>A free 30-minute call.</dd></div>\n  <div class="offer-item"><dt>Reply time</dt><dd>The same day</dd></div>\n</dl>' },
-  { name: 'Labels', doc: '`micro` is the system voice: mono, spaced capitals. `eyebrow` sits above a heading. `turn-tag` marks technical topics.', html:
-    '<p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Business process automation · London</p>\n<span class="micro">Micro label</span>\n<p class="turn-tag">Technical detail, mainly for developers</p>' },
-  { name: 'Live state', doc: 'The pulse runs twice, then stops. The scan line shows loading.', html:
-    '<p class="bar-status"><span class="pulse" aria-hidden="true"></span><span>London</span></p>\n<div class="scan" role="status"><span class="scan-label micro">Loading</span><span class="scan-track" aria-hidden="true"><i></i></span></div>' },
-  { name: 'Ask bar', doc: 'The free-text input. Fixed to the bottom of the real page; shown here in place.', html:
-    '<form class="ask is-static" onsubmit="return false" aria-label="Example ask bar">\n  <label class="ask-prompt" for="ex-ask">Ask</label>\n  <input class="ask-input" id="ex-ask" type="text" placeholder="Type a question" />\n  <kbd class="ask-hint" aria-hidden="true">/</kbd>\n  <button class="ask-send" type="submit" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg></button>\n</form>' },
+  { name: 'Labels', doc: '`micro` is the system voice: spaced capitals. `eyebrow` sits above a heading.', html:
+    '<p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Business process automation · London</p>\n<span class="micro">Micro label</span>' },
 ];
 
 // Variants ----------------------------------------------------------------------
