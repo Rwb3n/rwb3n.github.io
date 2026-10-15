@@ -1,31 +1,71 @@
 # Target: the copy
 
-> **Draft, phase 2** (2026-10-13). Hand-written. Every word a visitor reads is
-> on a line starting with `>`; the rest are notes. Checked against the writing
-> rules in `DESIGN.md` by `npm test` (see the end).
+> **Revised draft** (2026-10-15), following `funnel.md`. Hand-written. Every
+> word a visitor reads is on a line starting with `>`; the rest are notes.
+> Checked against the writing rules in `DESIGN.md` by `npm test` (see the end).
 
-Built from the live copy wherever it already works (`content/site.json`,
-`services.json`, `about.json`). New lines are marked *new*.
+Lines kept from the signed-off draft of 2026-10-13 are unmarked. New or
+changed lines are listed in the notes under each step.
 
-"Book the free call" is the heading of step 6 and the label of every quiet
-link to it (steps 1–4). The page's only filled button is "Show available
-times", in step 6.
+"Book the free call" is the heading of step 5 and the label of the quiet links
+after steps 2 and 3. The page has two filled buttons: "Show what it costs" in
+step 1 and "Show available times" in step 5.
 
 ---
 
-## 1 The problem
+## 1 The job
 
 > Business process automation · London
 >
-> I find the work your team repeats by hand.
+> Which job does your team do by hand, every week?
 >
-> Then I build a system that does it.
+> Put it in your own words, with three numbers. You will see what it costs you in a year, and the example below that is nearest to it.
 >
-> Below: three examples, how we would start, and who you would talk to.
+> The job your team does by hand
 >
-> Book the free call
+> For example: the Monday report, or setting up new clients.
+>
+> People doing it
+>
+> Hours each, per week
+>
+> Cost per hour
+>
+> Salary plus other staff costs.
+>
+> Show what it costs
+>
+> Nothing is sent. It all happens on this page until you book.
 
-Notes: headline unchanged. The cue line is *new* (it now names step 4).
+The answer, under the button:
+
+> You: the Monday report
+>
+> Hours a year
+>
+> Cost a year
+>
+> Equal to 15 full working weeks.
+>
+> One square is one working week of 37.5 hours.
+>
+> Nearest example: The Monday report
+>
+> An estimate, not a quote. It assumes 46 working weeks a year. A system rarely removes a job completely. It does the routine part, and a person checks the result.
+>
+> Book the free call with these answers
+
+Without JavaScript, in place of the three numbers:
+
+> How many people do it, and how often
+>
+> For example: two people, every Monday morning.
+>
+> Choose a time for the call
+
+Notes: all new. Headline and lead are new; the eyebrow stays. "You: the
+Monday report" and "15" stand for the visitor's own words and numbers.
+The estimate's labels come from the live `estimate` topic, shortened.
 
 ---
 
@@ -33,30 +73,60 @@ Notes: headline unchanged. The cue line is *new* (it now names step 4).
 
 > Where the time goes
 >
-> Three situations I see often. They are illustrations, not named clients. The numbers show the scale, not a promise.
+> Three situations I see often. They are illustrations, not named clients.
 
-The three examples stay as they are live: *The Monday report*, *Setting up a
-new client*, *Early warning on suppliers* (Today / What I would build / What
-changes). The signals topic is folded in as one short list, *new* as a block;
-the two signals the examples already cover (reports, suppliers) are dropped.
+> The Monday report
+>
+> Every Monday the operations manager rebuilds the leadership report by hand. Sales come from the accounts system, stock from the warehouse system, deliveries from the courier's website. It takes most of the morning, and the figures are a day old by the meeting.
+>
+> The report builds itself overnight from the same three systems and is in the inbox at 7am. The manager reads it, checks anything flagged, and adds comments.
+>
+> About 5 hours a week back. Roughly 230 hours a year.
 
-> Two more I often see
+> Setting up a new client
 >
-> Tenders found too late. A competitor met the buyer first.
+> When a proposal is signed, someone copies the client's details into the customer database (CRM), the billing system and the project tracker. Then they email three colleagues. It takes about 40 minutes a client, and something small is usually missed.
 >
-> One person holds the knowledge. They cannot take two weeks off.
+> Signing the proposal starts it. The records appear in all three systems, the right people are told, and anything missing is flagged for a person to fill in.
+>
+> At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts.
+
+> Seeing the cash coming
+>
+> The bank balance is checked each morning. Unpaid invoices and next month's bills are in three different places. A large bill arrives as a surprise, so a decision gets rushed: a loan, a long contract, a payment delayed.
+>
+> Every Monday a forecast builds itself from the accounts system and the bank. Money due in and money due out, for the next eight weeks. Anything late is flagged.
+>
+> Weeks of notice before a gap, instead of days. Time to choose, instead of a rushed decision.
 >
 > Book the free call
+
+Notes: intro shortened ("The numbers show the scale, not a promise" cut: the
+step 1 answer already says "an estimate, not a quote"). Case 3 is new and
+replaces "Early warning on suppliers". "Two more I often see" is cut. Labels
+(Today / What I would build / What changes) are unchanged.
 
 ---
 
 ## 3 How we would start
 
+> What I look for
+>
+> The same few problems are in every team, mine included.
+>
+> Decisions made in a rush, because the money coming in and going out was seen too late.
+>
+> Work that does not earn money directly, like admin and reports, left half-built. It then takes time from the work that does.
+>
+> The same job done two different ways by two people.
+>
+> Decisions nobody wrote down, so the same question gets settled again.
+
 > How we would start
 >
 > A 30-minute call, free. You tell me where the time goes. I ask how the work actually moves.
 >
-> A one-page summary. Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together.
+> A one-page plan. Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together.
 >
 > A design you approve. What stays, what changes, what becomes automatic. Nothing changes until you approve it.
 >
@@ -66,11 +136,9 @@ the two signals the examples already cover (reports, suppliers) are dropped.
 >
 > No sales pitch. If there is nothing worth fixing, I will say so.
 
-Facts, as a list (from `site.json › facts`):
-
 > First call: Free, 30 minutes.
 >
-> Price: Not on the site yet. Ask in the call or by email.
+> Price: Agreed in writing before any work starts. The call and the plan cost nothing.
 >
 > Reply to email: The same day.
 >
@@ -78,9 +146,9 @@ Facts, as a list (from `site.json › facts`):
 >
 > Book the free call
 
-Notes: step 3 ("A design you approve") is folded in from `process`; the
-trust ladder is already step 4. `method` and `cost` add nothing the list does
-not say, so they go. Price stays honest until it is published.
+Notes: "What I look for" is new (the operator's list, 2026-10-15). "A
+one-page summary" becomes "A one-page plan". Price no longer says "Not on
+the site yet".
 
 ---
 
@@ -90,45 +158,22 @@ not say, so they go. Price stays honest until it is published.
 >
 > I am Ruben. I work alone, in London. I have spent years automating work for other organisations.
 >
-> My main job is running Salesforce at London & Partners. Salesforce is software that companies use to track customers.
+> Today I run Salesforce at London & Partners, as an employee. Salesforce is software that companies use to track customers. A project with you would be my full-time work.
+>
+> I run my own work on a system I built. It keeps a record of every decision, so I do not settle the same question twice. I use it every day.
 >
 > When automation fails, the cause is usually how people work together, not the software.
 >
 > Salesforce certifications: Salesforce Administrator. Salesforce Platform App Builder. Salesforce Agentforce Specialist.
->
-> Book the free call
 
-Notes: three lines from `ruben`, `salesforce` and `about`. "Active projects:
-3" is cut with the projects.
-
----
-
-## 5 Intake
-
-> Before the call
->
-> Two questions, both optional. Your answers go into the booking, so I can read them before we talk.
->
-> The job that takes up your team's time
->
-> For example: the Monday report, or setting up new clients.
->
-> How many people do it, and how often
->
-> For example: two people, every Monday morning.
->
-> Choose a time for the call
->
-> Nothing is sent until you book.
-
-Notes: field labels are statements, not questions. The Cal.com questions use
-the same wording, with identifiers `job` and `scale`. The button moves to
-step 6 and opens the embed with the answers; without JavaScript, it opens the
-Cal.com page with the answers filled in.
+Notes: line 2 replaces "My main job is running Salesforce at London &
+Partners" and says what the day job means for a client. Line 3 is new: his
+own system (Behold), as proof, not as a product. No quiet link here: step 5
+follows.
 
 ---
 
-## 6 Book
+## 5 Book
 
 > Book the free call
 >
@@ -144,10 +189,8 @@ Cal.com page with the answers filled in.
 >
 > Or email lab@mindunder.dev. I reply the same day.
 
-Notes: "Show available times" loads Cal.com's embed; the label says what
-happens. The loading line and the fallback (after 10 seconds) are in
-`DESIGN.md › The page`. After booking, the confirmation is Cal.com's own; the page adds
-nothing.
+Notes: unchanged. With answers from step 1, the embed opens with them filled
+in.
 
 ---
 
