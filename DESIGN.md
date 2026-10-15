@@ -18,53 +18,66 @@ book without reading anything else.
 
 ## The page
 
-The site is one page, read top to bottom, ending at a booked call. It
-replaces the landing, the conversation and the topic pages. The one-page view
-(`/#/all`) was the closest thing to it.
+The site is one page, read top to bottom, ending at a booked call. It opens
+by asking the visitor about their own work and answering them
+(`_model/target/funnel.md`, revised 2026-10-15).
 
-| # | Section | Job | Content from today's site |
-| --- | --- | --- | --- |
-| 1 | The problem | Say what I do, in the headline | `landing.headline` |
-| 2 | Where the time goes | Recognition: "that is us" | the three examples (`landing.path.cases`), with the signals folded in |
-| 3 | How we would start | Lower the risk: first step, cost, reply time | `landing.path.how`, with method, cost and process as short answers |
-| 4 | Who you would talk to | Trust: one person, three lines | about, ruben, philosophy and salesforce, as one block |
-| 5 | Intake | Where the time goes, in the visitor's words | the conversation's last level and the brief |
-| 6 | Book | Pick a time | Cal.com |
+| # | Section | Job |
+| --- | --- | --- |
+| 1 | The job | The one conversational turn: the visitor gives their job and three numbers; the page answers with hours, cost and the nearest example |
+| 2 | Where the time goes | Recognition: "that is us". Three examples |
+| 3 | How we would start | The diagnosis ("What I look for"), then the steps and the facts: lower the risk |
+| 4 | Who you would talk to | Trust: a photograph, his full name, the day job and what it means for a client, his own system in one line |
+| 5 | Book | Pick a time, with Cal.com |
 
-**Every section has a way straight to the booking.** Intake helps the call
-but is never required for it.
+**Every section has a way straight to the booking.** Quiet links after steps
+2 and 3; step 1 has its own. The job and the numbers help the call but are
+never required for it.
 
-**The one action** (booking) is the only filled button on the page. Every
-other link is quieter than it.
+**Two filled buttons, one per action:** "Show what it costs" (step 1) and
+"Show available times" (step 5). Every other link is quieter.
 
-**Booking and intake** (decided in `_model/target/funnel.md`):
+**Step 1, the job:**
 
-- Cal.com, hosted. Step 6 is its inline embed, loaded only when the visitor
-  acts. Without JavaScript, the intake form opens the Cal.com page instead.
-- Intake is two optional fields on the page. They are Cal.com booking
-  questions, so the answers arrive with the booking. Nothing else stores
-  them.
+- The headline is the question. Under it, one lead line, then the field
+  *The job your team does by hand* (label above, one example line, no
+  placeholder), then three numbers: people doing it, hours each per week,
+  cost per hour (− and + buttons, as the estimate). They start at 3, 4 and
+  £30.
+- "Show what it costs" puts the answer under the button, as one block:
+  "You: …" (their words; left out if the field is empty), hours a year and
+  cost a year in large figures, the line of full working weeks, the grid of
+  weeks, the nearest example (a link to it), the note, and an outlined button
+  "Book the free call with these answers". Changing a number afterwards
+  updates the answer in place.
+- The nearest example is chosen by words in the job (each example lists its
+  words in `site.json`). No match, no line.
+- "Book the free call with these answers" opens step 5's embed with `job`
+  (their words) and `scale` ("3 people, 4 hours each a week, about 552 hours
+  a year"). Focus moves to step 5's heading.
+- One small line under the button: nothing is sent until you book.
+- **Without JavaScript:** the three numbers and the answer are hidden. In
+  their place, a text field *How many people do it, and how often* and an
+  outlined button "Choose a time for the call": a plain GET form to the
+  Cal.com page, which prefills both questions.
+
+**Step 4:** the photograph sits beside the lines on wide screens and above
+them on narrow ones, in black and white. Its `alt` says who it is.
+
+**Booking** (decided in `_model/target/funnel.md`):
+
+- Cal.com, hosted (`rwb3n/30min`). Step 5 is its inline embed, loaded only
+  when the visitor acts. Without JavaScript, "Show available times" is a link
+  to the Cal.com page.
+- `job` and `scale` are Cal.com booking questions, so the answers arrive with
+  the booking. Nothing else stores them.
 - After booking, the visitor sees Cal.com's confirmation and gets its email.
   The page adds nothing.
-
-**Intake and booking, on the page** (copy in `_model/target/copy.md`):
-
-- Each field has its label above it, in body text, and one example line under
-  the label in `--fg-2`. No placeholder text inside the field: it disappears
-  when typing starts. Both fields are optional and say so once, above them.
-- "Choose a time for the call" (step 5) is an outlined button. It moves to
-  step 6 and opens the embed with the answers. Focus moves to step 6's
-  heading.
-- Step 6 has the page's only filled button, "Show available times". It loads
-  Cal.com's script and opens the embed in place. The space the embed will
-  take is kept free while it loads, so nothing below it jumps. Without
-  JavaScript the button is a plain link to the Cal.com booking page. Once
-  the embed is open (from either button), it replaces the button.
-- While it loads, one line says "Loading available times from Cal.com." If
-  the script does not load (blocked or offline) within 10 seconds, that line
-  is replaced by a link to the Cal.com booking page, with the answers filled
-  in, and the email address.
-- "Book the free call" is the label of every quiet link to step 6, so the
+- The space the embed will take is kept free while it loads. One line says
+  "Loading available times from Cal.com." If the script does not load within
+  10 seconds, that line is replaced by a link to the Cal.com page, with the
+  answers filled in, and the email address.
+- "Book the free call" is the label of every quiet link to step 5, so the
   visitor always knows where it goes.
 
 ## Cut

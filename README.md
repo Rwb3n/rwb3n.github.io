@@ -11,6 +11,7 @@ src/
   static.js       renders the page from content/site.json (used by sync, the library and the tests)
   main.js         the page's script: settings, theme, rising headline, booking
   book.js         booking with Cal.com: embed on demand, prefill, loading line, fallback
+  job.js          step 1: the visitor's job and three numbers, answered (hours, cost, nearest example)
   prefs.js        reading preferences: motion, text size
   settings.js     the "Settings" panel
   type.js         word masks for the headline

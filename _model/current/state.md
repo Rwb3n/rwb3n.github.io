@@ -17,6 +17,6 @@ stateDiagram-v2
 | `ready` | Cal.com reported `linkReady`: the calendar is in the page. |
 | `failed` | No `linkReady` within the timeout, the script failed, or Cal.com reported `linkFailed`: a link to the Cal.com page, with the answers. |
 
-Timeout: 10 seconds. Booking link: **not set**.
+Timeout: 10 seconds. Booking link: `rwb3n/30min`.
 
 Reading settings (`src/prefs.js`, stored in `localStorage`): motion `full` | `calm` | `off`, text `standard` | `large`.

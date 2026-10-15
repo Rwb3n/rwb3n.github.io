@@ -4,6 +4,7 @@
 import { initPrefs } from './prefs.js';
 import { createSettings } from './settings.js';
 import { createBooking } from './book.js';
+import { createJob } from './job.js';
 import { splitWords } from './type.js';
 import { reducedMotion } from './dom.js';
 
@@ -58,4 +59,9 @@ onScroll();
 const display = document.querySelector('.pg .display');
 if (display && !reducedMotion()) splitWords(display);
 
-window.mindunderBooking = createBooking(document);
+// Step 1 answers the visitor; its answers go into the booking.
+let job = null;
+const booking = createBooking(document, { getAnswers: () => job?.answers() || {} });
+job = createJob(document, { book: (answers) => booking ? booking.open(answers) : location.assign('#book') });
+window.mindunderBooking = booking;
+window.mindunderJob = job;

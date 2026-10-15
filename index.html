@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <!-- sync:meta -->
     <title>mindunder.dev — business process automation, London</title>
-    <meta name="description" content="I find the work your team repeats by hand, then build a system that does it. The first call is free. Based in London." />
+    <meta name="description" content="Put in the job your team does by hand every week, and see what it costs you in a year. Then book a free 30-minute call. Based in London." />
     <meta property="og:title" content="mindunder.dev — business process automation, London" />
-    <meta property="og:description" content="I find the work your team repeats by hand, then build a system that does it. The first call is free. Based in London." />
+    <meta property="og:description" content="Put in the job your team does by hand every week, and see what it costs you in a year. Then book a free 30-minute call. Based in London." />
     <!-- /sync:meta -->
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
@@ -92,22 +92,82 @@
     <!-- The whole site: one page, generated from content/site.json by `npm run sync`. -->
     <main id="main" class="pg">
       <!-- sync:page -->
-      <section class="pg-section is-problem" id="problem" aria-labelledby="problem-h">
+      <section class="pg-section is-job" id="job" aria-labelledby="job-h">
         <div class="copy" data-copy>
           <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Business process automation · London</p>
-          <h1 class="display" id="problem-h">
-            <span class="display-line">I <em class="is-accent">find</em> the work your team repeats by hand.</span>
-            <span class="display-line">Then I build a system that does it.</span>
+          <h1 class="display" id="job-h">
+            <span class="display-line">Which job does your team do</span>
+            <span class="display-line"><em class="is-accent">by hand</em>, every week?</span>
           </h1>
         </div>
-        <p class="pg-cue">Below: three examples, how we would start, and who you would talk to.</p>
-        <a class="pg-book-link is-first" href="#book">Book the free call <span aria-hidden="true">↓</span></a>
+        <p class="pg-intro">Put it in your own words, with three numbers. You will see what it costs you in a year, and the example below that is nearest to it.</p>
+        <form class="pg-job" method="get" action="https://cal.com/rwb3n/30min" data-job>
+          <div class="pg-field">
+            <label class="pg-label" for="f-job">The job your team does by hand</label>
+            <p class="pg-example" id="f-job-ex">For example: the Monday report, or setting up new clients.</p>
+            <textarea class="pg-input" id="f-job" name="job" rows="3" aria-describedby="f-job-ex"></textarea>
+          </div>
+          <div class="pg-nojs" data-nojs>
+            <div class="pg-field">
+              <label class="pg-label" for="f-scale">How many people do it, and how often</label>
+              <p class="pg-example" id="f-scale-ex">For example: two people, every Monday morning.</p>
+              <input class="pg-input" id="f-scale" name="scale" type="text" autocomplete="off" aria-describedby="f-scale-ex" />
+            </div>
+            <button class="btn btn-ghost pg-job-go" type="submit">Choose a time for the call</button>
+          </div>
+          <div class="pg-js" data-js hidden>
+            <div class="est-fields pg-numbers">
+              <div class="est-field">
+                <label class="est-label" for="n-people">People doing it</label>
+                <div class="est-control">
+                  <button class="est-step" type="button" data-step="-1" aria-label="One person fewer">−</button>
+                  <input class="est-input" id="n-people" data-num="people" type="number" inputmode="decimal" min="1" max="500" step="1" value="3" />
+                  <button class="est-step" type="button" data-step="1" aria-label="One person more">+</button>
+                </div>
+              </div>
+              <div class="est-field">
+                <label class="est-label" for="n-hours">Hours each, per week</label>
+                <div class="est-control">
+                  <button class="est-step" type="button" data-step="-1" aria-label="Half an hour less">−</button>
+                  <input class="est-input" id="n-hours" data-num="hours" type="number" inputmode="decimal" min="0.5" max="40" step="0.5" value="4" />
+                  <button class="est-step" type="button" data-step="1" aria-label="Half an hour more">+</button>
+                </div>
+              </div>
+              <div class="est-field">
+                <label class="est-label" for="n-rate">Cost per hour</label>
+                <div class="est-control">
+                  <button class="est-step" type="button" data-step="-1" aria-label="One pound less">−</button>
+                  <span class="est-prefix" aria-hidden="true">£</span>
+                  <input class="est-input" id="n-rate" data-num="rate" type="number" inputmode="decimal" min="5" max="500" step="1" value="30" aria-describedby="n-rate-hint" />
+                  <button class="est-step" type="button" data-step="1" aria-label="One pound more">+</button>
+                </div>
+                <span class="est-hint" id="n-rate-hint">Salary plus other staff costs.</span>
+              </div>
+            </div>
+            <button class="btn btn-primary pg-job-show" type="button" data-job-show>Show what it costs <span aria-hidden="true">↓</span></button>
+            <p class="pg-small">Nothing is sent. It all happens on this page until you book.</p>
+          </div>
+        </form>
+        <div class="pg-answer" data-answer hidden tabindex="-1">
+          <p class="pg-you" data-answer-you></p>
+          <dl class="est-dl">
+            <div><dt class="micro">Hours a year</dt><dd><span class="est-num" data-answer-hours></span></dd></div>
+            <div><dt class="micro">Cost a year</dt><dd><span class="est-num is-accent" data-answer-cost></span></dd></div>
+          </dl>
+          <p class="est-weeks" data-answer-weeks></p>
+          <div class="est-grid-wrap"><div class="est-grid" data-answer-grid aria-hidden="true"></div></div>
+          <p class="est-key">One square is one working week of 37.5 hours.</p>
+          <p class="pg-nearest" data-answer-nearest></p>
+          <p class="pg-small">An estimate, not a quote. It assumes 46 working weeks a year. A system rarely removes a job completely. It does the routine part, and a person checks the result.</p>
+          <button class="btn btn-ghost pg-answer-book" type="button" data-answer-book>Book the free call with these answers <span aria-hidden="true">↓</span></button>
+          <p class="visually-hidden" aria-live="polite" data-answer-live></p>
+        </div>
       </section>
       <section class="pg-section is-cases" id="cases" aria-labelledby="cases-h">
         <h2 class="pg-head" id="cases-h">Where the time goes</h2>
-        <p class="pg-intro">Three situations I see often. They are illustrations, not named clients. The numbers show the scale, not a promise.</p>
+        <p class="pg-intro">Three situations I see often. They are illustrations, not named clients.</p>
         <div class="pg-cases">
-          <article class="pg-case">
+          <article class="pg-case" id="case-monday-report">
             <p class="pg-case-tag">Example · Wholesale, 40 staff</p>
             <h3 class="pg-case-title">The Monday report</h3>
             <dl class="pg-case-body">
@@ -116,7 +176,7 @@
               <div class="is-result"><dt>What changes</dt><dd>About 5 hours a week back. Roughly 230 hours a year.</dd></div>
             </dl>
           </article>
-          <article class="pg-case">
+          <article class="pg-case" id="case-new-client">
             <p class="pg-case-tag">Example · Professional services, 25 staff</p>
             <h3 class="pg-case-title">Setting up a new client</h3>
             <dl class="pg-case-body">
@@ -125,28 +185,31 @@
               <div class="is-result"><dt>What changes</dt><dd>At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts.</dd></div>
             </dl>
           </article>
-          <article class="pg-case">
-            <p class="pg-case-tag">Example · Illustration</p>
-            <h3 class="pg-case-title">Early warning on suppliers</h3>
+          <article class="pg-case" id="case-cash">
+            <p class="pg-case-tag">Example · Trades and services, 15 staff</p>
+            <h3 class="pg-case-title">Seeing the cash coming</h3>
             <dl class="pg-case-body">
-              <div><dt>Today</dt><dd>A distributor found out its main supplier had gone into administration when deliveries stopped. The signs had been public for weeks, in Companies House filings and insolvency notices.</dd></div>
-              <div><dt>What I would build</dt><dd>A system reads those public records every night for the companies you depend on. It emails you the morning something changes, such as overdue accounts or a winding-up petition.</dd></div>
-              <div class="is-result"><dt>What changes</dt><dd>Weeks of warning instead of none.</dd></div>
+              <div><dt>Today</dt><dd>The bank balance is checked each morning. Unpaid invoices and next month's bills are in three different places. A large bill arrives as a surprise, so a decision gets rushed: a loan, a long contract, a payment delayed.</dd></div>
+              <div><dt>What I would build</dt><dd>Every Monday a forecast builds itself from the accounts system and the bank. Money due in and money due out, for the next eight weeks. Anything late is flagged.</dd></div>
+              <div class="is-result"><dt>What changes</dt><dd>Weeks of notice before a gap, instead of days. Time to choose, instead of a rushed decision.</dd></div>
             </dl>
           </article>
         </div>
-        <h3 class="pg-sub">Two more I often see</h3>
-        <ul class="pg-more" role="list">
-          <li><b>Tenders found too late.</b> A competitor met the buyer first.</li>
-          <li><b>One person holds the knowledge.</b> They cannot take two weeks off.</li>
-        </ul>
         <a class="pg-book-link" href="#book">Book the free call <span aria-hidden="true">↓</span></a>
       </section>
       <section class="pg-section is-start" id="start" aria-labelledby="start-h">
-        <h2 class="pg-head" id="start-h">How we would start</h2>
+        <h2 class="pg-head" id="start-h">What I look for</h2>
+        <p class="pg-intro">The same few problems are in every team, mine included.</p>
+        <ul class="pg-look" role="list">
+          <li>Decisions made in a rush, because the money coming in and going out was seen too late.</li>
+          <li>Work that does not earn money directly, like admin and reports, left half-built. It then takes time from the work that does.</li>
+          <li>The same job done two different ways by two people.</li>
+          <li>Decisions nobody wrote down, so the same question gets settled again.</li>
+        </ul>
+        <h3 class="pg-sub">How we would start</h3>
         <ol class="pg-steps" role="list">
           <li><span class="pg-step-n" aria-hidden="true">1</span><h3 class="pg-step-title">A 30-minute call, free.</h3> <p class="pg-step-detail">You tell me where the time goes. I ask how the work actually moves.</p></li>
-          <li><span class="pg-step-n" aria-hidden="true">2</span><h3 class="pg-step-title">A one-page summary.</h3> <p class="pg-step-detail">Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together.</p></li>
+          <li><span class="pg-step-n" aria-hidden="true">2</span><h3 class="pg-step-title">A one-page plan.</h3> <p class="pg-step-detail">Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together.</p></li>
           <li><span class="pg-step-n" aria-hidden="true">3</span><h3 class="pg-step-title">A design you approve.</h3> <p class="pg-step-detail">What stays, what changes, what becomes automatic. Nothing changes until you approve it.</p></li>
           <li><span class="pg-step-n" aria-hidden="true">4</span><h3 class="pg-step-title">A first system, checked by a person.</h3> <p class="pg-step-detail">It does the work and someone checks every result. It runs alone only once the results are consistently right.</p></li>
           <li><span class="pg-step-n" aria-hidden="true">5</span><h3 class="pg-step-title">It runs, and reports.</h3> <p class="pg-step-detail">You get a regular report of what it did, and of anything it could not do.</p></li>
@@ -154,7 +217,7 @@
         <p class="pg-note">No sales pitch. If there is nothing worth fixing, I will say so.</p>
         <ul class="pg-facts" role="list">
           <li><b>First call:</b> Free, 30 minutes.</li>
-          <li><b>Price:</b> Not on the site yet. Ask in the call or by email.</li>
+          <li><b>Price:</b> Agreed in writing before any work starts. The call and the plan cost nothing.</li>
           <li><b>Reply to email:</b> The same day.</li>
           <li><b>Based in:</b> London, UK.</li>
         </ul>
@@ -162,15 +225,28 @@
       </section>
       <section class="pg-section is-who" id="who" aria-labelledby="who-h">
         <h2 class="pg-head" id="who-h">Who you would talk to</h2>
-        <p class="pg-who is-lead">I am Ruben. I work alone, in London. I have spent years automating work for other organisations.</p>
-        <p class="pg-who">My main job is running Salesforce at London &amp; Partners. Salesforce is software that companies use to track customers.</p>
-        <p class="pg-who">When automation fails, the cause is usually how people work together, not the software.</p>
-        <p class="pg-who">Salesforce certifications: Salesforce Administrator. Salesforce Platform App Builder. Salesforce Agentforce Specialist.</p>
-        <a class="pg-book-link" href="#book">Book the free call <span aria-hidden="true">↓</span></a>
+        <div class="pg-who-body">
+          <img class="pg-photo" src="img/ruben.jpg" width="500" height="620" alt="Ruben Pires, walking along a chalk cliff above the sea." loading="lazy" decoding="async" />
+          <div class="pg-who-lines">
+            <p class="pg-who-name">Ruben Pires</p>
+            <p class="pg-who is-lead">I am Ruben. I work alone, in London. I have spent years automating work for other organisations.</p>
+            <p class="pg-who">Today I run Salesforce at London &amp; Partners, as an employee. Salesforce is software that companies use to track customers. A project with you would be my full-time work.</p>
+            <p class="pg-who">I run my own work on a system I built. It keeps a record of every decision, so I do not settle the same question twice. I use it every day.</p>
+            <p class="pg-who">When automation fails, the cause is usually how people work together, not the software.</p>
+            <p class="pg-who">Salesforce certifications: Salesforce Administrator. Salesforce Platform App Builder. Salesforce Agentforce Specialist.</p>
+          </div>
+        </div>
       </section>
       <section class="pg-section is-book" id="book" aria-labelledby="book-h">
         <h2 class="pg-head" id="book-h" tabindex="-1">Book the free call</h2>
-        <p class="pg-intro">Online booking is not set up yet. Email <a href="mailto:lab@mindunder.dev">lab@mindunder.dev</a> to book the free call. I reply the same day.</p>
+        <p class="pg-intro">30 minutes, free. Choose a time that suits you. Cal.com sends the confirmation by email.</p>
+        <div class="pg-booking" data-booking>
+          <a class="btn btn-primary pg-show" href="https://cal.com/rwb3n/30min" data-book-show>Show available times <span aria-hidden="true">→</span></a>
+          <p class="pg-status" data-book-status role="status" hidden>Loading available times from Cal.com.</p>
+          <div class="pg-embed" id="cal-embed" data-book-embed hidden></div>
+          <p class="pg-fail" data-book-fail hidden>The booking calendar did not load. You can book on the Cal.com page instead. <a href="https://cal.com/rwb3n/30min" data-book-open>Open the booking page on Cal.com</a></p>
+        </div>
+        <p class="pg-email">Or email <a href="mailto:lab@mindunder.dev">lab@mindunder.dev</a>. I reply the same day.</p>
       </section>
       <!-- /sync:page -->
     </main>
@@ -181,7 +257,7 @@
     </footer>
 
     <!-- sync:booking -->
-    <script type="application/json" id="booking-config">{"calLink":null,"origin":"https://cal.com","embedScript":"https://app.cal.com/embed/embed.js","timeoutSeconds":10,"fields":["job","scale"]}</script>
+    <script type="application/json" id="booking-config">{"calLink":"rwb3n/30min","origin":"https://cal.com","embedScript":"https://app.cal.com/embed/embed.js","timeoutSeconds":10,"fields":["job","scale"],"job":{"field":"job","numbers":[{"key":"people","label":"People doing it","min":1,"max":500,"step":1,"value":3,"less":"One person fewer","more":"One person more"},{"key":"hours","label":"Hours each, per week","min":0.5,"max":40,"step":0.5,"value":4,"less":"Half an hour less","more":"Half an hour more"},{"key":"rate","label":"Cost per hour","hint":"Salary plus other staff costs.","min":5,"max":500,"step":1,"value":30,"prefix":"£","less":"One pound less","more":"One pound more"}],"answer":{"you":"You: {job}","hours":"Hours a year","cost":"Cost a year","weeks":"Equal to {weeks} full working weeks.","key":"One square is one working week of 37.5 hours.","nearest":"Nearest example: {title}","note":"An estimate, not a quote. It assumes 46 working weeks a year. A system rarely removes a job completely. It does the routine part, and a person checks the result.","book":"Book the free call with these answers","scale":"{people} people, {hours} hours each a week, about {total} hours a year","weeksPerYear":46,"hoursPerWeek":37.5},"cases":[{"id":"monday-report","title":"The Monday report","match":["report","reports","reporting","spreadsheet","spreadsheets","figures","dashboard","numbers","kpi"]},{"id":"new-client","title":"Setting up a new client","match":["client","clients","customer","customers","onboarding","proposal","proposals","crm","copy","copying","data entry","setting up","new starter","new starters"]},{"id":"cash","title":"Seeing the cash coming","match":["cash","invoice","invoices","invoicing","payment","payments","bank","bills","forecast","money","credit control","chasing","debtors","cash flow"]}]}}</script>
     <!-- /sync:booking -->
   </body>
 </html>

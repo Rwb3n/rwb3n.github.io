@@ -10,6 +10,7 @@ const site = JSON.parse(readFileSync(new URL('../../content/site.json', import.m
 const shell = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
 const withLink = { ...site, booking: { ...site.booking, calLink: 'example/30min' } };
 const pageWithLink = applyRegions(shell, renderRegions(withLink));
+const pageNoLink = applyRegions(shell, renderRegions({ ...site, booking: { ...site.booking, calLink: null } }));
 
 // A stand-in for Cal.com's embed.js: runs the queued calls, draws a box, and
 // reports linkReady.
@@ -18,7 +19,7 @@ const STUB = `(() => { const on = {}; let el;
   (window.Cal.q || []).forEach(run); window.Cal = function () { run(arguments); }; window.Cal.loaded = true;
   setTimeout(() => { el.innerHTML = '<div style="height:600px">calendar</div>'; on.linkReady && on.linkReady(); }, 200); })();`;
 
-async function open(page, { cal = 'ok', html = pageWithLink } = {}) {
+async function open(page, { cal = 'ok', html = pageWithLink, js = true } = {}) {
   const calRequests = [];
   page.on('request', (r) => { if (/cal\.com/.test(r.url())) calRequests.push(r.url()); });
   await page.route(/fonts\.(googleapis|gstatic)\.com|fontshare\.com/, (r) => r.abort());
@@ -26,6 +27,9 @@ async function open(page, { cal = 'ok', html = pageWithLink } = {}) {
   await page.route('https://app.cal.com/embed/embed.js', (r) => (cal === 'ok' ? r.fulfill({ contentType: 'text/javascript', body: STUB }) : r.abort()));
   await page.route(/^https:\/\/cal\.com\//, (r) => r.fulfill({ contentType: 'text/html', body: '<title>Cal.com</title>' }));
   await page.goto('/');
+  // With JavaScript, wait until the page's script has wired the buttons;
+  // a click before that follows the plain link, as it should without it.
+  if (js) await page.waitForFunction(() => 'mindunderJob' in window);
   return calRequests;
 }
 
@@ -36,20 +40,39 @@ test('the page loads without errors and asks Cal.com for nothing until the visit
   await page.waitForTimeout(800);
   expect(errors).toEqual([]);
   expect(calRequests).toEqual([]);
-  expect(await page.locator('.pg-section').evaluateAll((s) => s.map((x) => x.id))).toEqual(['problem', 'cases', 'start', 'who', 'intake', 'book']);
+  expect(await page.locator('.pg-section').evaluateAll((s) => s.map((x) => x.id))).toEqual(['job', 'cases', 'start', 'who', 'book']);
 });
 
-test('the intake form opens the calendar with the answers, and focus moves to the booking heading', async ({ page }) => {
+test('step 1 answers the visitor, then opens the calendar with their words and numbers', async ({ page }) => {
   const calRequests = await open(page);
-  await page.fill('#f-job', 'The Monday report');
-  await page.fill('#f-scale', 'Two people, every Monday');
-  await page.click('.pg-intake-go');
+  await expect(page.locator('#f-scale')).toHaveCount(0);
+  await page.fill('#f-job', 'We rebuild the Monday report from three spreadsheets');
+  await page.fill('#n-people', '2');
+  await page.click('[data-job-show]');
+  const answer = page.locator('[data-answer]');
+  await expect(answer).toBeVisible();
+  await expect(answer).toContainText('You: We rebuild the Monday report from three spreadsheets');
+  await expect(page.locator('[data-answer-hours]')).toHaveText('368');
+  await expect(page.locator('[data-answer-cost]')).toHaveText('£11,040');
+  await expect(page.locator('[data-answer-nearest] a')).toHaveAttribute('href', '#case-monday-report');
+  expect(calRequests).toEqual([]);
+  // Changing a number updates the answer in place.
+  await page.click('[aria-label="One person more"]');
+  await expect(page.locator('[data-answer-hours]')).toHaveText('552');
+  await page.click('[data-answer-book]');
   await expect(page.locator('[data-book-status]')).toBeHidden({ timeout: 5000 });
   expect(await page.evaluate(() => document.activeElement?.id)).toBe('book-h');
-  expect(await page.evaluate(() => window.__calInline)).toMatchObject({ calLink: 'example/30min', config: { job: 'The Monday report', scale: 'Two people, every Monday' } });
+  expect(await page.evaluate(() => window.__calInline)).toMatchObject({ calLink: 'example/30min', config: {
+    job: 'We rebuild the Monday report from three spreadsheets', scale: '3 people, 4 hours each a week, about 552 hours a year' } });
   await expect(page.locator('[data-book-show]')).toBeHidden();
-  await expect(page.locator('[data-book-fail]')).toBeHidden();
   expect(calRequests).toEqual(['https://app.cal.com/embed/embed.js']);
+});
+
+test('no example is named when none is near', async ({ page }) => {
+  await open(page);
+  await page.fill('#f-job', 'Booking rooms for the team');
+  await page.click('[data-job-show]');
+  await expect(page.locator('[data-answer-nearest]')).toBeHidden();
 });
 
 test('"Show available times" works without filling in the intake', async ({ page }) => {
@@ -62,7 +85,7 @@ test('"Show available times" works without filling in the intake', async ({ page
 test('if Cal.com does not load, the page offers its booking page with the answers, and email', async ({ page }) => {
   await open(page, { cal: 'blocked' });
   await page.fill('#f-job', 'Copying orders');
-  await page.click('.pg-intake-go');
+  await page.click('[data-book-show]');
   const fail = page.locator('[data-book-fail]');
   await expect(fail).toBeVisible({ timeout: 12000 });
   await expect(page.locator('[data-book-status]')).toBeHidden();
@@ -70,27 +93,29 @@ test('if Cal.com does not load, the page offers its booking page with the answer
   await expect(page.locator('.pg-email a')).toHaveAttribute('href', `mailto:${site.person.email}`);
 });
 
-test('without JavaScript, the intake form goes to the Cal.com page with the answers', async ({ browser }) => {
+test('without JavaScript, step 1 goes to the Cal.com page with the answers', async ({ browser }) => {
   const ctx = await browser.newContext({ javaScriptEnabled: false });
   const page = await ctx.newPage();
-  await open(page);
+  await open(page, { js: false });
+  await expect(page.locator('[data-job-show]')).toBeHidden();
   await page.fill('#f-job', 'The Monday report');
-  await page.click('.pg-intake-go');
+  await page.fill('#f-scale', 'Two people, every Monday');
+  await page.click('.pg-job-go');
   await page.waitForURL(/cal\.com/);
-  expect(page.url()).toBe('https://cal.com/example/30min?job=The+Monday+report&scale=');
+  expect(page.url()).toBe('https://cal.com/example/30min?job=The+Monday+report&scale=Two+people%2C+every+Monday');
   await ctx.close();
 });
 
 test('every "Book the free call" link goes to the booking step', async ({ page }) => {
   await open(page);
   const hrefs = await page.locator('.pg-book-link').evaluateAll((l) => l.map((a) => a.getAttribute('href')));
-  expect(hrefs.length).toBe(4);
+  expect(hrefs.length).toBe(2);
   expect(new Set(hrefs)).toEqual(new Set(['#book']));
 });
 
 test('without a booking link, the live page offers email only', async ({ page }) => {
-  await open(page, { html: shell });
-  await expect(page.locator('form')).toHaveCount(0);
+  await open(page, { html: pageNoLink });
+  await expect(page.locator('form[action]')).toHaveCount(0);
   await expect(page.locator('#book a[href^="mailto:"]')).toHaveCount(1);
 });
 

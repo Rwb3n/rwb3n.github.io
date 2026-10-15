@@ -7,29 +7,29 @@
 
 ```mermaid
 flowchart TD
-  S0["1 problem: I find the work your team repeats by hand. Then I build a system that does it."]
+  S0["1 job: Which job does your team do by hand , every week?"]
   S1["2 cases: Where the time goes"]
-  S2["3 start: How we would start"]
+  S2["3 start: What I look for"]
   S3["4 who: Who you would talk to"]
   S4["5 book: Book the free call"]
   S0 --> S1
   S1 --> S2
   S2 --> S3
   S3 --> S4
-  S0 -. "Book the free call" .-> S4
   S1 -. "Book the free call" .-> S4
   S2 -. "Book the free call" .-> S4
-  S3 -. "Book the free call" .-> S4
+  S4 --> C["Cal.com: pick a slot"] --> D["booked: Cal.com confirms by email"]
 ```
 
 | # | Section | Heading | Job | Words | Links to #book | Form |
 |---|---|---|---|---|---|---|
-| 1 | `#problem` | I find the work your team repeats by hand. Then I build a system that does it. | Say what I do | 38 | yes | no |
-| 2 | `#cases` | Where the time goes | Recognition: "that is us" | 325 | yes | no |
-| 3 | `#start` | How we would start | Lower the risk | 160 | yes | no |
-| 4 | `#who` | Who you would talk to | Trust | 69 | yes | no |
-| 5 | `#book` | Book the free call | Pick a time | 25 | no | no |
+| 1 | `#job` | Which job does your team do by hand , every week? |  | 165 | no | no |
+| 2 | `#cases` | Where the time goes | Recognition: "that is us" | 316 | yes | no |
+| 3 | `#start` | What I look for | Lower the risk | 236 | yes | no |
+| 4 | `#who` | Who you would talk to | Trust | 108 | no | no |
+| 5 | `#book` | Book the free call | Pick a time | 61 | no | no |
 
 ## Without JavaScript
 
-- No booking link is set (`site.json › booking.calLink` is null): the page shows no form and offers email only.
+- The intake form is a plain `GET` form to `https://cal.com/rwb3n/30min`, with fields `job`, `scale`: the answers prefill the Cal.com page.
+- "Show available times" is a plain link to the same page.

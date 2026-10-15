@@ -21,7 +21,7 @@ erDiagram
 | `facts` | what, who, firstStep, cost, timeline, reply, location, clients, handover |
 | `language` | maxSentenceWords, minSentenceWords, maxGrade, knownAcronyms, banned, bannedBusiness |
 | `meta` | title, description |
-| `page` | bookLink, problem, cases, start, who, intake, book |
+| `page` | bookLink, job, cases, start, who, book |
 | `person` | name, fullName, email, location, links |
 | `reading` | motion, text |
 | `timeZone` | string |
@@ -30,8 +30,6 @@ erDiagram
 
 | Name (Cal.com identifier) | Label | Kind |
 |---|---|---|
-| `job` | The job that takes up your team's time | long text |
-| `scale` | How many people do it, and how often | short text |
 
 ## Blocks (`src/catalog.js`; * = required). The page does not use them; the library and the fixtures do.
 

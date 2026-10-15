@@ -3,8 +3,8 @@
 // so the whole page reads without JavaScript and never drifts from config.
 //
 // The page is one funnel, read top to bottom, ending at a booked call
-// (_model/target/funnel.md): problem, cases, start, who, intake, book. Every
-// section has a quiet link straight to #book.
+// (_model/target/funnel.md): job, cases, start, who, book. Cases and start
+// end in a quiet link straight to #book.
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const fill = (t, vars) => String(t ?? '').replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
@@ -36,25 +36,83 @@ export function renderRegions(site) {
     '</section>',
   ].filter(Boolean);
 
-  // 1 The problem --------------------------------------------------------------
-  const pr = P.problem || {};
+  // 1 The job ------------------------------------------------------------------
+  // The one conversational turn. A plain GET form to the Cal.com page: without
+  // JavaScript, the job and a text "scale" field prefill it there. With
+  // JavaScript, src/job.js swaps the text field for three numbers and answers
+  // the visitor under "Show what it costs" (the answer block is here, hidden,
+  // so its words read without JavaScript too).
+  const J = P.job || {};
+  const action = bookingUrl(site);
+  const A = J.answer || {};
   let accented = false;
-  const lines = (pr.headline || []).map((line) => {
+  const lines = (J.headline || []).map((line) => {
     const e = esc(line);
-    const a = pr.accent && esc(pr.accent);
+    const a = J.accent && esc(J.accent);
     if (!accented && a && e.includes(a)) { accented = true; return e.replace(a, `<em class="is-accent">${a}</em>`); }
     return e;
   });
-  const problem = [
-    '<section class="pg-section is-problem" id="problem" aria-labelledby="problem-h">',
+  const textField = (f, id, long) => [
+    '    <div class="pg-field">',
+    `      <label class="pg-label" for="${id}">${esc(f.label)}</label>`,
+    `      <p class="pg-example" id="${id}-ex">${esc(f.example)}</p>`,
+    long
+      ? `      <textarea class="pg-input" id="${id}" name="${esc(f.name)}" rows="3" aria-describedby="${id}-ex"></textarea>`
+      : `      <input class="pg-input" id="${id}" name="${esc(f.name)}" type="text" autocomplete="off" aria-describedby="${id}-ex" />`,
+    '    </div>',
+  ];
+  const number = (n) => {
+    const id = `n-${n.key}`;
+    return [
+      '      <div class="est-field">',
+      `        <label class="est-label" for="${id}">${esc(n.label)}</label>`,
+      '        <div class="est-control">',
+      `          <button class="est-step" type="button" data-step="-1" aria-label="${esc(n.less)}">−</button>`,
+      n.prefix ? `          <span class="est-prefix" aria-hidden="true">${esc(n.prefix)}</span>` : '',
+      `          <input class="est-input" id="${id}" data-num="${esc(n.key)}" type="number" inputmode="decimal" min="${n.min}" max="${n.max}" step="${n.step ?? 1}" value="${n.value}"${n.hint ? ` aria-describedby="${id}-hint"` : ''} />`,
+      `          <button class="est-step" type="button" data-step="1" aria-label="${esc(n.more)}">+</button>`,
+      '        </div>',
+      n.hint ? `        <span class="est-hint" id="${id}-hint">${esc(n.hint)}</span>` : '',
+      '      </div>',
+    ].filter(Boolean);
+  };
+  const job = [
+    '<section class="pg-section is-job" id="job" aria-labelledby="job-h">',
     '  <div class="copy" data-copy>',
-    `    <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>${esc(pr.eyebrow)}</p>`,
-    '    <h1 class="display" id="problem-h">',
+    `    <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>${esc(J.eyebrow)}</p>`,
+    '    <h1 class="display" id="job-h">',
     ...lines.map((l) => `      <span class="display-line">${l}</span>`),
     '    </h1>',
     '  </div>',
-    pr.cue && `  <p class="pg-cue">${esc(pr.cue)}</p>`,
-    `  ${bookLink(' is-first')}`,
+    J.lead && `  <p class="pg-intro">${esc(J.lead)}</p>`,
+    `  <form class="pg-job" method="get"${action ? ` action="${esc(action)}"` : ''} data-job>`,
+    ...textField(J.field || {}, `f-${J.field?.name}`, true),
+    '    <div class="pg-nojs" data-nojs>',
+    ...textField(J.noscript || {}, `f-${J.noscript?.name}`, false).map((l) => `  ${l}`),
+    action ? `      <button class="btn btn-ghost pg-job-go" type="submit">${esc(J.noscript?.submit)}</button>` : '',
+    '    </div>',
+    '    <div class="pg-js" data-js hidden>',
+    '      <div class="est-fields pg-numbers">',
+    ...(J.numbers || []).flatMap(number).map((l) => `  ${l}`),
+    '      </div>',
+    `      <button class="btn btn-primary pg-job-show" type="button" data-job-show>${esc(J.show)} <span aria-hidden="true">↓</span></button>`,
+    `      <p class="pg-small">${esc(J.note)}</p>`,
+    '    </div>',
+    '  </form>',
+    '  <div class="pg-answer" data-answer hidden tabindex="-1">',
+    '    <p class="pg-you" data-answer-you></p>',
+    '    <dl class="est-dl">',
+    `      <div><dt class="micro">${esc(A.hours)}</dt><dd><span class="est-num" data-answer-hours></span></dd></div>`,
+    `      <div><dt class="micro">${esc(A.cost)}</dt><dd><span class="est-num is-accent" data-answer-cost></span></dd></div>`,
+    '    </dl>',
+    '    <p class="est-weeks" data-answer-weeks></p>',
+    '    <div class="est-grid-wrap"><div class="est-grid" data-answer-grid aria-hidden="true"></div></div>',
+    `    <p class="est-key">${esc(A.key)}</p>`,
+    '    <p class="pg-nearest" data-answer-nearest></p>',
+    `    <p class="pg-small">${esc(A.note)}</p>`,
+    `    <button class="btn btn-ghost pg-answer-book" type="button" data-answer-book>${esc(A.book)} <span aria-hidden="true">↓</span></button>`,
+    '    <p class="visually-hidden" aria-live="polite" data-answer-live></p>',
+    '  </div>',
     '</section>',
   ].filter(Boolean);
 
@@ -65,7 +123,7 @@ export function renderRegions(site) {
     C.intro && `<p class="pg-intro">${esc(C.intro)}</p>`,
     '<div class="pg-cases">',
     ...(C.items || []).flatMap((c) => [
-      '  <article class="pg-case">',
+      `  <article class="pg-case"${c.id ? ` id="case-${esc(c.id)}"` : ''}>`,
       `    <p class="pg-case-tag">${esc(c.tag)}</p>`,
       `    <h3 class="pg-case-title">${esc(c.title)}</h3>`,
       '    <dl class="pg-case-body">',
@@ -89,7 +147,17 @@ export function renderRegions(site) {
     const value = f.key ? factText(site, f.key) : f.value;
     return label && value ? `  <li><b>${esc(label)}:</b> ${esc(stop(value))}</li>` : null;
   }).filter(Boolean);
-  const start = section('start', S.head, [
+  const L = S.look;
+  // With "What I look for", that is the section's heading and "How we would
+  // start" a sub-heading.
+  const start = section('start', L ? L.head : S.head, [
+    ...(L ? [
+      L.intro && `<p class="pg-intro">${esc(L.intro)}</p>`,
+      '<ul class="pg-look" role="list">',
+      ...(L.items || []).map((t) => `  <li>${esc(t)}</li>`),
+      '</ul>',
+      `<h3 class="pg-sub">${esc(S.head)}</h3>`,
+    ] : []),
     '<ol class="pg-steps" role="list">',
     ...(S.items || []).map((it, i) => `  <li><span class="pg-step-n" aria-hidden="true">${i + 1}</span><h3 class="pg-step-title">${esc(it.title)}</h3> <p class="pg-step-detail">${esc(it.detail)}</p></li>`),
     '</ol>',
@@ -101,37 +169,18 @@ export function renderRegions(site) {
 
   // 4 Who you would talk to ----------------------------------------------------
   const W = P.who || {};
-  const who = section('who', W.head, (W.lines || []).map((l, i) => `<p class="pg-who${i === 0 ? ' is-lead' : ''}">${esc(l)}</p>`));
-
-  // 5 Intake --------------------------------------------------------------------
-  // A plain GET form whose action is the Cal.com booking page: without
-  // JavaScript the fields prefill it there. With JavaScript, src/book.js opens
-  // the embed in #book instead. No booking link yet: no form, nothing to send.
-  const I = P.intake || {};
-  const action = bookingUrl(site);
-  const field = (f) => {
-    const id = `f-${f.name}`;
-    const control = f.long
-      ? `<textarea class="pg-input" id="${id}" name="${esc(f.name)}" rows="4" aria-describedby="${id}-ex"></textarea>`
-      : `<input class="pg-input" id="${id}" name="${esc(f.name)}" type="text" autocomplete="off" aria-describedby="${id}-ex" />`;
-    return [
-      '  <div class="pg-field">',
-      `    <label class="pg-label" for="${id}">${esc(f.label)}</label>`,
-      `    <p class="pg-example" id="${id}-ex">${esc(f.example)}</p>`,
-      `    ${control}`,
-      '  </div>',
-    ];
-  };
-  const intake = !action ? [] : section('intake', I.head, [
-    I.intro && `<p class="pg-intro">${esc(I.intro)}</p>`,
-    `<form class="pg-intake" method="get" action="${esc(action)}" data-intake>`,
-    ...(I.fields || []).flatMap(field),
-    `  <button class="btn btn-ghost pg-intake-go" type="submit">${esc(I.submit)}</button>`,
-    `  <p class="pg-small">${esc(I.note)}</p>`,
-    '</form>',
+  const ph = W.photo;
+  const who = section('who', W.head, [
+    '<div class="pg-who-body">',
+    ph && `  <img class="pg-photo" src="${esc(ph.src)}" width="${ph.width}" height="${ph.height}" alt="${esc(ph.alt)}" loading="lazy" decoding="async" />`,
+    '  <div class="pg-who-lines">',
+    site.person?.fullName && `    <p class="pg-who-name">${esc(site.person.fullName)}</p>`,
+    ...(W.lines || []).map((l, i) => `    <p class="pg-who${i === 0 ? ' is-lead' : ''}">${esc(l)}</p>`),
+    '  </div>',
+    '</div>',
   ], { link: false });
 
-  // 6 Book -----------------------------------------------------------------------
+  // 5 Book -----------------------------------------------------------------------
   const B = P.book || {};
   const bookUrl = bookingUrl(site);
   const book = section('book', B.head, bookUrl ? [
@@ -147,7 +196,7 @@ export function renderRegions(site) {
     `<p class="pg-intro">${esc(fill(B.unset, { email: '\u0000' })).replace('\u0000', `<a href="mailto:${esc(email)}">${esc(email)}</a>`)}</p>`,
   ], { link: false });
 
-  const page = [...problem, ...cases, ...start, ...who, ...intake, ...book];
+  const page = [...job, ...cases, ...start, ...who, ...book];
 
   const meta = [
     `<title>${esc(site.meta?.title || site.brand)}</title>`,
@@ -165,6 +214,14 @@ export function renderRegions(site) {
     embedScript: site.booking?.embedScript || 'https://app.cal.com/embed/embed.js',
     timeoutSeconds: site.booking?.timeoutSeconds ?? 10,
     fields: site.booking?.fields || [],
+    // Step 1 (src/job.js): the numbers, the answer's words, and the examples'
+    // words for "nearest example".
+    job: J.numbers ? {
+      field: J.field?.name || 'job',
+      numbers: J.numbers,
+      answer: J.answer || {},
+      cases: (P.cases?.items || []).filter((c) => c.id).map((c) => ({ id: c.id, title: c.title, match: c.match || [] })),
+    } : null,
   }).replace(/</g, '\\u003c')}</script>`];
 
   return { meta, reading, page, booking };

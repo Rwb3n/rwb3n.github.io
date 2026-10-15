@@ -16,12 +16,12 @@ flowchart TD
 | Part | Domain | Words |
 |---|---|---|
 | `site.json › $comment` | - | 46 |
-| `site.json › booking` | Booking | 4 |
+| `site.json › booking` | Booking | 5 |
 | `site.json › brand` | Platform | 1 |
-| `site.json › facts` | Offer | 84 |
+| `site.json › facts` | Offer | 105 |
 | `site.json › language` | Rules | 125 |
-| `site.json › meta` | Platform | 30 |
-| `site.json › page` | Story | 692 |
-| `site.json › person` | Offer | 3 |
+| `site.json › meta` | Platform | 35 |
+| `site.json › page` | Story | 963 |
+| `site.json › person` | Offer | 5 |
 | `site.json › reading` | Platform | 2 |
 | `site.json › timeZone` | Platform | 1 |

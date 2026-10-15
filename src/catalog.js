@@ -277,7 +277,7 @@ export const blocks = {
     example: { type: 'fact', key: 'reply' },
     // Needs the site's facts: a fact with no value shows its "missing" sentence.
     variantKey: (b, facts = {}) => (facts[b.key]?.value != null ? 'value' : 'missing'),
-    variants: [{ name: 'Not published', note: 'The fact has no value yet, so its "missing" sentence is shown, with a rule.', example: { type: 'fact', key: 'cost' } }],
+    variants: [{ name: 'Not published', note: 'The fact has no value yet, so its "missing" sentence is shown, with a rule.', example: { type: 'fact', key: 'clients' } }],
   },
   facts: {
     category: 'facts',

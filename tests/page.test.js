@@ -23,53 +23,76 @@ test('every visitor-facing line of the signed-off copy is on the page, word for 
     else if (inSection && l.startsWith('> ') && l.slice(2).trim()) copy.push(l.slice(2).trim());
   }
   assert.ok(copy.length > 30, 'copy.md has visitor lines');
-  const missing = copy.filter((l) => !page.includes(l));
+  // Lines of the answer that hold the visitor's own words or numbers match
+  // their template in site.json › page.job.answer instead.
+  const A = site.page.job.answer;
+  const escRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const templates = ['you', 'weeks', 'nearest'].map((k) => new RegExp(`^${A[k].split(/\{\w+\}/).map(escRe).join('.+')}$`));
+  const missing = copy.filter((l) => !page.includes(l) && !templates.some((t) => t.test(l)));
   assert.deepEqual(missing, []);
 });
 
-test('six sections, in the order of the funnel', () => {
+test('five sections, in the order of the funnel', () => {
   const ids = [...html(withLink).matchAll(/<section class="pg-section is-[a-z]+" id="([a-z]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(ids, ['problem', 'cases', 'start', 'who', 'intake', 'book']);
+  assert.deepEqual(ids, ['job', 'cases', 'start', 'who', 'book']);
 });
 
-test('steps 1 to 4 each have a quiet link to #book with the same label', () => {
+test('steps 2 and 3 each have a quiet link to #book with the same label', () => {
   const h = html(withLink);
-  for (const id of ['problem', 'cases', 'start', 'who']) {
+  for (const id of ['cases', 'start']) {
     const sec = h.match(new RegExp(`<section[^>]*id="${id}"[\\s\\S]*?</section>`))[0];
     assert.match(sec, new RegExp(`<a class="pg-book-link[^"]*" href="#book">${site.page.bookLink} `), id);
   }
 });
 
-test('the page has exactly one filled button, "Show available times"', () => {
+test('two filled buttons, one per action: "Show what it costs" and "Show available times"', () => {
   const h = html(withLink);
   const filled = [...h.matchAll(/class="btn btn-primary[^"]*"[^>]*>([^<]+)/g)].map((m) => m[1].trim());
-  assert.deepEqual(filled, [site.page.book.show]);
+  assert.deepEqual(filled, [site.page.job.show, site.page.book.show]);
 });
 
-test('without JavaScript, the intake form goes to the Cal.com page with the answers as booking questions', () => {
+test('without JavaScript, step 1 is a form to the Cal.com page with the answers as booking questions', () => {
   const h = html(withLink);
-  const form = h.match(/<form[^>]*data-intake[^>]*>/)[0];
+  const form = h.match(/<form[^>]*data-job[^>]*>/)[0];
   assert.match(form, /method="get"/);
   assert.match(form, /action="https:\/\/cal\.com\/example\/30min"/);
   const names = [...h.matchAll(/<(?:input|textarea)[^>]*name="([a-z]+)"/g)].map((m) => m[1]);
   assert.deepEqual(names, site.booking.fields);
+  // The numbers and the answer need JavaScript, so they start hidden.
+  assert.match(h, /<div class="pg-js" data-js hidden>/);
+  assert.match(h, /<div class="pg-answer" data-answer hidden/);
   assert.match(h, /<a class="btn btn-primary pg-show" href="https:\/\/cal\.com\/example\/30min"/);
   assert.equal(bookingUrl(withLink, { job: 'Monday report', scale: '' }), 'https://cal.com/example/30min?job=Monday+report');
 });
 
 test('every field has a label above it and one example line, and no placeholder', () => {
   const h = html(withLink);
-  for (const f of site.page.intake.fields) {
+  for (const f of [site.page.job.field, site.page.job.noscript]) {
     assert.match(h, new RegExp(`<label class="pg-label" for="f-${f.name}">`), f.name);
     assert.match(h, new RegExp(`id="f-${f.name}-ex"`), f.name);
   }
   assert.doesNotMatch(h, /placeholder=/);
 });
 
-test('without a booking link, no form and nothing to send: email only', () => {
+test('without a booking link, nothing goes to Cal.com: email only', () => {
   const h = html({ ...site, booking: { ...site.booking, calLink: null } });
-  assert.doesNotMatch(h, /<form|data-booking|cal\.com\//);
+  assert.doesNotMatch(h, /action=|data-booking|cal\.com\//);
   assert.match(h, /mailto:/);
+});
+
+test('every example has an id and words for "nearest example"', () => {
+  for (const c of site.page.cases.items) {
+    assert.match(c.id, /^[a-z-]+$/, c.title);
+    assert.ok(c.match.length >= 5, c.title);
+  }
+});
+
+test('step 4 shows who is speaking: full name and a photograph that says who it is', () => {
+  const h = html(withLink);
+  assert.ok(site.person.fullName);
+  assert.match(h, new RegExp(`<p class="pg-who-name">${site.person.fullName}</p>`));
+  assert.match(h, /<img class="pg-photo" src="img\/ruben\.jpg"[^>]*alt="Ruben Pires[^"]+"/);
+  assert.ok(readFileSync(new URL('../img/ruben.jpg', import.meta.url)).length < 120_000, 'photo under 120 KB');
 });
 
 test('honesty: the page never says it sent, received or booked anything', () => {
