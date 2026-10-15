@@ -18,6 +18,13 @@ const STUB = `(() => { const on = {}; let el;
   (window.Cal.q || []).forEach(run); window.Cal = function () { run(arguments); }; window.Cal.loaded = true;
   setTimeout(() => { el.innerHTML = '<div style="height:600px">calendar</div>'; on.linkReady && on.linkReady(); }, 200); })();`;
 
+// Free text: "Something else" in the latest turn, then the visitor's words.
+async function say(page, text) {
+  await page.locator('.pg-other:visible').last().click();
+  await page.fill('#ask', text);
+  await page.press('#ask', 'Enter');
+}
+
 async function open(page, { cal = 'ok', html = pageWithLink, hash = '' } = {}) {
   const calRequests = [];
   page.on('request', (r) => { if (/cal\.com/.test(r.url())) calRequests.push(r.url()); });
@@ -37,9 +44,23 @@ test('the page loads without errors and asks Cal.com for nothing until the visit
   expect(errors).toEqual([]);
   expect(calRequests).toEqual([]);
   expect(await page.locator('.pg-section').evaluateAll((s) => s.map((x) => x.id))).toEqual(['problem', 'cases', 'start', 'who', 'intake', 'book']);
-  // A conversation: only the first turn is open, with the ask bar under it.
+  // A conversation: only the first turn is open; free text is its last option.
   expect(await page.locator('.pg-section:visible').evaluateAll((s) => s.map((x) => x.id))).toEqual(['problem']);
-  await expect(page.locator('[data-ask]')).toBeVisible();
+  expect(await page.locator('#problem .pg-replies > li:visible').allInnerTexts()).toEqual(['See examples ↓', 'See how we would start ↓', 'See who I would talk to ↓', 'BOOK THE FREE CALL ↓', 'Something else'].map((t) => expect.stringContaining(t.replace(' ↓', ''))));
+  await expect(page.locator('[data-ask]')).toBeHidden();
+});
+
+test('"Something else" opens a field in place under the options; Escape closes it', async ({ page }) => {
+  await open(page);
+  const other = page.locator('#problem .pg-other');
+  await other.click();
+  await expect(page.locator('#problem > .pg-replies + [data-ask]')).toBeVisible();
+  await expect(other).toHaveAttribute('aria-expanded', 'true');
+  expect(await page.evaluate(() => document.activeElement?.id)).toBe('ask');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[data-ask]')).toBeHidden();
+  await expect(other).toHaveAttribute('aria-expanded', 'false');
+  await expect(other).toBeFocused();
 });
 
 test('a reply says itself back, opens its section under the turn, and spends the earlier replies', async ({ page }) => {
@@ -47,10 +68,11 @@ test('a reply says itself back, opens its section under the turn, and spends the
   await page.click('#problem .pg-reply[data-to="cases"]');
   await expect(page.locator('#cases')).toBeVisible();
   expect(await page.evaluate(() => document.activeElement?.id)).toBe('cases-h');
-  await expect(page.locator('.pg-you').last()).toHaveText(/You\s+Show me examples/);
+  await expect(page.locator('.pg-you').last()).toHaveText(/You\s+See examples/);
   await expect(page.locator('#problem .pg-replies')).toBeHidden();
   // The new turn offers what is not open yet, and the booking link.
   expect(await page.locator('#cases .pg-replies a:visible').evaluateAll((l) => l.map((a) => a.dataset.to))).toEqual(['start', 'who', 'book']);
+  await expect(page.locator('#cases .pg-other')).toBeVisible();
   expect(page.url()).toMatch(/#cases$/);
   await page.click('#cases [data-to="who"]');
   expect(await page.locator('.pg-section:visible').evaluateAll((s) => s.map((x) => x.id))).toEqual(['problem', 'cases', 'who']);
@@ -59,20 +81,18 @@ test('a reply says itself back, opens its section under the turn, and spends the
 
 test('typed text: a fact answers a question; a description opens the intake with the words in it', async ({ page }) => {
   await open(page);
-  await page.fill('#ask', 'How much does it cost?');
-  await page.press('#ask', 'Enter');
+  await say(page, 'How much does it cost?');
   await expect(page.locator('.pg-turn .pg-answer')).toHaveText(site.facts.cost.missing);
   await expect(page.locator('.pg-turn .pg-you')).toContainText('“How much does it cost?”');
-  await page.fill('#ask', 'Two of us copy orders into a spreadsheet by hand every day');
-  await page.press('#ask', 'Enter');
+  await say(page, 'Two of us copy orders into a spreadsheet by hand every day');
   await expect(page.locator('#intake')).toBeVisible();
   await expect(page.locator('#f-job')).toHaveValue('Two of us copy orders into a spreadsheet by hand every day');
   await expect(page.locator('#intake .pg-answer')).toHaveText(site.conversation.describe);
-  await page.fill('#ask', 'purple elephants');
-  await page.press('#ask', 'Enter');
+  await say(page, 'purple elephants');
   await expect(page.locator('.pg-turn .pg-answer').last()).toHaveText(site.conversation.fallback);
-  // The ask bar stays under the latest turn.
-  expect(await page.evaluate(() => document.querySelector('.pg').lastElementChild.matches('[data-ask]'))).toBe(true);
+  // After sending, the field closes; the newest turn has its own "Something else".
+  await expect(page.locator('[data-ask]')).toBeHidden();
+  await expect(page.locator('.pg-turn').last().locator('.pg-other')).toBeVisible();
 });
 
 test('"Show the whole page" puts every section back in order, as without JavaScript', async ({ page }) => {
@@ -82,6 +102,7 @@ test('"Show the whole page" puts every section back in order, as without JavaScr
   expect(await page.locator('.pg-section:visible').evaluateAll((s) => s.map((x) => x.id))).toEqual(['problem', 'cases', 'start', 'who', 'intake', 'book']);
   await expect(page.locator('.pg-you')).toHaveCount(0);
   await expect(page.locator('[data-ask]')).toBeHidden();
+  await expect(page.locator('.pg-other:visible')).toHaveCount(0);
   expect(page.url()).toMatch(/#all$/);
 });
 
@@ -178,10 +199,8 @@ test('the component library covers every class used on the page', async ({ page 
   // Classes from every state: the conversation a few turns in, then the whole page.
   await open(page);
   await page.click('#problem [data-to="cases"]');
-  await page.fill('#ask', 'How much does it cost?');
-  await page.press('#ask', 'Enter');
-  await page.fill('#ask', 'We copy orders by hand every day');
-  await page.press('#ask', 'Enter');
+  await say(page, 'How much does it cost?');
+  await say(page, 'We copy orders by hand every day');
   await page.waitForTimeout(800);
   const used = await classes('.pg');
   await page.click('[data-show-all]');

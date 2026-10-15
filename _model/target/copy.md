@@ -152,30 +152,34 @@ nothing.
 
 ---
 
-## Conversation: replies and ask bar
+## Conversation: options and free text
 
 *New* (draft, 2026-10-15). The page is a conversation (`funnel.md ›
-Changed`). Each turn ends with replies, in the visitor's voice, as
-statements. The booking reply is "Book the free call", as before.
+Changed`). Each turn ends with numbered options, worded as actions. The
+booking option is "Book the free call", as before. The last option is
+always free text: "Something else" opens a field in place.
 
-> Show me examples
+> See examples
 >
-> Show me how we would start
+> See how we would start
 >
-> Tell me who I would talk to
+> See who I would talk to
 >
-> Describe our job first
+> Describe the job first
 >
-> Ask a question, or describe the job
+> Something else
+>
+> Say it in your own words
 >
 > For example: the price. Or: two of us rebuild a report every Monday.
 >
-> Ask
+> Send
 >
 > Show the whole page
 
-Notes: the visitor's own words are said back above the turn they open, after
-a small "You". Replies to sections already open are not offered again.
+Notes: the option chosen, or the visitor's own words, is said back above the
+turn it opens, after a small "You". Options for sections already open are
+not offered again.
 
 ---
 

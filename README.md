@@ -11,7 +11,7 @@ src/
   parts.js        the page's part types and sections: props, examples, validation, HTML
   static.js       renders the page from content/site.json (used by sync, the library and the tests)
   main.js         the page's script: settings, theme, rising headline, conversation, booking
-  talk.js         the conversation: replies open sections as turns; the ask bar; whole page
+  talk.js         the conversation: options open sections as turns; "Something else" for free text; whole page
   route.js        typed text → intake, a fact, a section or the fallback (pure, tested)
   book.js         booking with Cal.com: embed on demand, prefill, loading line, fallback
   prefs.js        reading preferences: motion, text size
@@ -33,7 +33,7 @@ tests/            node --test; tests/visual: Playwright (behaviour + screenshots
 
 ## Change what the site says
 
-1. Edit `content/site.json` › `page.sections` (the steps and the parts they are made of; part types are in `src/parts.js` and on `/components/`), `conversation` (replies, ask bar, typed-text answers), `facts`, or `booking`.
+1. Edit `content/site.json` › `page.sections` (the steps and the parts they are made of; part types are in `src/parts.js` and on `/components/`), `conversation` (options, free text, typed-text answers), `facts`, or `booking`.
    Keys starting with `$` are comments. The signed-off words are in
    `_model/target/copy.md`; `npm test` fails if the page drops one.
 2. `npm run sync` rewrites the `<!-- sync:… -->` regions of index.html.

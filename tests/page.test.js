@@ -101,8 +101,12 @@ test('the conversation config names only sections that are on the page', () => {
   }
 });
 
-test('the ask bar is hidden without JavaScript', () => {
-  assert.match(html(withLink), /<form class="pg-ask" data-ask hidden>/);
+test('free text needs JavaScript: "Something else" and its form start hidden', () => {
+  const h = html(withLink);
+  assert.match(h, /<form class="pg-ask" data-ask hidden>/);
+  const others = [...h.matchAll(/<li class="pg-other-li" data-other hidden><button[^>]*>([^<]+)</g)].map((m) => m[1]);
+  assert.equal(others.length, 6, 'one per section');
+  assert.ok(others.every((t) => t === site.conversation.other));
 });
 
 test('the page has exactly one filled button, "Show available times"', () => {
@@ -135,7 +139,7 @@ test('every field has a label above it and one example line, and no placeholder'
 test('without a booking link, no form and nothing to send: email only', () => {
   const h = html({ ...site, booking: { ...site.booking, calLink: null } });
   assert.doesNotMatch(h, /<form class="pg-intake|data-booking|cal\.com\//);
-  // The ask bar has no action: it only routes within the page.
+  // The free-text form has no action: it only routes within the page.
   assert.doesNotMatch(h.match(/<form class="pg-ask"[^>]*>/)[0], /action=/);
   assert.match(h, /mailto:/);
 });

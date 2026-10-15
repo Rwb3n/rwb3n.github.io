@@ -20,7 +20,7 @@ erDiagram
 |---|---|
 | `booking` | calLink, origin, embedScript, timeoutSeconds, fields |
 | `brand` | string |
-| `conversation` | start, you, ask, all, answers, fallback, describe, describeUnset, disclosure |
+| `conversation` | start, you, other, ask, all, answers, fallback, describe, describeUnset, disclosure |
 | `facts` | what, who, firstStep, cost, timeline, reply, location, clients, handover |
 | `language` | maxSentenceWords, minSentenceWords, maxGrade, knownAcronyms, banned, bannedBusiness |
 | `meta` | title, description |

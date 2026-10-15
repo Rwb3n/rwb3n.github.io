@@ -135,7 +135,7 @@ function processMd() {
     '\n## Answers to typed questions\n',
     table(['Words', 'Answer'], (C.answers || []).map((a) => [a.keywords.slice(0, 4).join(', ') + (a.keywords.length > 4 ? ', …' : ''), a.fact ? `fact \`${a.fact}\`${site.facts?.[a.fact]?.value ?? site.facts?.[a.fact]?.missing ? '' : ' (empty: the fallback)'}` : a.text])),
     '\n## Without JavaScript\n',
-    '- Every section shows, in order. Replies are links to the sections; the ask bar is hidden.',
+    '- Every section shows, in order. Replies are links to the sections; "Something else" and its field are hidden.',
     bookingUrl(site)
       ? `- The intake form is a plain \`GET\` form to \`${bookingUrl(site)}\`, with fields ${(site.booking.fields || []).map((f) => `\`${f}\``).join(', ')}: the answers prefill the Cal.com page.\n- "${P.book?.show}" is a plain link to the same page.`
       : '- No booking link is set (`site.json › booking.calLink` is null): the page shows no form and offers email only.',

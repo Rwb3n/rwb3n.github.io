@@ -102,13 +102,14 @@
         </div>
         <p class="pg-cue">Below: three examples, how we would start, and who you would talk to.</p>
         <ul class="pg-replies" role="list">
-          <li><a class="pg-reply" href="#cases" data-to="cases">Show me examples <span aria-hidden="true">↓</span></a></li>
-          <li><a class="pg-reply" href="#start" data-to="start">Show me how we would start <span aria-hidden="true">↓</span></a></li>
-          <li><a class="pg-reply" href="#who" data-to="who">Tell me who I would talk to <span aria-hidden="true">↓</span></a></li>
+          <li><a class="pg-reply" href="#cases" data-to="cases">See examples <span aria-hidden="true">↓</span></a></li>
+          <li><a class="pg-reply" href="#start" data-to="start">See how we would start <span aria-hidden="true">↓</span></a></li>
+          <li><a class="pg-reply" href="#who" data-to="who">See who I would talk to <span aria-hidden="true">↓</span></a></li>
           <li><a class="pg-book-link" href="#book" data-to="book">Book the free call <span aria-hidden="true">↓</span></a></li>
+          <li class="pg-other-li" data-other hidden><button class="pg-reply pg-other" type="button" aria-expanded="false">Something else</button></li>
         </ul>
       </section>
-      <section class="pg-section is-plain" id="cases" aria-labelledby="cases-h" data-reply="Show me examples">
+      <section class="pg-section is-plain" id="cases" aria-labelledby="cases-h" data-reply="See examples">
         <h2 class="pg-head" id="cases-h" tabindex="-1">Where the time goes</h2>
         <p class="pg-intro">Three situations I see often. They are illustrations, not named clients. The numbers show the scale, not a promise.</p>
         <div class="pg-cases">
@@ -146,12 +147,13 @@
           <li><b>One person holds the knowledge.</b> They cannot take two weeks off.</li>
         </ul>
         <ul class="pg-replies" role="list">
-          <li><a class="pg-reply" href="#start" data-to="start">Show me how we would start <span aria-hidden="true">↓</span></a></li>
-          <li><a class="pg-reply" href="#who" data-to="who">Tell me who I would talk to <span aria-hidden="true">↓</span></a></li>
+          <li><a class="pg-reply" href="#start" data-to="start">See how we would start <span aria-hidden="true">↓</span></a></li>
+          <li><a class="pg-reply" href="#who" data-to="who">See who I would talk to <span aria-hidden="true">↓</span></a></li>
           <li><a class="pg-book-link" href="#book" data-to="book">Book the free call <span aria-hidden="true">↓</span></a></li>
+          <li class="pg-other-li" data-other hidden><button class="pg-reply pg-other" type="button" aria-expanded="false">Something else</button></li>
         </ul>
       </section>
-      <section class="pg-section is-plain" id="start" aria-labelledby="start-h" data-reply="Show me how we would start">
+      <section class="pg-section is-plain" id="start" aria-labelledby="start-h" data-reply="See how we would start">
         <h2 class="pg-head" id="start-h" tabindex="-1">How we would start</h2>
         <ol class="pg-steps" role="list">
           <li><span class="pg-step-n" aria-hidden="true">1</span><h3 class="pg-step-title">A 30-minute call, free.</h3> <p class="pg-step-detail">You tell me where the time goes. I ask how the work actually moves.</p></li>
@@ -168,11 +170,12 @@
           <li><b>Based in:</b> London, UK.</li>
         </ul>
         <ul class="pg-replies" role="list">
-          <li><a class="pg-reply" href="#who" data-to="who">Tell me who I would talk to <span aria-hidden="true">↓</span></a></li>
+          <li><a class="pg-reply" href="#who" data-to="who">See who I would talk to <span aria-hidden="true">↓</span></a></li>
           <li><a class="pg-book-link" href="#book" data-to="book">Book the free call <span aria-hidden="true">↓</span></a></li>
+          <li class="pg-other-li" data-other hidden><button class="pg-reply pg-other" type="button" aria-expanded="false">Something else</button></li>
         </ul>
       </section>
-      <section class="pg-section is-plain" id="who" aria-labelledby="who-h" data-reply="Tell me who I would talk to">
+      <section class="pg-section is-plain" id="who" aria-labelledby="who-h" data-reply="See who I would talk to">
         <h2 class="pg-head" id="who-h" tabindex="-1">Who you would talk to</h2>
         <p class="pg-lead">I am Ruben. I work alone, in London. I have spent years automating work for other organisations.</p>
         <p class="pg-body">My main job is running Salesforce at London &amp; Partners. Salesforce is software that companies use to track customers.</p>
@@ -180,21 +183,27 @@
         <p class="pg-body">Salesforce certifications: Salesforce Administrator. Salesforce Platform App Builder. Salesforce Agentforce Specialist.</p>
         <ul class="pg-replies" role="list">
           <li><a class="pg-book-link" href="#book" data-to="book">Book the free call <span aria-hidden="true">↓</span></a></li>
+          <li class="pg-other-li" data-other hidden><button class="pg-reply pg-other" type="button" aria-expanded="false">Something else</button></li>
         </ul>
       </section>
       <section class="pg-section is-booking" id="book" aria-labelledby="book-h">
         <h2 class="pg-head" id="book-h" tabindex="-1">Book the free call</h2>
         <p class="pg-intro">Online booking is not set up yet. Email <a href="mailto:lab@mindunder.dev">lab@mindunder.dev</a> to book the free call. I reply the same day.</p>
+        <ul class="pg-replies" role="list">
+          <li class="pg-other-li" data-other hidden><button class="pg-reply pg-other" type="button" aria-expanded="false">Something else</button></li>
+        </ul>
       </section>
       <form class="pg-ask" data-ask hidden>
-        <label class="pg-label" for="ask">Ask a question, or describe the job</label>
+        <label class="pg-label" for="ask">Say it in your own words</label>
         <p class="pg-example" id="ask-ex">For example: the price. Or: two of us rebuild a report every Monday.</p>
         <div class="pg-ask-row">
           <input class="pg-input" id="ask" name="q" type="text" autocomplete="off" aria-describedby="ask-ex" />
-          <button class="btn btn-ghost" type="submit">Ask</button>
+          <button class="btn btn-ghost" type="submit">Send</button>
         </div>
-        <button class="pg-all" type="button" data-show-all>Show the whole page</button>
       </form>
+      <div class="pg-end" data-end hidden>
+        <button class="pg-all" type="button" data-show-all>Show the whole page</button>
+      </div>
       <!-- /sync:page -->
     </main>
 
@@ -205,7 +214,7 @@
 
     <!-- sync:booking -->
     <script type="application/json" id="booking-config">{"calLink":null,"origin":"https://cal.com","embedScript":"https://app.cal.com/embed/embed.js","timeoutSeconds":10,"fields":["job","scale"]}</script>
-    <script type="application/json" id="talk-config">{"start":"problem","book":"book","intake":null,"you":"You","bookLink":"Book the free call","fallback":"I do not have an answer to that on this page. Ask me in the call, or by email.","describe":"That is the kind of thing the call is for. I have put your words in the first field below. Change them if you like.","describeUnset":"That is the kind of thing the call is for. Email it to me, and I will reply the same day.","disclosure":{"strong":["work together","hire you","proposal","quote for","help us","help me with"],"org":["our team","my team","our company","my company","we have","we use","we run","we spend","two of us","our staff","our office","our","we"],"problem":["by hand","manually","copy","copying","retype","rekey","spreadsheet","every week","every monday","every day","takes hours","takes ages","hours","struggling","broken","keeps","chase","chasing","report","invoices","orders"],"need":["we need","we are looking","we are trying","looking for someone","need help","want to automate","automate our"],"threshold":2},"answers":[{"keywords":["cost","price","pricing","how much","fee","fees","charge","budget","expensive","rate"],"text":"Not on the site yet. Ask in the call or by email."},{"keywords":["where are you","based","location","office","remote"],"text":"Based in: London, UK."},{"keywords":["reply","respond","response","get back"],"text":"Reply: The same day."},{"keywords":["clients","client work","case study","case studies","references","worked with","portfolio"],"text":"No client case studies published yet. The examples here are illustrations."},{"keywords":["what do you do","what is this","what is automation"],"text":"What I do: I find the steps your team repeats by hand. Then I build software that does them."}],"sections":[{"id":"problem","reply":null,"intents":[],"replies":["cases","start","who","book"]},{"id":"cases","reply":"Show me examples","intents":["example","case","situation","report","supplier","new client","tender"],"replies":["start","who","book"]},{"id":"start","reply":"Show me how we would start","intents":["start","first step","process","how would","how does","how do","what happens"],"replies":["who","book"]},{"id":"who","reply":"Tell me who I would talk to","intents":["who","about you","ruben","experience","background","salesforce","certification","yourself"],"replies":["book"]},{"id":"book","reply":null,"intents":["book","call","meeting","appointment","schedule","available","calendar","talk to you"],"replies":[]}]}</script>
+    <script type="application/json" id="talk-config">{"start":"problem","book":"book","intake":null,"you":"You","bookLink":"Book the free call","other":"Something else","fallback":"I do not have an answer to that on this page. Ask me in the call, or by email.","describe":"That is the kind of thing the call is for. I have put your words in the first field below. Change them if you like.","describeUnset":"That is the kind of thing the call is for. Email it to me, and I will reply the same day.","disclosure":{"strong":["work together","hire you","proposal","quote for","help us","help me with"],"org":["our team","my team","our company","my company","we have","we use","we run","we spend","two of us","our staff","our office","our","we"],"problem":["by hand","manually","copy","copying","retype","rekey","spreadsheet","every week","every monday","every day","takes hours","takes ages","hours","struggling","broken","keeps","chase","chasing","report","invoices","orders"],"need":["we need","we are looking","we are trying","looking for someone","need help","want to automate","automate our"],"threshold":2},"answers":[{"keywords":["cost","price","pricing","how much","fee","fees","charge","budget","expensive","rate"],"text":"Not on the site yet. Ask in the call or by email."},{"keywords":["where are you","based","location","office","remote"],"text":"Based in: London, UK."},{"keywords":["reply","respond","response","get back"],"text":"Reply: The same day."},{"keywords":["clients","client work","case study","case studies","references","worked with","portfolio"],"text":"No client case studies published yet. The examples here are illustrations."},{"keywords":["what do you do","what is this","what is automation"],"text":"What I do: I find the steps your team repeats by hand. Then I build software that does them."}],"sections":[{"id":"problem","reply":null,"intents":[],"replies":["cases","start","who","book"]},{"id":"cases","reply":"See examples","intents":["example","case","situation","report","supplier","new client","tender"],"replies":["start","who","book"]},{"id":"start","reply":"See how we would start","intents":["start","first step","process","how would","how does","how do","what happens"],"replies":["who","book"]},{"id":"who","reply":"See who I would talk to","intents":["who","about you","ruben","experience","background","salesforce","certification","yourself"],"replies":["book"]},{"id":"book","reply":null,"intents":["book","call","meeting","appointment","schedule","available","calendar","talk to you"],"replies":[]}]}</script>
     <!-- /sync:booking -->
   </body>
 </html>

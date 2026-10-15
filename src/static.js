@@ -16,7 +16,8 @@ export function renderRegions(site) {
   const C = site.conversation || {};
   const sections = visibleSections(site);
 
-  // The ask bar: only useful with JavaScript, so it starts hidden.
+  // Free text: the form that "Something else" opens inside the latest turn.
+  // Only useful with JavaScript, so it starts hidden.
   const ask = C.ask ? [
     '<form class="pg-ask" data-ask hidden>',
     `  <label class="pg-label" for="ask">${esc(C.ask.label)}</label>`,
@@ -25,11 +26,13 @@ export function renderRegions(site) {
     `    <input class="pg-input" id="ask" name="q" type="text" autocomplete="off"${C.ask.example ? ' aria-describedby="ask-ex"' : ''} />`,
     `    <button class="btn btn-ghost" type="submit">${esc(C.ask.submit)}</button>`,
     '  </div>',
-    C.all && `  <button class="pg-all" type="button" data-show-all>${esc(C.all)}</button>`,
     '</form>',
   ].filter(Boolean) : [];
 
-  const page = [...renderPage(site), ...ask];
+  // The end of the conversation: one way back to the reading order.
+  const end = C.all ? ['<div class="pg-end" data-end hidden>', `  <button class="pg-all" type="button" data-show-all>${esc(C.all)}</button>`, '</div>'] : [];
+
+  const page = [...renderPage(site), ...ask, ...end];
 
   const meta = [
     `<title>${esc(site.meta?.title || site.brand)}</title>`,
@@ -69,6 +72,7 @@ export function talkConfig(site, sections = visibleSections(site)) {
     intake: sections.find((s) => s.parts.some((p) => p.type === 'intake'))?.id || null,
     you: C.you || 'You',
     bookLink: site.page.bookLink,
+    other: C.other || null,
     fallback: C.fallback,
     describe: C.describe,
     describeUnset: C.describeUnset,

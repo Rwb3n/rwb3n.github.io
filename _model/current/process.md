@@ -14,14 +14,14 @@ flowchart TD
   S2["start: How we would start"]
   S3["who: Who you would talk to"]
   S4["book: Book the free call"]
-  S0 -- "Show me examples" --> S1
-  S0 -- "Show me how we would start" --> S2
-  S0 -- "Tell me who I would talk to" --> S3
+  S0 -- "See examples" --> S1
+  S0 -- "See how we would start" --> S2
+  S0 -- "See who I would talk to" --> S3
   S0 -. "Book the free call" .-> S4
-  S1 -- "Show me how we would start" --> S2
-  S1 -- "Tell me who I would talk to" --> S3
+  S1 -- "See how we would start" --> S2
+  S1 -- "See who I would talk to" --> S3
   S1 -. "Book the free call" .-> S4
-  S2 -- "Tell me who I would talk to" --> S3
+  S2 -- "See who I would talk to" --> S3
   S2 -. "Book the free call" .-> S4
   S3 -. "Book the free call" .-> S4
 ```
@@ -39,9 +39,9 @@ flowchart LR
 | Section | Variant | Heading | Job | Opened by | Parts | Words | Form |
 |---|---|---|---|---|---|---|---|
 | `#problem` | hero | I find the work your team repeats by hand. Then I build a system that does it. | Say what I do | the start | headline, text | 34 | no |
-| `#cases` | plain | Where the time goes | Recognition: "that is us" | "Show me examples" | text, cases, list | 321 | no |
-| `#start` | plain | How we would start | Lower the risk | "Show me how we would start" | steps, text, facts | 156 | no |
-| `#who` | plain | Who you would talk to | Trust | "Tell me who I would talk to" | text, text, text, text | 65 | no |
+| `#cases` | plain | Where the time goes | Recognition: "that is us" | "See examples" | text, cases, list | 321 | no |
+| `#start` | plain | How we would start | Lower the risk | "See how we would start" | steps, text, facts | 156 | no |
+| `#who` | plain | Who you would talk to | Trust | "See who I would talk to" | text, text, text, text | 65 | no |
 | `#book` | booking | Book the free call | Pick a time | "Book the free call" | text | 25 | no |
 
 ## Answers to typed questions
@@ -58,5 +58,5 @@ flowchart LR
 
 ## Without JavaScript
 
-- Every section shows, in order. Replies are links to the sections; the ask bar is hidden.
+- Every section shows, in order. Replies are links to the sections; "Something else" and its field are hidden.
 - No booking link is set (`site.json › booking.calLink` is null): the page shows no form and offers email only.

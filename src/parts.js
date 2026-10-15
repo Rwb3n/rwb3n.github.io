@@ -273,11 +273,16 @@ export const bookSection = (sections) => sections.find((s) => s.variant === 'boo
 
 // The replies at the end of a section: links to other sections, so they work
 // without JavaScript too. The booking reply is the quiet "Book the free call".
-export function replyList(ids, sections, page) {
+// The last option, "Something else", opens free text; it needs JavaScript, so
+// it starts hidden.
+export const otherItem = (label) => `  <li class="pg-other-li" data-other hidden><button class="pg-reply pg-other" type="button" aria-expanded="false">${esc(label)}</button></li>`;
+
+export function replyList(ids, sections, page, other) {
   const book = bookSection(sections);
   const items = ids.map((id) => sections.find((s) => s.id === id)).filter(Boolean).map((s) => (s === book
     ? `  <li><a class="pg-book-link" href="#${s.id}" data-to="${s.id}">${esc(page.bookLink)} <span aria-hidden="true">↓</span></a></li>`
     : `  <li><a class="pg-reply" href="#${s.id}" data-to="${s.id}">${esc(s.reply)} <span aria-hidden="true">↓</span></a></li>`));
+  if (other) items.push(otherItem(other));
   return items.length ? ['<ul class="pg-replies" role="list">', ...items, '</ul>'] : [];
 }
 
@@ -294,14 +299,14 @@ export function renderSection(s, ctx) {
     `<section class="pg-section is-${variant}" id="${s.id}" aria-labelledby="${s.id}-h"${s.reply ? ` data-reply="${esc(s.reply)}"` : ''}>`,
     variant !== 'hero' && s.head && `  <h2 class="pg-head" id="${s.id}-h" tabindex="-1">${esc(s.head)}</h2>`,
     ...s.parts.flatMap((p) => renderPart(p, c)).map((l) => `  ${l}`),
-    ...replyList(s.replies || [], ctx.sections, ctx.page).map((l) => `  ${l}`),
+    ...replyList(s.replies || [], ctx.sections, ctx.page, ctx.other).map((l) => `  ${l}`),
     '</section>',
   ].filter(Boolean);
 }
 
 export function renderPage(site) {
   const sections = visibleSections(site);
-  const ctx = { site, sections, page: site.page, email: site.person?.email, bookUrl: bookingUrl(site) };
+  const ctx = { site, sections, page: site.page, other: site.conversation?.other, email: site.person?.email, bookUrl: bookingUrl(site) };
   return sections.flatMap((s) => renderSection(s, ctx));
 }
 

@@ -175,10 +175,11 @@ has documented, validated props and an editable example on `/components/`.
 The block system stays as the library's catalogue, shown with the fixtures.
 
 **The conversation** (`src/talk.js`, `src/route.js`): each section is a turn.
-Replies at the end of a turn are links to sections, in the visitor's voice;
-the visitor's choice or typed words are said back, right-aligned in the
-voice face after a small "You". Only the latest turn offers replies. The ask
-bar sits under the latest turn, never fixed over content. No delays: the site
+A turn ends with numbered options, worded as actions: links to sections, then
+"Book the free call", then "Something else", which opens a free-text field in
+place (never a bar fixed over content). The choice or typed words are said
+back, right-aligned in the voice face after a small "You". Only the latest
+turn offers options. No delays: the site
 does not pretend to think. "Show the whole page" restores the reading order.
 Retired with the conversation: the `brief` and `compose` blocks, and the
 library's chips, entry rows, ask bar and live-state pieces.

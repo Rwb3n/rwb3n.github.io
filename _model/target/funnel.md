@@ -86,10 +86,14 @@ The original site was a conversation: the visitor chose replies or typed, and
 the site answered with topics. The funnel above keeps its order and its end,
 but is delivered the same way.
 
-- **Each step is a turn.** The page opens on step 1. Its end offers replies:
-  the next steps, in the visitor's voice, and "Book the free call". Choosing
-  one says it back ("You: Show me examples") and opens that step under it.
-  Only the latest turn offers replies, and never to a step already open.
+- **Each step is a turn.** The page opens on step 1. Its end offers numbered
+  options, worded as actions: the next steps, "Book the free call", and last,
+  "Something else". Choosing a step says it back ("You: See examples") and
+  opens that step under it. Only the latest turn offers options, and never
+  to a step already open.
+- **Free text is an option, not a bar.** "Something else" opens a field in
+  place, under the options (Escape closes it). Sending closes it; the next
+  turn has its own.
 - **Typed text** (`src/route.js`), in this order: a description of the
   visitor's own work opens the intake with their words in its first field (it
   replaces the old L3 brief); a question a fact answers gets that fact (old
@@ -110,15 +114,15 @@ away with it.
 
 ```mermaid
 flowchart TD
-  P[1 problem] -- "Show me examples" --> R[2 cases]
-  P -- "Show me how we would start" --> K[3 start]
-  P -- "Tell me who I would talk to" --> T[4 who]
+  P[1 problem] -- "See examples" --> R[2 cases]
+  P -- "See how we would start" --> K[3 start]
+  P -- "See who I would talk to" --> T[4 who]
   R --> K & T
   K --> T & I
   T --> I[5 intake]
   I -- "Choose a time for the call" --> B[6 book]
   P & R & K & T -. "Book the free call" .-> B
-  X([typed text]) -- describes their work --> I
+  X(["Something else": typed text]) -- describes their work --> I
   X -- a fact answers it --> A[the fact, then replies]
   X -- intents --> R & K & T & B
 ```

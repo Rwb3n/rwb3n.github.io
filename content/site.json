@@ -100,7 +100,7 @@
       {
         "id": "cases",
         "head": "Where the time goes",
-        "reply": "Show me examples",
+        "reply": "See examples",
         "intents": [
           "example",
           "case",
@@ -171,7 +171,7 @@
       {
         "id": "start",
         "head": "How we would start",
-        "reply": "Show me how we would start",
+        "reply": "See how we would start",
         "intents": [
           "start",
           "first step",
@@ -241,7 +241,7 @@
       {
         "id": "who",
         "head": "Who you would talk to",
-        "reply": "Tell me who I would talk to",
+        "reply": "See who I would talk to",
         "intents": [
           "who",
           "about you",
@@ -280,7 +280,7 @@
         "id": "intake",
         "when": "booking",
         "head": "Before the call",
-        "reply": "Describe our job first",
+        "reply": "Describe the job first",
         "intents": [
           "describe",
           "questions"
@@ -358,13 +358,14 @@
     ]
   },
   "conversation": {
-    "$": "The conversation around the sections. Typed text is matched in this order: a description of the visitor's own work opens the intake with their words in its first field; a question in answers gets that fact; words in a section's intents open that section; anything else gets the fallback.",
+    "$": "The conversation around the sections. Every turn ends with its replies and then \"other\", which opens a field for the visitor's own words. Typed text is matched in this order: a description of the visitor's own work opens the intake with their words in its first field; a question in answers gets that fact; words in a section's intents open that section; anything else gets the fallback.",
     "start": "problem",
     "you": "You",
+    "other": "Something else",
     "ask": {
-      "label": "Ask a question, or describe the job",
+      "label": "Say it in your own words",
       "example": "For example: the price. Or: two of us rebuild a report every Monday.",
-      "submit": "Ask"
+      "submit": "Send"
     },
     "all": "Show the whole page",
     "answers": [

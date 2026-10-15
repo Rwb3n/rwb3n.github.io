@@ -483,7 +483,7 @@ function layoutsSection() {
   return section('layouts', 'The page', 'Layouts',
     h('p', { class: 'lib-p' }, md('The whole site. Markup from `src/static.js` (the same text as `index.html`), booking from `src/book.js`, with a sample booking link. Without JavaScript, and after "Show the whole page", it reads top to bottom; the loading line and the fallback are shown together here.')),
     h('article', { class: 'lib-card', id: 'layout-page' }, h('h3', { class: 'lib-h3' }, 'One page'), stage),
-    h('p', { class: 'lib-p' }, md('With JavaScript it is a conversation (`src/talk.js`, `src/route.js`): the page opens on the first section, each reply opens the next one, and the ask bar takes typed text. Here, three turns in: a reply, a question a fact answers, and a description of the visitor\'s work, which opens the intake with their words in it. The replies work.')),
+    h('p', { class: 'lib-p' }, md('With JavaScript it is a conversation (`src/talk.js`, `src/route.js`): the page opens on the first section, each turn ends in numbered options, and the last one, "Something else", opens a field for typed text in place. Here, three turns in: an option, a question a fact answers, and a description of the visitor\'s work, which opens the intake with their words in it. The options work.')),
     h('article', { class: 'lib-card', id: 'layout-talk' }, h('h3', { class: 'lib-h3' }, 'Conversation'), talk),
   );
 }

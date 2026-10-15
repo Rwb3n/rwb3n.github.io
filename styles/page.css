@@ -135,7 +135,7 @@ textarea.pg-input { resize: vertical; min-height: 7.5rem; }
 
 /* The conversation ------------------------------------------------------- */
 .pg.is-talk > .pg-section:not(.is-open) { display: none; }
-.pg-you, .pg-turn, .pg-ask { max-width: 78rem; margin: 0 auto; padding: 0 var(--gutter); }
+.pg-you, .pg-turn { max-width: 78rem; margin: 0 auto; padding: 0 var(--gutter); }
 .pg-you {
   padding-top: var(--space-8);
   font-family: var(--font-voice);
@@ -158,11 +158,26 @@ textarea.pg-input { resize: vertical; min-height: 7.5rem; }
 .pg-turn { display: grid; gap: var(--space-5); padding-bottom: var(--space-8); }
 .pg-turn > .pg-you { padding-inline: 0; }
 .pg-answer { max-width: 40rem; font-size: var(--step-2); line-height: 1.4; outline: none; }
-.pg-ask { display: grid; gap: var(--space-2); padding-block: var(--space-8) var(--space-9); border-top: 1px solid var(--line); }
-.pg-ask[hidden] { display: none; }
+.pg-end { max-width: 78rem; margin: 0 auto; padding: var(--space-8) var(--gutter) var(--space-9); border-top: 1px solid var(--line); }
+.pg-end[hidden], .pg-ask[hidden], .pg-replies > li[data-other][hidden] { display: none; }
+
+/* In the conversation the options are a numbered list; the last one,
+   "Something else", opens the free-text form in place under it. */
+.pg.is-talk .pg-replies { display: grid; justify-items: start; gap: var(--space-3); counter-reset: reply; }
+.pg.is-talk .pg-replies > li { display: flex; align-items: baseline; gap: var(--space-4); counter-increment: reply; }
+.pg.is-talk .pg-replies > li::before {
+  content: counter(reply);
+  flex: 0 0 1.25rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--fg-2);
+}
+.pg-other { padding: 0 0 4px; border: 0; border-bottom: 1px dashed var(--line-2); background: none; font: inherit; font-size: var(--step-1); color: var(--fg-2); cursor: pointer; }
+.pg-other[aria-expanded='true'] { color: var(--fg); border-bottom: 1px solid var(--fg); }
+.pg-ask { display: grid; gap: var(--space-2); max-width: 52rem; margin: 0; padding: 0 0 0 calc(1.25rem + var(--space-4)); }
 .pg-ask-row { display: flex; gap: var(--space-3); max-width: 52rem; margin-top: var(--space-2); }
 .pg-ask-row .pg-input { flex: 1; min-width: 0; }
-.pg-all { justify-self: start; margin-top: var(--space-4); padding: 0 0 2px; border: 0; border-bottom: 1px solid var(--line-2); background: none; color: var(--fg-2); font: inherit; font-size: var(--step--1); cursor: pointer; }
+.pg-all { padding: 0 0 2px; border: 0; border-bottom: 1px solid var(--line-2); background: none; color: var(--fg-2); font: inherit; font-size: var(--step--1); cursor: pointer; }
 .pg-all:hover, .pg-all:focus-visible { color: var(--fg); border-color: var(--fg); }
 
 /* A new turn rises in (Full and Calm; Off: no movement). */
@@ -197,7 +212,7 @@ html[data-motion='full'].js .pg .display.is-split .sw-in {
   .pg-section.is-hero { min-height: calc(88svh - var(--bar-h)); }
 }
 @media print {
-  .pg-replies, .pg-booking, .pg-intake-go, .pg-ask, .pg-you, .pg-turn, .bar, .settings { display: none !important; }
+  .pg-replies, .pg-booking, .pg-intake-go, .pg-ask, .pg-end, .pg-you, .pg-turn, .bar, .settings { display: none !important; }
   .pg.is-talk > .pg-section { display: grid !important; }
   .pg-section { padding: var(--space-6) 0; min-height: 0 !important; break-inside: avoid; }
 }
