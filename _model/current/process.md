@@ -23,7 +23,7 @@ flowchart TD
 
 | # | Section | Heading | Job | Words | Links to #book | Form |
 |---|---|---|---|---|---|---|
-| 1 | `#job` | Tell me the job your team does by hand , every week. |  | 166 | no | no |
+| 1 | `#job` | Tell me the job your team does by hand , every week. |  | 180 | no | no |
 | 2 | `#cases` | Where the time goes | Recognition: "that is us" | 316 | yes | no |
 | 3 | `#start` | What I look for | Lower the risk | 236 | yes | no |
 | 4 | `#who` | Who you would talk to | Trust | 92 | no | no |

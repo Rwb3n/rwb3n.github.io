@@ -100,7 +100,7 @@
             <span class="display-line"><em class="is-accent">by hand</em>, every week.</span>
           </h1>
         </div>
-        <p class="pg-intro">Put it in your own words, with three numbers. You will see what it costs you in a year, and the example below that is nearest to it.</p>
+        <p class="pg-intro">Put it in your own words. Then say how many people do it, for how long, and what you pay them. You will see how much of their pay goes on this job.</p>
         <form class="pg-job" method="get" action="https://cal.com/rwb3n/30min" data-job>
           <div class="pg-field">
             <label class="pg-label" for="f-job">The job your team does by hand</label>
@@ -121,7 +121,7 @@
                 <label class="est-label" for="n-people">People doing it</label>
                 <div class="est-control">
                   <button class="est-step" type="button" data-step="-1" aria-label="One person fewer">−</button>
-                  <input class="est-input" id="n-people" data-num="people" type="number" inputmode="decimal" min="1" max="500" step="1" value="3" />
+                  <input class="est-input" id="n-people" data-num="people" type="number" inputmode="decimal" min="1" max="500" step="1" value="2" />
                   <button class="est-step" type="button" data-step="1" aria-label="One person more">+</button>
                 </div>
               </div>
@@ -129,19 +129,19 @@
                 <label class="est-label" for="n-hours">Hours each, per week</label>
                 <div class="est-control">
                   <button class="est-step" type="button" data-step="-1" aria-label="Half an hour less">−</button>
-                  <input class="est-input" id="n-hours" data-num="hours" type="number" inputmode="decimal" min="0.5" max="40" step="0.5" value="4" />
+                  <input class="est-input" id="n-hours" data-num="hours" type="number" inputmode="decimal" min="0.5" max="37.5" step="0.5" value="4" />
                   <button class="est-step" type="button" data-step="1" aria-label="Half an hour more">+</button>
                 </div>
               </div>
               <div class="est-field">
-                <label class="est-label" for="n-rate">Cost per hour</label>
+                <label class="est-label" for="n-salary">Salary of each person</label>
                 <div class="est-control">
-                  <button class="est-step" type="button" data-step="-1" aria-label="One pound less">−</button>
+                  <button class="est-step" type="button" data-step="-1" aria-label="£1,000 less">−</button>
                   <span class="est-prefix" aria-hidden="true">£</span>
-                  <input class="est-input" id="n-rate" data-num="rate" type="number" inputmode="decimal" min="5" max="500" step="1" value="30" aria-describedby="n-rate-hint" />
-                  <button class="est-step" type="button" data-step="1" aria-label="One pound more">+</button>
+                  <input class="est-input" id="n-salary" data-num="salary" type="number" inputmode="decimal" min="10000" max="300000" step="1000" value="35000" aria-describedby="n-salary-hint" />
+                  <button class="est-step" type="button" data-step="1" aria-label="£1,000 more">+</button>
                 </div>
-                <span class="est-hint" id="n-rate-hint">Salary plus other staff costs.</span>
+                <span class="est-hint" id="n-salary-hint">A year, before tax. With National Insurance and pension, the real cost is higher.</span>
               </div>
             </div>
             <button class="btn btn-primary pg-job-show" type="button" data-job-show>Show what it costs <span aria-hidden="true">↓</span></button>
@@ -150,15 +150,16 @@
         </form>
         <div class="pg-answer" data-answer hidden tabindex="-1">
           <p class="pg-you" data-answer-you></p>
+          <p class="pg-share" data-answer-share></p>
           <dl class="est-dl">
-            <div><dt class="micro">Hours a year</dt><dd><span class="est-num" data-answer-hours></span></dd></div>
-            <div><dt class="micro">Cost a year</dt><dd><span class="est-num is-accent" data-answer-cost></span></dd></div>
+            <div><dt class="micro">Their pay, a year</dt><dd><span class="est-num" data-answer-pay></span></dd></div>
+            <div><dt class="micro">Spent on this job</dt><dd><span class="est-num is-accent" data-answer-cost></span></dd></div>
           </dl>
           <p class="est-weeks" data-answer-weeks></p>
           <div class="est-grid-wrap"><div class="est-grid" data-answer-grid aria-hidden="true"></div></div>
           <p class="est-key">One square is one working week of 37.5 hours.</p>
           <p class="pg-nearest" data-answer-nearest></p>
-          <p class="pg-small">An estimate, not a quote. It assumes 46 working weeks a year. A system rarely removes a job completely. It does the routine part, and a person checks the result.</p>
+          <p class="pg-small">An estimate, not a quote. It counts salary only. A system rarely removes a job completely. It does the routine part, and a person checks the result.</p>
           <button class="btn btn-ghost pg-answer-book" type="button" data-answer-book>Book the free call with these answers <span aria-hidden="true">↓</span></button>
           <p class="visually-hidden" aria-live="polite" data-answer-live></p>
         </div>
@@ -257,7 +258,7 @@
     </footer>
 
     <!-- sync:booking -->
-    <script type="application/json" id="booking-config">{"calLink":"rwb3n/30min","origin":"https://cal.com","embedScript":"https://app.cal.com/embed/embed.js","timeoutSeconds":10,"fields":["job","scale"],"job":{"field":"job","numbers":[{"key":"people","label":"People doing it","min":1,"max":500,"step":1,"value":3,"less":"One person fewer","more":"One person more"},{"key":"hours","label":"Hours each, per week","min":0.5,"max":40,"step":0.5,"value":4,"less":"Half an hour less","more":"Half an hour more"},{"key":"rate","label":"Cost per hour","hint":"Salary plus other staff costs.","min":5,"max":500,"step":1,"value":30,"prefix":"£","less":"One pound less","more":"One pound more"}],"answer":{"you":"You: {job}","hours":"Hours a year","cost":"Cost a year","weeks":"Equal to {weeks} full working weeks.","key":"One square is one working week of 37.5 hours.","nearest":"Nearest example: {title}","note":"An estimate, not a quote. It assumes 46 working weeks a year. A system rarely removes a job completely. It does the routine part, and a person checks the result.","book":"Book the free call with these answers","scale":"{people} people, {hours} hours each a week, about {total} hours a year","weeksPerYear":46,"hoursPerWeek":37.5},"cases":[{"id":"monday-report","title":"The Monday report","match":["report","reports","reporting","spreadsheet","spreadsheets","figures","dashboard","numbers","kpi"]},{"id":"new-client","title":"Setting up a new client","match":["client","clients","customer","customers","onboarding","proposal","proposals","crm","copy","copying","data entry","setting up","new starter","new starters"]},{"id":"cash","title":"Seeing the cash coming","match":["cash","invoice","invoices","invoicing","payment","payments","bank","bills","forecast","money","credit control","chasing","debtors","cash flow"]}]}}</script>
+    <script type="application/json" id="booking-config">{"calLink":"rwb3n/30min","origin":"https://cal.com","embedScript":"https://app.cal.com/embed/embed.js","timeoutSeconds":10,"fields":["job","scale"],"job":{"field":"job","numbers":[{"key":"people","label":"People doing it","min":1,"max":500,"step":1,"value":2,"less":"One person fewer","more":"One person more"},{"key":"hours","label":"Hours each, per week","min":0.5,"max":37.5,"step":0.5,"value":4,"less":"Half an hour less","more":"Half an hour more"},{"key":"salary","label":"Salary of each person","hint":"A year, before tax. With National Insurance and pension, the real cost is higher.","min":10000,"max":300000,"step":1000,"value":35000,"prefix":"£","less":"£1,000 less","more":"£1,000 more"}],"answer":{"you":"You: {job}","cost":"Spent on this job","weeks":"Equal to {weeks} full working weeks a year.","key":"One square is one working week of 37.5 hours.","nearest":"Nearest example: {title}","note":"An estimate, not a quote. It counts salary only. A system rarely removes a job completely. It does the routine part, and a person checks the result.","book":"Book the free call with these answers","scale":"{people} people, {hours} hours each a week, salary {salary} each: about {cost} a year on this job","weeksPerYear":46,"hoursPerWeek":37.5,"share":"Of the {pay} a year you pay them, {cost} goes on this job.","pay":"Their pay, a year"},"cases":[{"id":"monday-report","title":"The Monday report","match":["report","reports","reporting","spreadsheet","spreadsheets","figures","dashboard","numbers","kpi"]},{"id":"new-client","title":"Setting up a new client","match":["client","clients","customer","customers","onboarding","proposal","proposals","crm","copy","copying","data entry","setting up","new starter","new starters"]},{"id":"cash","title":"Seeing the cash coming","match":["cash","invoice","invoices","invoicing","payment","payments","bank","bills","forecast","money","credit control","chasing","debtors","cash flow"]}]}}</script>
     <!-- /sync:booking -->
   </body>
 </html>

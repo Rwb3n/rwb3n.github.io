@@ -19,7 +19,7 @@ step 1 and "Show available times" in step 5.
 >
 > Tell me the job your team does by hand, every week.
 >
-> Put it in your own words, with three numbers. You will see what it costs you in a year, and the example below that is nearest to it.
+> Put it in your own words. Then say how many people do it, for how long, and what you pay them. You will see how much of their pay goes on this job.
 >
 > The job your team does by hand
 >
@@ -29,9 +29,9 @@ step 1 and "Show available times" in step 5.
 >
 > Hours each, per week
 >
-> Cost per hour
+> Salary of each person
 >
-> Salary plus other staff costs.
+> A year, before tax. With National Insurance and pension, the real cost is higher.
 >
 > Show what it costs
 >
@@ -41,17 +41,19 @@ The answer, under the button:
 
 > You: the Monday report
 >
-> Hours a year
+> Of the £70,000 a year you pay them, £7,467 goes on this job.
 >
-> Cost a year
+> Their pay, a year
 >
-> Equal to 15 full working weeks.
+> Spent on this job
+>
+> Equal to 9.8 full working weeks a year.
 >
 > One square is one working week of 37.5 hours.
 >
 > Nearest example: The Monday report
 >
-> An estimate, not a quote. It assumes 46 working weeks a year. A system rarely removes a job completely. It does the routine part, and a person checks the result.
+> An estimate, not a quote. It counts salary only. A system rarely removes a job completely. It does the routine part, and a person checks the result.
 >
 > Book the free call with these answers
 
@@ -62,6 +64,11 @@ Without JavaScript, in place of the three numbers:
 > For example: two people, every Monday morning.
 >
 > Choose a time for the call
+
+Changed 2026-10-15 (operator: "it costs someone £xxx per year to hire
+someone, how much does it cost them to have that person busy with" this
+work): the answer starts from the salary a director knows, not a cost per
+hour. Starting numbers: 2 people, 4 hours each a week, £35,000 each.
 
 Notes: all new. Headline and lead are new; the eyebrow stays. The headline
 is a statement, not a question (`DESIGN.md › Writing`: statements, not

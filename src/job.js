@@ -5,8 +5,9 @@
 //   - the "scale" text field gives way to three numbers (people, hours each a
 //     week, cost per hour);
 //   - "Show what it costs" answers under the form: the visitor's words said
-//     back, hours and cost a year, full working weeks, the grid of weeks, and
-//     the nearest example, chosen by the words in the job;
+//     back, how much of what they pay these people goes on this job, full
+//     working weeks, the grid of weeks, and the nearest example, chosen by the
+//     words in the job;
 //   - "Book the free call with these answers" opens the booking with `job`
 //     and `scale` filled in.
 // Everything stays in the browser. Nothing is sent until the visitor books.
@@ -32,10 +33,12 @@ export function nearestCase(text, cases = []) {
   return best;
 }
 
-// Hours and cost a year for the numbers given.
-export function costOf({ people, hours, rate }, { weeksPerYear = 46, hoursPerWeek = 37.5 } = {}) {
+// What they pay these people a year, how much of it goes on this job (the
+// job's share of a working week), and the hours and working weeks it takes.
+export function costOf({ people, hours, salary }, { weeksPerYear = 46, hoursPerWeek = 37.5 } = {}) {
+  const pay = people * salary;
   const total = people * hours * weeksPerYear;
-  return { hours: total, cost: total * rate, weeks: total / hoursPerWeek };
+  return { pay, cost: pay * (hours / hoursPerWeek), hours: total, weeks: total / hoursPerWeek };
 }
 
 export function createJob(root = document, { book } = {}) {
@@ -49,7 +52,7 @@ export function createJob(root = document, { book } = {}) {
   const jobField = form.querySelector(`[name="${cfg.field}"]`);
   const q = (s) => answer.querySelector(s);
   const out = {
-    you: q('[data-answer-you]'), hours: q('[data-answer-hours]'), cost: q('[data-answer-cost]'),
+    you: q('[data-answer-you]'), share: q('[data-answer-share]'), pay: q('[data-answer-pay]'), cost: q('[data-answer-cost]'),
     weeks: q('[data-answer-weeks]'), grid: q('[data-answer-grid]'), nearest: q('[data-answer-nearest]'),
     live: q('[data-answer-live]'),
   };
@@ -93,7 +96,8 @@ export function createJob(root = document, { book } = {}) {
   function scaleText() {
     const r = costOf(values, A);
     return fill(A.scale, {
-      people: NUM.format(values.people), hours: values.hours.toLocaleString('en-GB'), total: NUM.format(Math.round(r.hours)),
+      people: NUM.format(values.people), hours: values.hours.toLocaleString('en-GB'),
+      salary: GBP.format(values.salary), cost: GBP.format(Math.round(r.cost)),
     });
   }
 
@@ -102,8 +106,9 @@ export function createJob(root = document, { book } = {}) {
     const w = words();
     out.you.textContent = w ? fill(A.you, { job: w }) : '';
     out.you.hidden = !w;
-    out.hours.textContent = NUM.format(Math.round(r.hours));
+    out.pay.textContent = GBP.format(Math.round(r.pay));
     out.cost.textContent = GBP.format(Math.round(r.cost));
+    out.share.textContent = fill(A.share, { pay: out.pay.textContent, cost: out.cost.textContent });
     out.weeks.textContent = fill(A.weeks, { weeks: fmtWeeks(r.weeks) });
     const n = Math.min(maxCells, Math.round(r.weeks));
     const rows = Math.max(2, Math.ceil(n / perRow));
@@ -120,7 +125,7 @@ export function createJob(root = document, { book } = {}) {
     }
     clearTimeout(liveTimer);
     liveTimer = setTimeout(() => {
-      out.live.textContent = `${A.hours}: ${out.hours.textContent}. ${A.cost}: ${out.cost.textContent}.${near ? ` ${out.nearest.textContent}` : ''}`;
+      out.live.textContent = `${out.share.textContent}${near ? ` ${out.nearest.textContent}` : ''}`;
     }, 600);
   }
 

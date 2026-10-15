@@ -12,9 +12,9 @@ const near = (t) => nearestCase(t, cases)?.id ?? null;
 test('the starting numbers give the answer the copy describes', () => {
   const start = Object.fromEntries(site.page.job.numbers.map((n) => [n.key, n.value]));
   const r = costOf(start, site.page.job.answer);
-  assert.equal(r.hours, 552);
-  assert.equal(r.cost, 16560);
-  assert.equal(Math.round(r.weeks), 15);
+  assert.equal(r.pay, 70000);
+  assert.equal(Math.round(r.cost), 7467);
+  assert.equal(Math.round(r.weeks * 10) / 10, 9.8);
 });
 
 test('nearest example: by whole words, the best match wins', () => {

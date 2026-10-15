@@ -47,23 +47,24 @@ test('step 1 answers the visitor, then opens the calendar with their words and n
   const calRequests = await open(page);
   await expect(page.locator('#f-scale')).toHaveCount(0);
   await page.fill('#f-job', 'We rebuild the Monday report from three spreadsheets');
-  await page.fill('#n-people', '2');
+  await page.fill('#n-people', '1');
   await page.click('[data-job-show]');
   const answer = page.locator('[data-answer]');
   await expect(answer).toBeVisible();
   await expect(answer).toContainText('You: We rebuild the Monday report from three spreadsheets');
-  await expect(page.locator('[data-answer-hours]')).toHaveText('368');
-  await expect(page.locator('[data-answer-cost]')).toHaveText('£11,040');
+  await expect(page.locator('[data-answer-pay]')).toHaveText('£35,000');
+  await expect(page.locator('[data-answer-cost]')).toHaveText('£3,733');
+  await expect(answer).toContainText('Of the £35,000 a year you pay them, £3,733 goes on this job.');
   await expect(page.locator('[data-answer-nearest] a')).toHaveAttribute('href', '#case-monday-report');
   expect(calRequests).toEqual([]);
   // Changing a number updates the answer in place.
   await page.click('[aria-label="One person more"]');
-  await expect(page.locator('[data-answer-hours]')).toHaveText('552');
+  await expect(page.locator('[data-answer-cost]')).toHaveText('£7,467');
   await page.click('[data-answer-book]');
   await expect(page.locator('[data-book-status]')).toBeHidden({ timeout: 5000 });
   expect(await page.evaluate(() => document.activeElement?.id)).toBe('book-h');
   expect(await page.evaluate(() => window.__calInline)).toMatchObject({ calLink: 'example/30min', config: {
-    job: 'We rebuild the Monday report from three spreadsheets', scale: '3 people, 4 hours each a week, about 552 hours a year' } });
+    job: 'We rebuild the Monday report from three spreadsheets', scale: '2 people, 4 hours each a week, salary £35,000 each: about £7,467 a year on this job' } });
   await expect(page.locator('[data-book-show]')).toBeHidden();
   expect(calRequests).toEqual(['https://app.cal.com/embed/embed.js']);
 });

@@ -9,10 +9,10 @@ One page, read top to bottom, ending at a booked call. It opens by asking the vi
   ┌───────────────────────────────────────────┐
   │ Tell me the job your team does by hand,   │  1 the job: the visitor puts
   │ every week.   [ the job ____________ ]    │    in their job and three
-  │ people [3]  hours each [4]  £/hour [30]   │    numbers; the page answers
-  │            [ Show what it costs ]         │    with hours a year, cost a
-  │  ↳ You: "the Monday report"               │    year, and the nearest
-  │    552 hours a year · £16,560 · ▦▦▦▦▦     │    example below
+  │ people [2]  hours each [4]  salary [35k]  │    numbers; the page answers
+  │            [ Show what it costs ]         │    with how much of their pay
+  │  ↳ You: "the Monday report"               │    goes on the job, and the
+  │    Of £70,000, £7,467 goes on this job ▦▦ │    nearest example below
   │    Nearest example: The Monday report     │
   ├───────────────────────────────────────────┤
   │ Where the time goes   (3 cases)           │  2 recognition: "that's us"
@@ -46,12 +46,12 @@ Every step has a way straight to the booking. The job and the numbers help the c
 
 The site was a conversation. Now it has exactly one turn, at the top, where the visitor's own words and numbers come back to them as something they could not get by reading. Everything else is a plain page you can scan.
 
-- **The visitor gives:** the job (`job`, long text, optional) and three numbers: people doing it, hours each a week, cost per hour (salary plus other staff costs). The numbers start at 3, 4 and £30.
+- **The visitor gives:** the job (`job`, long text, optional) and three numbers: people doing it, hours each a week, salary of each person. The numbers start at 2, 4 and £35,000. (Changed 2026-10-15: start from the salary a director knows, not a cost per hour.)
 - **The page answers** under the button, as one structured block:
   - their words, said back ("You: …"); if the field is empty, nothing is said back.
-  - hours a year and cost a year, with the grid of working weeks (the `estimate` showpiece), computed in the browser: hours a year = people × hours × 46 weeks; cost a year = hours a year × cost per hour.
+  - "Of the £70,000 a year you pay them, £7,467 goes on this job." Pay = people × salary; spent on this job = pay × hours ÷ 37.5. Then the full working weeks and the grid of weeks (people × hours × 46 ÷ 37.5).
   - the nearest of the three examples, by the words in the job, linked to it. If none is near, no line: the page does not pretend.
-  - "Book the free call with these answers": opens step 5 with `job` = their words and `scale` = "3 people, 4 hours each a week, about 552 hours a year".
+  - "Book the free call with these answers": opens step 5 with `job` = their words and, if they changed a number, `scale` = "2 people, 4 hours each a week, salary £35,000 each: about £7,467 a year on this job".
 - **Nothing is sent.** The note under the button says so. Everything happens in the browser until the visitor books.
 - **Without JavaScript:** the job field and a plain `scale` text field (people, how often), and a button that opens the Cal.com page with both filled in. No numbers, no answer.
 

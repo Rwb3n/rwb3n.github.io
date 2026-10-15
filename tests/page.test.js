@@ -27,7 +27,7 @@ test('every visitor-facing line of the signed-off copy is on the page, word for 
   // their template in site.json › page.job.answer instead.
   const A = site.page.job.answer;
   const escRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const templates = ['you', 'weeks', 'nearest'].map((k) => new RegExp(`^${A[k].split(/\{\w+\}/).map(escRe).join('.+')}$`));
+  const templates = ['you', 'share', 'weeks', 'nearest'].map((k) => new RegExp(`^${A[k].split(/\{\w+\}/).map(escRe).join('.+')}$`));
   const missing = copy.filter((l) => !page.includes(l) && !templates.some((t) => t.test(l)));
   assert.deepEqual(missing, []);
 });
