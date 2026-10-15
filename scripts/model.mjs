@@ -4,14 +4,15 @@
 //   npm run model              update _model/current/
 //   npm run model -- --check   exit 1 if _model/current/ is out of date (used by npm test)
 //
-// Most of each file is generated. A few things live inside closures in
-// src/app.js (the modes and the special chip targets), so they can't be
-// imported. Their descriptions are written here by hand, and the check fails
-// if app.js gains or loses one, so the hand-written part can't drift silently.
+// The site is one page (src/static.js renders it from content/site.json), so
+// almost everything here is read from the rendered page itself. The booking
+// states live in src/book.js; they are described by hand below, and the check
+// fails if book.js gains or loses one, so the description can't drift silently.
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { indexContent, newSession, gravity } from '../src/engine.js';
+import { renderRegions, bookingUrl } from '../src/static.js';
+import { indexContent } from '../src/content.js';
 import { blocks, categories, usage, typeLabel } from '../src/catalog.js';
 
 const root = new URL('../', import.meta.url);
@@ -21,123 +22,75 @@ const OUT = '_model/current/';
 
 // Hand-maintained, drift-checked --------------------------------------------
 
-const MODES = {
-  landing: 'The scroll story: headline, lens, the landing path. Start and reset.',
-  session: 'The conversation: turns, chips, the ask bar, the side rail.',
-  page: 'Everything on one printable page (`/#/all`). No conversation.',
+// The booking step's states, as src/book.js moves between them.
+const STATES = {
+  idle: 'The "Show available times" button. No Cal.com script on the page.',
+  loading: 'Cal.com script requested; the loading line shows; the calendar\'s space is kept.',
+  ready: 'Cal.com reported `linkReady`: the calendar is in the page.',
+  failed: 'No `linkReady` within the timeout, the script failed, or Cal.com reported `linkFailed`: a link to the Cal.com page, with the answers.',
 };
-const MODE_EDGES = [
-  ['landing', 'session', 'pick a topic or type a question'],
-  ['session', 'landing', 'reset'],
-  ['landing', 'page', 'the one-page link'],
-  ['page', 'session', 'a link to a topic not on the page'],
-  ['page', 'landing', 'back'],
+const STATE_EDGES = [
+  ['idle', 'loading', '"Show available times" or the intake form'],
+  ['loading', 'ready', 'linkReady'],
+  ['loading', 'failed', 'timeout, script error or linkFailed'],
 ];
-const VERBS = {
-  _engage: 'Ask about the visitor\'s business (L3 discovery).',
-  _show_brief: 'Show the brief built from the visit.',
-  _book: 'Show the brief and a mail link to send it.',
-  _add_context: 'Mark the visitor as describing their business; focus the ask bar.',
-};
-const ROUTES = [
-  ['L1', 'the text matches a topic\'s intents', 'show that topic'],
-  ['L3', 'the visitor describes their own business', 'start discovery, then the brief'],
-  ['L2', 'anything else', 'a short canned answer'],
-];
+// Words in book.js that mark each transition; the check fails if one goes.
+const STATE_MARKS = { loading: 'opened = true', ready: 'ready = true', failed: 'function failed' };
 
-// Which domain each part belongs to (see _model/README.md).
+// Which domain each part of site.json belongs to (see _model/README.md).
 const SITE_DOMAINS = {
-  $comment: '-', brand: 'Platform', timeZone: 'Platform', meta: 'Platform',
-  person: 'Offer', facts: 'Offer',
-  landing: 'Story', onePage: 'Story',
-  copy: 'Presentation', reading: 'Platform', features: 'Platform',
-  language: 'Rules',
-};
-const FILE_DOMAINS = {
-  root: 'Story', services: 'Offer', about: 'Proof', projects: 'Proof',
-  callsheet: 'Proof', haios: 'Proof', behold: 'Proof',
+  $comment: '-', brand: 'Platform', timeZone: 'Platform', meta: 'Platform', reading: 'Platform',
+  person: 'Offer', facts: 'Offer', booking: 'Booking', page: 'Story', language: 'Rules',
 };
 
 // Load ------------------------------------------------------------------------
 
 const site = json('content/site.json');
-const manifest = json('content/graphs/default.json');
-const files = Object.fromEntries(manifest.nodes.map((f) => [f, [json(`content/nodes/${f}.json`)].flat()]));
-const content = indexContent(Object.values(files));
-const rootId = manifest.root || 'root';
-const fileOf = Object.fromEntries(Object.entries(files).flatMap(([f, ns]) => ns.map((n) => [n.id, f])));
-const nodes = Object.values(files).flat();
-const ids = nodes.map((n) => n.id).sort();
-const appSrc = read('src/app.js');
-const engineSrc = read('src/engine.js');
+const bookSrc = read('src/book.js');
+const P = site.page || {};
+const regions = renderRegions(site);
+const pageHtml = regions.page.join('\n');
+const fixtures = indexContent(json('content/graphs/fixtures.json').nodes.map((f) => json(`content/nodes/${f}.json`)));
+const fixtureNodes = Object.values(fixtures.nodes);
 
-const sorted = (xs) => [...xs].sort();
-const words = (v) => {
-  if (typeof v === 'string') return v.split(/\s+/).filter(Boolean).length;
-  if (Array.isArray(v)) return v.reduce((a, x) => a + words(x), 0);
-  if (v && typeof v === 'object') return Object.entries(v).filter(([k]) => k !== 'type' && k !== 'id').reduce((a, [, x]) => a + words(x), 0);
-  return 0;
-};
-const mid = (id) => 'n' + id.replace(/[^a-zA-Z0-9]/g, '_');
+const drift = [];
+for (const [state, mark] of Object.entries(STATE_MARKS)) if (!bookSrc.includes(mark)) drift.push(`src/book.js no longer contains "${mark}" (state "${state}")`);
+
+const text = (html) => html.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&#39;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim();
+const wordCount = (s) => (s.match(/[A-Za-z0-9£%'’-]+/g) || []).length;
 const q = (s) => `"${String(s).replace(/"/g, "'")}"`;
 const header = (title, note) => `# ${title}\n\n> Generated by \`npm run model\` from the code. Don't edit by hand.${note ? `\n> ${note}` : ''}\n`;
 const table = (head, rows) => [`| ${head.join(' | ')} |`, `|${head.map(() => '---').join('|')}|`, ...rows.map((r) => `| ${r.join(' | ')} |`)].join('\n');
-
-// Drift checks for the hand-maintained parts.
-const drift = [];
-const found = (re) => new Set([...appSrc.matchAll(re)].map((m) => m[1]));
-const same = (a, b) => a.size === b.size && [...a].every((x) => b.has(x));
-const appModes = found(/mode = '([a-z]+)'/g);
-const appVerbs = found(/target === '(_[a-z_]+)'/g);
-const engineLayers = new Set([...engineSrc.matchAll(/layer: (\d)/g)].map((m) => `L${m[1]}`));
-if (!same(appModes, new Set(Object.keys(MODES)))) drift.push(`modes in src/app.js are ${sorted(appModes).join(', ')}; scripts/model.mjs describes ${Object.keys(MODES).sort().join(', ')}`);
-if (!same(appVerbs, new Set(Object.keys(VERBS)))) drift.push(`special targets in src/app.js are ${sorted(appVerbs).join(', ')}; scripts/model.mjs describes ${Object.keys(VERBS).sort().join(', ')}`);
-if (!same(engineLayers, new Set(ROUTES.map((r) => r[0])))) drift.push(`route layers in src/engine.js are ${sorted(engineLayers).join(', ')}; scripts/model.mjs describes ${ROUTES.map((r) => r[0]).sort().join(', ')}`);
-
-// Graph facts -------------------------------------------------------------------
-
-const chipsOf = (n) => (n.chips || []).map((c) => c.target).filter(Boolean);
-// Links inside blocks: any "target" in a block, at any depth (e.g. grid cards).
-const blockLinksOf = (n) => {
-  const out = [];
-  const walk = (v) => {
-    if (Array.isArray(v)) v.forEach(walk);
-    else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) (k === 'target' && typeof x === 'string' ? out.push(x) : walk(x));
-  };
-  walk(n.blocks);
-  return sorted(new Set(out));
+const words = (v) => {
+  if (typeof v === 'string') return v.split(/\s+/).filter(Boolean).length;
+  if (Array.isArray(v)) return v.reduce((a, x) => a + words(x), 0);
+  if (v && typeof v === 'object') return Object.entries(v).filter(([k]) => !k.startsWith('$') && k !== 'type' && k !== 'id' && k !== 'name').reduce((a, [, x]) => a + words(x), 0);
+  return 0;
 };
-const linksOf = (n) => [...chipsOf(n), ...blockLinksOf(n)];
-const landingPath = Object.keys(site.landing?.path || {}).filter((k) => !k.startsWith('$'));
-const entries = new Set([rootId, ...chipsOf(content.nodes[rootId] || {}), site.landing?.tool?.target].filter(Boolean));
-const reach = new Set();
-const stack = [...entries];
-while (stack.length) {
-  const id = stack.pop();
-  if (reach.has(id) || !content.nodes[id]) continue;
-  reach.add(id);
-  stack.push(...linksOf(content.nodes[id]));
-}
-const isTechnical = (n) => n.audience === 'technical' || n.tags?.includes('technical');
+
+// The sections, read from the rendered page, in order.
+const sections = [...pageHtml.matchAll(/<section class="pg-section is-([a-z]+)" id="([a-z]+)"[\s\S]*?<\/section>/g)].map((m) => {
+  const html = m[0];
+  const head = text((html.match(/<h[12][^>]*>([\s\S]*?)<\/h[12]>/) || [])[1] || '');
+  return {
+    id: m[2],
+    head,
+    words: wordCount(text(html)),
+    toBook: html.includes('href="#book"'),
+    form: html.includes('data-intake'),
+    filled: (html.match(/btn-primary/g) || []).length,
+  };
+});
+const SECTION_JOB = { problem: 'Say what I do', cases: 'Recognition: "that is us"', start: 'Lower the risk', who: 'Trust', intake: 'The job, in the visitor\'s words', book: 'Pick a time' };
 
 // domains.md --------------------------------------------------------------------
 
 function domainsMd() {
-  const siteRows = Object.keys(site).sort().map((k) => [`\`site.json › ${k}\``, SITE_DOMAINS[k] || '**unassigned**', String(words(site[k]))]);
-  const byDomain = {};
-  for (const n of nodes) {
-    const d = isTechnical(n) ? 'Proof (technical)' : FILE_DOMAINS[fileOf[n.id]] || '**unassigned**';
-    (byDomain[d] ||= { topics: 0, words: 0 }).topics++;
-    byDomain[d].words += words(n.blocks);
-  }
-  const rows = Object.entries(byDomain).sort().map(([d, v]) => [d, String(v.topics), String(v.words)]);
   return [
-    header('Domains', 'Which domain each part belongs to is set in `scripts/model.mjs` (SITE_DOMAINS, FILE_DOMAINS).'),
-    '```mermaid\nflowchart TD\n  O[Offer] --> S[Story]\n  P[Proof] --> S\n  S --> C[Conversation]\n  C --> V[Presentation]\n  V --> X[Platform]\n  R[Rules] -.checks.-> S\n```\n',
+    header('Domains', 'Which domain each part belongs to is set in `scripts/model.mjs` (SITE_DOMAINS).'),
+    '```mermaid\nflowchart TD\n  O[Offer] --> S[Story: the page]\n  S --> B[Booking: Cal.com]\n  R[Rules] -.checks.-> S\n  S --> X[Platform]\n```\n',
     '## site.json\n',
-    table(['Part', 'Domain', 'Words'], siteRows),
-    '\n## Topics\n',
-    table(['Domain', 'Topics', 'Words'], rows),
+    table(['Part', 'Domain', 'Words'], Object.keys(site).sort().map((k) => [`\`site.json › ${k}\``, SITE_DOMAINS[k] || '**unassigned**', String(words(site[k]))])),
     '',
   ].join('\n');
 }
@@ -145,16 +98,21 @@ function domainsMd() {
 // process.md --------------------------------------------------------------------
 
 function processMd() {
-  const path = landingPath.map((k, i) => `  L${i}[${q(`${k}: ${site.landing.path[k].head || k}`)}]`).join('\n');
-  const pathEdges = landingPath.slice(1).map((_, i) => `  L${i} --> L${i + 1}`).join('\n');
+  const ids = sections.map((s) => s.id);
+  const nodes = sections.map((s, i) => `  S${i}[${q(`${i + 1} ${s.id}: ${s.head}`)}]`).join('\n');
+  const flow = ids.slice(1).map((_, i) => `  S${i} --> S${i + 1}`).join('\n');
+  const book = ids.indexOf('book');
+  const skips = sections.map((s, i) => (s.toBook && i !== book ? `  S${i} -. "${P.bookLink}" .-> S${book}` : null)).filter(Boolean).join('\n');
+  const cal = bookingUrl(site) ? `\n  S${book} --> C["Cal.com: pick a slot"] --> D["booked: Cal.com confirms by email"]` : '';
   return [
-    header('Process: one visit'),
-    '## Landing path, in order (`site.json › landing.path`)\n',
-    '```mermaid\nflowchart LR\n  H["headline + lens"] --> L0\n' + path + '\n' + pathEdges + '\n```\n',
-    '## A typed question (`route` in src/engine.js)\n',
-    '```mermaid\nflowchart TD\n  A[ask] --> R{route}\n' + ROUTES.map(([l, when, then]) => `  R -->|${q(l + ': ' + when)}| ${l}[${q(then)}]`).join('\n') + '\n  L3 --> B[brief] --> M[mail link]\n```\n',
-    '## Special chip targets (`src/app.js`)\n',
-    table(['Target', 'Does'], Object.entries(VERBS).sort().map(([k, v]) => [`\`${k}\``, v])),
+    header('Process: one visit', 'Read from the page that `npm run sync` writes into index.html.'),
+    '## The page, top to bottom\n',
+    '```mermaid\nflowchart TD\n' + nodes + '\n' + flow + (skips ? '\n' + skips : '') + cal + '\n```\n',
+    table(['#', 'Section', 'Heading', 'Job', 'Words', 'Links to #book', 'Form'], sections.map((s, i) => [String(i + 1), `\`#${s.id}\``, s.head, SECTION_JOB[s.id] || '', String(s.words), s.toBook ? 'yes' : 'no', s.form ? 'yes' : 'no'])),
+    '\n## Without JavaScript\n',
+    bookingUrl(site)
+      ? `- The intake form is a plain \`GET\` form to \`${bookingUrl(site)}\`, with fields ${(site.booking.fields || []).map((f) => `\`${f}\``).join(', ')}: the answers prefill the Cal.com page.\n- "${P.book?.show}" is a plain link to the same page.`
+      : '- No booking link is set (`site.json › booking.calLink` is null): the page shows no form and offers email only.',
     '',
   ].join('\n');
 }
@@ -162,21 +120,12 @@ function processMd() {
 // state.md --------------------------------------------------------------------
 
 function stateMd() {
-  const s = newSession();
-  const [t1, t2] = gravity.thresholds;
   return [
-    header('State'),
-    '## Modes (`src/app.js`)\n',
-    '```mermaid\nstateDiagram-v2\n  [*] --> landing\n' + MODE_EDGES.map(([a, b, why]) => `  ${a} --> ${b}: ${why}`).join('\n') + '\n```\n',
-    table(['Mode', 'What the visitor sees'], Object.entries(MODES).map(([k, v]) => [`\`${k}\``, v])),
-    '\n## Session (`newSession()` in src/engine.js)\n',
-    table(['Field', 'Starts as'], Object.entries(s).map(([k, v]) => [`\`${k}\``, `\`${JSON.stringify(v)}\``])),
-    '\n## Gravity (`gravity` in src/engine.js)\n',
-    `How far up the list the engagement chip ("${gravity.engagementChip.label}") sits. At most ${gravity.chipLimit} chips.\n`,
-    '```mermaid\nstateDiagram-v2\n  [*] --> surface\n' +
-      `  surface --> exploring: depth >= ${t1}\n  exploring --> deep: depth >= ${t2}\n` +
-      '  surface --> engaged: describes their business\n  exploring --> engaged: describes their business\n  deep --> engaged: describes their business\n```\n',
-    table(['Level', 'Engagement chip'], [['0 surface', 'absent'], ['1 exploring', 'last'], ['2 deep', 'first'], ['3 engaged', 'first']]),
+    header('State: the booking step (`src/book.js`)'),
+    '```mermaid\nstateDiagram-v2\n  [*] --> idle\n' + STATE_EDGES.map(([a, b, why]) => `  ${a} --> ${b}: ${why}`).join('\n') + '\n```\n',
+    table(['State', 'What the visitor sees'], Object.entries(STATES).map(([k, v]) => [`\`${k}\``, v])),
+    `\nTimeout: ${site.booking?.timeoutSeconds ?? 10} seconds. Booking link: ${site.booking?.calLink ? `\`${site.booking.calLink}\`` : '**not set**'}.`,
+    '\nReading settings (`src/prefs.js`, stored in `localStorage`): motion `full` | `calm` | `off`, text `standard` | `large`.',
     '',
   ].join('\n');
 }
@@ -184,26 +133,24 @@ function stateMd() {
 // data.md --------------------------------------------------------------------
 
 function dataMd() {
-  const siteTree = Object.keys(site).sort().filter((k) => !k.startsWith('$')).map((k) => {
+  const tree = Object.keys(site).sort().filter((k) => !k.startsWith('$')).map((k) => {
     const v = site[k];
     const kids = v && typeof v === 'object' && !Array.isArray(v) ? Object.keys(v).filter((x) => !x.startsWith('$')).join(', ') : Array.isArray(v) ? 'list' : typeof v;
     return [`\`${k}\``, kids];
   });
-  const fieldCount = {};
-  for (const n of nodes) for (const f of Object.keys(n)) fieldCount[f] = (fieldCount[f] || 0) + 1;
-  const used = usage(nodes);
+  const used = usage(fixtureNodes);
   const blockRows = categories.flatMap((c) => Object.entries(blocks).filter(([, b]) => b.category === c.id).sort(([a], [b]) => a.localeCompare(b)).map(([t, b]) => [
     c.label, `\`${t}\``, Object.entries(b.props).map(([p, spec]) => `${p}${spec.required ? '*' : ''}: ${typeLabel(spec)}`).join('; '), String((used[t] || []).length),
   ]));
   return [
     header('Data'),
-    '```mermaid\nerDiagram\n  SITE ||--o{ FACT : facts\n  SITE ||--|| LANDING : landing\n  GRAPH ||--o{ NODE : nodes\n  NODE ||--o{ BLOCK : blocks\n  NODE ||--o{ CHIP : chips\n  NODE ||--o{ INTENT : intents\n  CHIP }o--|| NODE : target\n  BLOCK ||--o{ BLOCK : children\n  SESSION }o--o{ NODE : viewed\n  SESSION ||--o| BRIEF : builds\n```\n',
+    '```mermaid\nerDiagram\n  SITE ||--o{ FACT : facts\n  SITE ||--|| PAGE : page\n  PAGE ||--o{ SECTION : sections\n  SITE ||--|| BOOKING : booking\n  BOOKING ||--o{ FIELD : "fields (Cal.com question ids)"\n  SECTION }o--o{ FACT : shows\n```\n',
     '## site.json\n',
-    table(['Key', 'Holds'], siteTree),
-    `\n## Topic fields (${nodes.length} topics)\n`,
-    table(['Field', 'Topics that have it'], Object.entries(fieldCount).sort().map(([k, v]) => [`\`${k}\``, String(v)])),
-    '\n## Blocks (`src/catalog.js`; * = required)\n',
-    table(['Category', 'Block', 'Props', 'Topics using it'], blockRows),
+    table(['Key', 'Holds'], tree),
+    '\n## Intake fields (`site.json › page.intake.fields`)\n',
+    table(['Name (Cal.com identifier)', 'Label', 'Kind'], (P.intake?.fields || []).map((f) => [`\`${f.name}\``, f.label, f.long ? 'long text' : 'short text'])),
+    '\n## Blocks (`src/catalog.js`; * = required). The page does not use them; the library and the fixtures do.\n',
+    table(['Category', 'Block', 'Props', 'Fixtures using it'], blockRows),
     '',
   ].join('\n');
 }
@@ -211,31 +158,13 @@ function dataMd() {
 // story.md --------------------------------------------------------------------
 
 function storyMd() {
-  const lines = ['flowchart LR'];
-  for (const [f, ns] of Object.entries(files).sort()) {
-    lines.push(`  subgraph ${f}`);
-    for (const n of [...ns].sort((a, b) => a.id.localeCompare(b.id))) lines.push(`    ${mid(n.id)}[${q(n.id)}]`);
-    lines.push('  end');
-  }
-  const specials = new Set();
-  for (const n of [...nodes].sort((a, b) => a.id.localeCompare(b.id))) {
-    for (const t of chipsOf(n)) {
-      if (t.startsWith('_')) specials.add(t);
-      lines.push(`  ${mid(n.id)} --> ${mid(t)}`);
-    }
-    for (const t of blockLinksOf(n)) lines.push(`  ${mid(n.id)} -.-> ${mid(t)}`);
-  }
-  for (const t of sorted(specials)) lines.push(`  ${mid(t)}((${q(t)}))`);
-  const tech = nodes.filter(isTechnical).map((n) => mid(n.id)).sort();
-  lines.push('  classDef technical stroke-dasharray: 4 3;');
-  if (tech.length) lines.push(`  class ${tech.join(',')} technical`);
-  lines.push(`  classDef entry stroke-width:3px;`, `  class ${sorted(entries).filter((id) => content.nodes[id]).map(mid).join(',')} entry`);
+  const cases = P.cases?.items || [];
   return [
-    header('Story: the topic graph', 'Solid arrows are chips; dotted arrows are links inside blocks (cards). Thick border: linked from the landing. Dashed: technical.'),
-    '```mermaid\n' + lines.join('\n') + '\n```\n',
-    table(['Topic', 'File', 'Tags', 'Blocks', 'Words', 'Links to'], [...nodes].sort((a, b) => a.id.localeCompare(b.id)).map((n) => [
-      `\`${n.id}\``, fileOf[n.id], (n.tags || []).join(', '), (n.blocks || []).map((b) => b.type).join(' '), String(words(n.blocks)), linksOf(n).join(', '),
-    ])),
+    header('Story: what the page says, in order'),
+    ...sections.map((s, i) => `${i + 1}. **${s.head}** (\`#${s.id}\`, ${s.words} words)`),
+    '\n## The examples\n',
+    table(['Example', 'Tag', 'What changes'], cases.map((c) => [c.title, c.tag, c.result])),
+    `\nAlso listed: ${(P.cases?.more?.items || []).map((m) => m.title.replace(/\.$/, '')).join('; ') || 'none'}.`,
     '',
   ].join('\n');
 }
@@ -243,25 +172,19 @@ function storyMd() {
 // health.md --------------------------------------------------------------------
 
 function healthMd() {
-  const unknown = nodes.flatMap((n) => linksOf(n).filter((t) => !t.startsWith('_') && !content.nodes[t]).map((t) => `\`${n.id}\` → \`${t}\``));
   const list = (xs) => (xs.length ? xs.map((x) => `- ${x}`).join('\n') : '- none');
-  const tagCount = {};
-  for (const n of nodes) for (const t of n.tags || []) tagCount[t] = (tagCount[t] || 0) + 1;
+  const missing = Object.entries(site.facts || {}).filter(([, f]) => f.value == null).map(([k, f]) => `\`${k}\` (${f.label})${f.missing ? ': says it is not published' : ': hidden'}`);
+  const noLink = sections.filter((s) => !s.toBook && !['intake', 'book'].includes(s.id)).map((s) => `\`#${s.id}\``);
+  const filled = sections.reduce((n, s) => n + s.filled, 0);
   return [
-    header('Health: facts for deciding what to cut'),
-    `- Topics: ${nodes.length} (${nodes.filter(isTechnical).length} technical)`,
-    `- Words in topics: ${words(nodes.map((n) => n.blocks))}`,
-    `- Landing entries: ${sorted(entries).map((x) => `\`${x}\``).join(', ')}`,
-    '\n## Not reachable from the landing by any link (only by typing)\n',
-    list(ids.filter((id) => !reach.has(id)).map((x) => `\`${x}\``)),
-    '\n## Dead ends (no links out)\n',
-    list(ids.filter((id) => !linksOf(content.nodes[id]).length).map((x) => `\`${x}\``)),
-    '\n## No intents (can\'t be reached by typing)\n',
-    list(nodes.filter((n) => !n.intents?.length).map((n) => `\`${n.id}\``).sort()),
-    '\n## Links to unknown topics\n',
-    list(unknown.sort()),
-    '\n## Tags\n',
-    table(['Tag', 'Topics'], Object.entries(tagCount).sort().map(([k, v]) => [k, String(v)])),
+    header('Health: facts for deciding what to change'),
+    `- Sections: ${sections.length}; words on the page: ${sections.reduce((n, s) => n + s.words, 0)}`,
+    `- Booking link: ${site.booking?.calLink ? `\`${site.booking.calLink}\`` : '**not set**: the page offers email only'}`,
+    `- Filled buttons on the page: ${filled} (the design allows one)`,
+    '\n## Sections without a link to #book\n',
+    list(noLink),
+    '\n## Facts not filled in\n',
+    list(missing),
     '',
   ].join('\n');
 }

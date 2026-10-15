@@ -5,70 +5,56 @@
 ```mermaid
 erDiagram
   SITE ||--o{ FACT : facts
-  SITE ||--|| LANDING : landing
-  GRAPH ||--o{ NODE : nodes
-  NODE ||--o{ BLOCK : blocks
-  NODE ||--o{ CHIP : chips
-  NODE ||--o{ INTENT : intents
-  CHIP }o--|| NODE : target
-  BLOCK ||--o{ BLOCK : children
-  SESSION }o--o{ NODE : viewed
-  SESSION ||--o| BRIEF : builds
+  SITE ||--|| PAGE : page
+  PAGE ||--o{ SECTION : sections
+  SITE ||--|| BOOKING : booking
+  BOOKING ||--o{ FIELD : "fields (Cal.com question ids)"
+  SECTION }o--o{ FACT : shows
 ```
 
 ## site.json
 
 | Key | Holds |
 |---|---|
+| `booking` | calLink, origin, embedScript, timeoutSeconds, fields |
 | `brand` | string |
-| `copy` | ui |
 | `facts` | what, who, firstStep, cost, timeline, reply, location, clients, handover |
-| `features` | map, depthMeter, freeText, sound |
-| `landing` | eyebrow, headline, accent, facts, allLink, tool, lens, cue, path |
 | `language` | maxSentenceWords, minSentenceWords, maxGrade, knownAcronyms, banned, bannedBusiness |
 | `meta` | title, description |
-| `onePage` | title, intro, sections, appendix |
+| `page` | bookLink, problem, cases, start, who, intake, book |
 | `person` | name, fullName, email, location, links |
-| `reading` | motion, text, sound |
+| `reading` | motion, text |
 | `timeZone` | string |
 
-## Topic fields (24 topics)
+## Intake fields (`site.json › page.intake.fields`)
 
-| Field | Topics that have it |
-|---|---|
-| `audience` | 4 |
-| `blocks` | 24 |
-| `chips` | 24 |
-| `id` | 24 |
-| `intents` | 24 |
-| `label` | 24 |
-| `parent` | 24 |
-| `tags` | 24 |
+| Name (Cal.com identifier) | Label | Kind |
+|---|---|---|
+| `job` | The job that takes up your team's time | long text |
+| `scale` | How many people do it, and how often | short text |
 
-## Blocks (`src/catalog.js`; * = required)
+## Blocks (`src/catalog.js`; * = required). The page does not use them; the library and the fixtures do.
 
-| Category | Block | Props | Topics using it |
+| Category | Block | Props | Fixtures using it |
 |---|---|---|---|
-| Text | `callout` | text*: string; attribution: string | 6 |
+| Text | `callout` | text*: string; attribution: string | 1 |
 | Text | `code` | content*: string; language: string | 1 |
 | Text | `hero` | title*: string; accentWord: string; subtitle: string | 1 |
-| Text | `text` | content*: string | 21 |
-| Numbers | `metric` | value*: any; label*: string; sublabel: string | 0 |
+| Text | `text` | content*: string | 4 |
+| Numbers | `metric` | value*: any; label*: string; sublabel: string | 1 |
 | Numbers | `metricRow` | items*: list of objects | 1 |
-| Numbers | `progress` | label*: string; current*: number; total*: number; sublabel: string | 0 |
-| Numbers | `stats` | items*: list of objects | 2 |
+| Numbers | `progress` | label*: string; current*: number; total*: number; sublabel: string | 1 |
+| Numbers | `stats` | items*: list of objects | 1 |
 | Lists and structure | `badge` | status*: string; variant: "default" | "active" | 1 |
-| Lists and structure | `grid` | items*: list of objects | 2 |
+| Lists and structure | `grid` | items*: list of objects | 1 |
 | Lists and structure | `layers` | items*: list of objects | 1 |
-| Lists and structure | `pills` | items*: list of string; label: string | 5 |
-| Lists and structure | `section` | title*: string; kicker: string; tone: "plain" | "raised" | "accent"; blocks*: blocks | 0 |
-| Lists and structure | `split` | left: blocks; right: blocks | 2 |
-| Lists and structure | `table` | headers*: list of string; rows*: list of list of string | 0 |
-| Lists and structure | `timeline` | items*: list of objects | 0 |
-| Diagrams | `flow` | layout: "horizontal" | "vertical" | "fanout"; title: string; nodes*: list of objects; edges*: list of objects; loop: object | 5 |
+| Lists and structure | `pills` | items*: list of string; label: string | 1 |
+| Lists and structure | `section` | title*: string; kicker: string; tone: "plain" | "raised" | "accent"; blocks*: blocks | 1 |
+| Lists and structure | `split` | left: blocks; right: blocks | 1 |
+| Lists and structure | `table` | headers*: list of string; rows*: list of list of string | 1 |
+| Lists and structure | `timeline` | items*: list of objects | 1 |
+| Diagrams | `flow` | layout: "horizontal" | "vertical" | "fanout"; title: string; nodes*: list of objects; edges*: list of objects; loop: object | 1 |
 | Interactive | `compare` | label: string; start: number; states*: list of objects | 1 |
 | Interactive | `estimate` | title: string; inputs*: list of objects; labels: object; weeksPerYear: number; hoursPerWeek: number; maxCells: number; cellsPerRow: number; note: string; summary: string; addLabel: string; added: string | 1 |
-| Facts | `fact` | key*: string; label: boolean | 3 |
-| Facts | `facts` | keys: list of string | 2 |
-| Session | `brief` | data*: object | 0 |
-| Session | `compose` | data*: object | 0 |
+| Facts | `fact` | key*: string; label: boolean | 1 |
+| Facts | `facts` | keys: list of string | 1 |

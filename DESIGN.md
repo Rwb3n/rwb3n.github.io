@@ -1,9 +1,9 @@
 # mindunder.dev — design notes
 
-> **Draft, phase 2** (2026-10-13). This file describes the **target** site,
-> the funnel in `_model/target/funnel.md` (signed off 2026-10-13), not the
-> site that is live. Until the build lands, the live site is
-> described by this file at `057d4d7` (`git show 057d4d7:DESIGN.md`).
+> **Phase 3, built** on branch `ccr-97d11a0a-6l0u48` (2026-10-15). This file
+> describes the funnel in `_model/target/funnel.md` (signed off 2026-10-13).
+> It is not live until phase 4 (UAT) is signed off. The live site is described
+> by this file at `057d4d7` (`git show 057d4d7:DESIGN.md`).
 
 ## Idea
 
@@ -166,8 +166,11 @@ and the tests, never by the site. It covers the blocks the page does not use,
 so the site never shows invented facts to cover a component. Fixtures follow
 the same writing rules.
 
-Which blocks the page uses, and which are retired with the conversation, is
-decided in the build (phase 3), not here.
+Decided in the build: **the page uses no blocks.** It is rendered from
+`site.json › page` by `src/static.js`, in its own markup (`styles/page.css`).
+The block system stays as the library's catalogue, shown with the fixtures.
+Retired with the conversation: the `brief` and `compose` blocks, and the
+library's chips, entry rows, ask bar and live-state pieces.
 
 Pages are assembled by shared code (`src/static.js`, `src/layouts.js`), so
 the library shows the real page parts. A browser test

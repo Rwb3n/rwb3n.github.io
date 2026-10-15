@@ -1,108 +1,153 @@
-// Static HTML for index.html, generated from content/site.json and the root
-// topic. Pure strings (no DOM), shared by scripts/sync.mjs and the tests, so
-// the page reads correctly without JavaScript and never drifts from config.
+// Static HTML for index.html, generated from content/site.json. Pure strings
+// (no DOM), shared by scripts/sync.mjs, the component library and the tests,
+// so the whole page reads without JavaScript and never drifts from config.
+//
+// The page is one funnel, read top to bottom, ending at a booked call
+// (_model/target/funnel.md): problem, cases, start, who, intake, book. Every
+// section has a quiet link straight to #book.
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const fill = (t, vars) => String(t ?? '').replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
+const stop = (s) => (/[.!?]$/.test(s) ? s : `${s}.`);
 
 const factText = (site, key) => {
   const f = site.facts?.[key];
   return f ? f.value ?? f.missing ?? null : null;
 };
 
-export function renderRegions(site, content) {
-  const L = site.landing || {};
-  const lines = (L.headline || []).map((line) => {
-    const e = esc(line);
-    const a = L.accent && esc(L.accent);
-    return a && e.includes(a) ? e.replace(a, `<em class="is-accent">${a}</em>`) : e;
-  });
-  // Only the first occurrence of the accent word gets the accent.
-  let accented = false;
-  const display = lines.map((l) => {
-    if (accented) return l.replace(/<em class="is-accent">(.*?)<\/em>/, '$1');
-    if (l.includes('is-accent')) accented = true;
-    return l;
-  });
+// The Cal.com booking page for a link like "ruben/30min", or null.
+export function bookingUrl(site, answers = {}) {
+  const link = site.booking?.calLink;
+  if (!link) return null;
+  const url = new URL(`${String(site.booking.origin || 'https://cal.com').replace(/\/$/, '')}/${link}`);
+  for (const [k, v] of Object.entries(answers)) if (v) url.searchParams.set(k, v);
+  return url.href;
+}
 
-  const root = content.nodes[content.root];
-  const entries = (root?.chips || []).map((c, i) => {
-    const label = c.label || content.nodes[c.target]?.label || c.target;
-    return `<a class="entry-item" href="#/${esc(c.target)}" data-target="${esc(c.target)}"><span class="entry-index">${String(i + 1).padStart(2, '0')}</span><span class="entry-label">${esc(label)}</span><span class="entry-arrow" aria-hidden="true">→</span></a>`;
-  });
-
-  const facts = (L.path?.book?.facts || L.facts || []).map((k) => [site.facts?.[k], factText(site, k)]).filter(([f, v]) => f && v);
-
-  // The landing is one path, one idea per screen: the headline (with the lens),
-  // then three examples with their context, a system that runs today, how we
-  // would start, and the next step. Copy lives in site.json → landing.path.
-  const P = L.path || {};
-  const step = (id, title, body) => [
-    `<section class="land-step is-${id}" id="land-${id}" aria-labelledby="land-${id}-h">`,
-    `  <h2 class="land-step-head" id="land-${id}-h">${esc(title)}</h2>`,
+export function renderRegions(site) {
+  const P = site.page || {};
+  const email = site.person?.email;
+  const bookLink = (cls = '') => `<a class="pg-book-link${cls}" href="#book">${esc(P.bookLink)} <span aria-hidden="true">↓</span></a>`;
+  const section = (id, head, body, { headTag = 'h2', link = true } = {}) => [
+    `<section class="pg-section is-${id}" id="${id}" aria-labelledby="${id}-h">`,
+    `  <${headTag} class="pg-head" id="${id}-h"${id === 'book' ? ' tabindex="-1"' : ''}>${esc(head)}</${headTag}>`,
     ...body.filter(Boolean).map((l) => `  ${l}`),
+    link ? `  ${bookLink()}` : '',
     '</section>',
-  ];
-  const first = ['cases', 'proof', 'how', 'book'].find((k) => P[k]) || 'book';
-
-  const landing = [
-    '<div class="copy" data-copy>',
-    `  <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>${esc(L.eyebrow)}</p>`,
-    '  <h1 class="display" id="landing-title">',
-    ...display.map((l) => `    <span class="display-line">${l}</span>`),
-    '  </h1>',
-    '</div>',
-    L.cue ? `<a class="land-cue" href="#land-${first}">${esc(L.cue)} <span aria-hidden="true">↓</span></a>` : '',
   ].filter(Boolean);
 
-  const C = P.cases, R = P.proof, H = P.how, B = P.book;
-  const lab = C?.labels || {};
-  const email = site.person?.email;
-  const steps = [
-    ...(C ? step('cases', C.head, [
-      C.intro && `<p class="land-intro">${esc(C.intro)}</p>`,
-      '<div class="land-cases">',
-      ...(C.items || []).flatMap((c) => [
-        '  <article class="land-case">',
-        `    <p class="land-case-tag">${esc(c.tag)}</p>`,
-        `    <h3 class="land-case-title">${esc(c.title)}</h3>`,
-        '    <dl class="land-case-body">',
-        `      <div><dt>${esc(lab.before || 'Today')}</dt><dd>${esc(c.before)}</dd></div>`,
-        `      <div><dt>${esc(lab.build || 'What I would build')}</dt><dd>${esc(c.build)}</dd></div>`,
-        `      <div class="is-result"><dt>${esc(lab.result || 'What changes')}</dt><dd>${esc(c.result)}</dd></div>`,
-        '    </dl>',
-        '  </article>',
-      ]),
-      '</div>',
-    ]) : []),
-    ...(R ? step('proof', R.head, [
-      R.intro && `<p class="land-intro">${esc(R.intro)}</p>`,
-      '<ul class="land-metrics" role="list">',
-      ...(R.metrics || []).map((m) => `  <li><span class="land-metric-value">${esc(m.value)}</span> <span class="land-metric-label">${esc(m.label)}</span></li>`),
-      '</ul>',
-      R.note && `<p class="land-note">${esc(R.note)}</p>`,
-      R.link && `<a class="land-link" href="#/${esc(R.link.target)}" data-target="${esc(R.link.target)}">${esc(R.link.label)} <span aria-hidden="true">→</span></a>`,
-    ]) : []),
-    ...(H ? step('how', H.head, [
-      '<ol class="land-how" role="list">',
-      ...(H.items || []).map((it, i) => `  <li><span class="land-how-n">${i + 1}</span><h3 class="land-how-title">${esc(it.title)}</h3><p class="land-how-detail">${esc(it.detail)}</p></li>`),
-      '</ol>',
-    ]) : []),
-    ...step('book', B?.head || 'Next step', [
-      B?.line && `<p class="land-line">${esc(B.line)}</p>`,
-      B?.cta && email && `<a class="entry-tool is-cta" href="mailto:${esc(email)}" data-target="_book"><span class="entry-tool-label">${esc(B.cta)}</span><span class="entry-arrow" aria-hidden="true">→</span></a>`,
-      facts.length && '<dl class="offer">',
-      ...facts.map(([f, v]) => `  <div class="offer-item"><dt>${esc(f.label)}</dt><dd>${esc(v)}</dd></div>`),
-      facts.length && '</dl>',
-      B?.more && `<h3 class="land-more-head">${esc(B.more)}</h3>`,
-      '<nav class="entry" aria-label="Topics" data-entry>',
-      ...entries.map((e) => `  ${e}`),
-      '</nav>',
-      '<div class="entry-more">',
-      L.tool ? `  <a class="entry-tool" href="#/${esc(L.tool.target)}" data-target="${esc(L.tool.target)}"><span class="entry-tool-label">${esc(L.tool.label)}</span>${L.tool.note ? `<span class="entry-tool-note">${esc(L.tool.note)}</span>` : ''}<span class="entry-arrow" aria-hidden="true">→</span></a>` : '',
-      L.allLink ? `  <p class="entry-all"><a href="#/all" data-all-link>${esc(L.allLink)} <span aria-hidden="true">→</span></a></p>` : '',
-      '</div>',
+  // 1 The problem --------------------------------------------------------------
+  const pr = P.problem || {};
+  let accented = false;
+  const lines = (pr.headline || []).map((line) => {
+    const e = esc(line);
+    const a = pr.accent && esc(pr.accent);
+    if (!accented && a && e.includes(a)) { accented = true; return e.replace(a, `<em class="is-accent">${a}</em>`); }
+    return e;
+  });
+  const problem = [
+    '<section class="pg-section is-problem" id="problem" aria-labelledby="problem-h">',
+    '  <div class="copy" data-copy>',
+    `    <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>${esc(pr.eyebrow)}</p>`,
+    '    <h1 class="display" id="problem-h">',
+    ...lines.map((l) => `      <span class="display-line">${l}</span>`),
+    '    </h1>',
+    '  </div>',
+    pr.cue && `  <p class="pg-cue">${esc(pr.cue)}</p>`,
+    `  ${bookLink(' is-first')}`,
+    '</section>',
+  ].filter(Boolean);
+
+  // 2 Where the time goes ------------------------------------------------------
+  const C = P.cases || {};
+  const lab = C.labels || {};
+  const cases = section('cases', C.head, [
+    C.intro && `<p class="pg-intro">${esc(C.intro)}</p>`,
+    '<div class="pg-cases">',
+    ...(C.items || []).flatMap((c) => [
+      '  <article class="pg-case">',
+      `    <p class="pg-case-tag">${esc(c.tag)}</p>`,
+      `    <h3 class="pg-case-title">${esc(c.title)}</h3>`,
+      '    <dl class="pg-case-body">',
+      `      <div><dt>${esc(lab.before)}</dt><dd>${esc(c.before)}</dd></div>`,
+      `      <div><dt>${esc(lab.build)}</dt><dd>${esc(c.build)}</dd></div>`,
+      `      <div class="is-result"><dt>${esc(lab.result)}</dt><dd>${esc(c.result)}</dd></div>`,
+      '    </dl>',
+      '  </article>',
     ]),
-  ];
+    '</div>',
+    C.more && `<h3 class="pg-sub">${esc(C.more.head)}</h3>`,
+    C.more && '<ul class="pg-more" role="list">',
+    ...(C.more?.items || []).map((m) => `  <li><b>${esc(m.title)}</b> ${esc(m.text)}</li>`),
+    C.more && '</ul>',
+  ]);
+
+  // 3 How we would start -------------------------------------------------------
+  const S = P.start || {};
+  const startFacts = (S.facts || []).map((f) => {
+    const label = f.key ? site.facts?.[f.key]?.label : f.label;
+    const value = f.key ? factText(site, f.key) : f.value;
+    return label && value ? `  <li><b>${esc(label)}:</b> ${esc(stop(value))}</li>` : null;
+  }).filter(Boolean);
+  const start = section('start', S.head, [
+    '<ol class="pg-steps" role="list">',
+    ...(S.items || []).map((it, i) => `  <li><span class="pg-step-n" aria-hidden="true">${i + 1}</span><h3 class="pg-step-title">${esc(it.title)}</h3> <p class="pg-step-detail">${esc(it.detail)}</p></li>`),
+    '</ol>',
+    S.note && `<p class="pg-note">${esc(S.note)}</p>`,
+    startFacts.length && '<ul class="pg-facts" role="list">',
+    ...startFacts,
+    startFacts.length && '</ul>',
+  ]);
+
+  // 4 Who you would talk to ----------------------------------------------------
+  const W = P.who || {};
+  const who = section('who', W.head, (W.lines || []).map((l, i) => `<p class="pg-who${i === 0 ? ' is-lead' : ''}">${esc(l)}</p>`));
+
+  // 5 Intake --------------------------------------------------------------------
+  // A plain GET form whose action is the Cal.com booking page: without
+  // JavaScript the fields prefill it there. With JavaScript, src/book.js opens
+  // the embed in #book instead. No booking link yet: no form, nothing to send.
+  const I = P.intake || {};
+  const action = bookingUrl(site);
+  const field = (f) => {
+    const id = `f-${f.name}`;
+    const control = f.long
+      ? `<textarea class="pg-input" id="${id}" name="${esc(f.name)}" rows="4" aria-describedby="${id}-ex"></textarea>`
+      : `<input class="pg-input" id="${id}" name="${esc(f.name)}" type="text" autocomplete="off" aria-describedby="${id}-ex" />`;
+    return [
+      '  <div class="pg-field">',
+      `    <label class="pg-label" for="${id}">${esc(f.label)}</label>`,
+      `    <p class="pg-example" id="${id}-ex">${esc(f.example)}</p>`,
+      `    ${control}`,
+      '  </div>',
+    ];
+  };
+  const intake = !action ? [] : section('intake', I.head, [
+    I.intro && `<p class="pg-intro">${esc(I.intro)}</p>`,
+    `<form class="pg-intake" method="get" action="${esc(action)}" data-intake>`,
+    ...(I.fields || []).flatMap(field),
+    `  <button class="btn btn-ghost pg-intake-go" type="submit">${esc(I.submit)}</button>`,
+    `  <p class="pg-small">${esc(I.note)}</p>`,
+    '</form>',
+  ], { link: false });
+
+  // 6 Book -----------------------------------------------------------------------
+  const B = P.book || {};
+  const bookUrl = bookingUrl(site);
+  const book = section('book', B.head, bookUrl ? [
+    `<p class="pg-intro">${esc(B.line)}</p>`,
+    '<div class="pg-booking" data-booking>',
+    `  <a class="btn btn-primary pg-show" href="${esc(bookUrl)}" data-book-show>${esc(B.show)} <span aria-hidden="true">→</span></a>`,
+    `  <p class="pg-status" data-book-status role="status" hidden>${esc(B.loading)}</p>`,
+    '  <div class="pg-embed" id="cal-embed" data-book-embed hidden></div>',
+    `  <p class="pg-fail" data-book-fail hidden>${esc(B.failed)} <a href="${esc(bookUrl)}" data-book-open>${esc(B.open)}</a></p>`,
+    '</div>',
+    `<p class="pg-email">${esc(fill(B.email, { email: '\u0000' })).replace('\u0000', `<a href="mailto:${esc(email)}">${esc(email)}</a>`)}</p>`,
+  ] : [
+    `<p class="pg-intro">${esc(fill(B.unset, { email: '\u0000' })).replace('\u0000', `<a href="mailto:${esc(email)}">${esc(email)}</a>`)}</p>`,
+  ], { link: false });
+
+  const page = [...problem, ...cases, ...start, ...who, ...intake, ...book];
 
   const meta = [
     `<title>${esc(site.meta?.title || site.brand)}</title>`,
@@ -113,22 +158,16 @@ export function renderRegions(site, content) {
 
   const reading = [`<script>window.__muReading = ${JSON.stringify({ motion: site.reading?.motion || 'calm', text: site.reading?.text || 'standard' })};</script>`];
 
-  const caption = [`<span class="lens-caption-text" data-lens-caption-text>${esc(L.lens?.idle)}</span>`];
+  // Booking settings the script needs, without loading site.json at runtime.
+  const booking = [`<script type="application/json" id="booking-config">${JSON.stringify({
+    calLink: site.booking?.calLink || null,
+    origin: site.booking?.origin || 'https://cal.com',
+    embedScript: site.booking?.embedScript || 'https://app.cal.com/embed/embed.js',
+    timeoutSeconds: site.booking?.timeoutSeconds ?? 10,
+    fields: site.booking?.fields || [],
+  }).replace(/</g, '\\u003c')}</script>`];
 
-  const noscript = [
-    '<section class="noscript">',
-    '  <p>JavaScript is off. The essentials:</p>',
-    '  <dl class="offer">',
-    ...Object.keys(site.facts || {})
-      .map((k) => [site.facts[k], factText(site, k)])
-      .filter(([f, v]) => f && v && !f.link)
-      .map(([f, v]) => `    <div class="offer-item"><dt>${esc(f.label)}</dt><dd>${esc(v)}</dd></div>`),
-    '  </dl>',
-    email ? `  <p>Email: <a href="mailto:${esc(email)}">${esc(email)}</a></p>` : '',
-    '</section>',
-  ].filter(Boolean);
-
-  return { meta, reading, landing, steps, caption, noscript };
+  return { meta, reading, page, booking };
 }
 
 // Replace each <!-- sync:NAME --> … <!-- /sync:NAME --> region, keeping indentation.

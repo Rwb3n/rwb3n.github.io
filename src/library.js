@@ -7,8 +7,6 @@ import { initPrefs, setPref, motion } from './prefs.js';
 import { renderBlock } from './blocks.js';
 import { h, reducedMotion } from './dom.js';
 import { blocks, categories, primitives, validateBlocks, usage, typeLabel } from './catalog.js';
-import { turnShell, chips, onePage, createRail } from './layouts.js';
-import { enhanceLanding } from './landing.js';
 import { renderRegions } from './static.js';
 import { splitWords } from './type.js';
 
@@ -19,14 +17,13 @@ let config = {};
 try { config = await loadSiteConfig(); applyConfig(config); } catch (err) { console.warn('[config]', err.message); }
 initPrefs(config.reading);
 
-let content = { nodes: {} };
-try { content = await loadContent(); } catch (err) { console.warn('[content]', err.message); }
-// Fixtures: test content that uses every block. Never loaded by the site.
+// Fixtures: test content that uses every block. The site itself is one page
+// built from site.json (src/static.js) and loads no topics.
 const fixtureIds = new Set();
-let fx = { nodes: {}, parents: {} };
+let content = { nodes: {}, parents: {} };
 try {
-  fx = await loadContent('fixtures');
-  for (const [id, n] of Object.entries(fx.nodes)) { fixtureIds.add(id); content.nodes[id] = n; }
+  content = await loadContent('fixtures');
+  for (const id of Object.keys(content.nodes)) fixtureIds.add(id);
 } catch (err) { console.warn('[fixtures]', err.message); }
 const nodes = Object.values(content.nodes);
 const used = usage(nodes);
@@ -62,8 +59,8 @@ function toast(msg) {
 
 // What blocks can do on this page instead of in a conversation.
 const ctx = {
-  navigate: (target) => toast(`On the site this opens the topic “${content.nodes[target]?.label || target}”.`),
-  addEstimate: (s) => toast(`Added to the visit summary: ${s}`),
+  navigate: (target) => toast(`Links to “${content.nodes[target]?.label || target}”. The site has no topic pages.`),
+  addEstimate: (s) => toast(`The estimate block is not on the site. It would add: ${s}`),
 };
 
 // Rendering ---------------------------------------------------------------------
@@ -318,7 +315,6 @@ function blockCard(type, spec) {
   return h('article', { class: 'lib-card', id: `block-${type}` },
     h('header', { class: 'lib-card-head' },
       h('h3', { class: 'lib-h3' }, h('code', null, type)),
-      spec.runtime && h('span', { class: 'lib-tag' }, 'made by the engine'),
     ),
     h('p', { class: 'lib-doc' }, md(spec.doc)),
     h('div', { class: 'lib-tools' },
@@ -342,8 +338,7 @@ function blockCard(type, spec) {
               h('td', null, md(p.doc), p.type === 'list' && p.of.type === 'object' && h('span', { class: 'lib-sub' }, Object.entries(p.of.props).map(([sk, sp]) => `${sk}${sp.required ? '*' : ''}`).join(' · ')))))),
         ),
         h('h4', { class: 'micro lib-used-h' }, 'Used in'),
-        spec.runtime ? h('p', { class: 'lib-doc' }, 'The visit summary, built by src/engine.js.')
-          : where.length ? h('ul', { class: 'lib-used' }, where.map((id) => h('li', null, fixtureIds.has(id)
+        where.length ? h('ul', { class: 'lib-used' }, where.map((id) => h('li', null, fixtureIds.has(id)
             ? h('span', { class: 'lib-fixture', title: 'Test content, not on the site' }, content.nodes[id]?.label || id)
             : h('a', { href: `/#/${id}` }, content.nodes[id]?.label || id))))
           : h('p', { class: 'lib-doc' }, 'Not used in any topic yet.'),
@@ -364,124 +359,40 @@ function blocksSections() {
   });
 }
 
-// Composer: a whole topic from blocks. Start from a real topic or the example.
-const SAMPLE = [
-  { type: 'hero', title: 'An example topic', accentWord: 'example', subtitle: 'Composed from blocks' },
-  { type: 'text', content: 'Every topic on the site is a list like this one. Change it and the page below changes.' },
-  { type: 'split',
-    left: [{ type: 'metric', value: '12', label: 'hours a week of copying' }],
-    right: [{ type: 'pills', label: 'Systems', items: ['Email', 'Spreadsheet', 'Invoices'] }] },
-  { type: 'flow', layout: 'horizontal', nodes: [{ id: 'a', label: 'Email' }, { id: 'b', label: 'System', variant: 'accent' }, { id: 'c', label: 'Invoice' }], edges: [{ from: 'a', to: 'b', label: 'reads' }, { from: 'b', to: 'c', label: 'writes' }] },
-  { type: 'layers', items: [{ label: '1', title: 'Call' }, { label: '2', title: 'Summary' }, { label: '3', title: 'Build' }] },
-  { type: 'fact', key: 'firstStep' },
-];
-
-// Page layouts: the same functions the site uses (src/layouts.js), on fixtures.
+// The page: the same generator as index.html (src/static.js), with a sample
+// booking link so the intake form and the booking step are shown. Links and
+// buttons here do not navigate or load anything.
 function layoutsSection() {
-  const main = fx.nodes.fixture_order_to_invoice;
-  const turnStage = h('div', { class: 'lib-stage is-turn is-layout' });
-  const renderTurn = () => {
-    if (!main) return turnStage.replaceChildren(h('p', { class: 'lib-error' }, 'Fixtures did not load.'));
-    const { turn, answer, heading } = turnShell({ n: 1, question: main.label });
-    // As on the site: with motion on, the question's words rise into place.
-    if (!reducedMotion()) splitWords(heading);
-    const label = (c) => c.label || fx.nodes[c.target]?.label || c.target;
-    // The side column, as on the site, after one topic. The progress meter is
-    // switched off on the site (site.json features); it is shown here.
-    const rail = createRail(content, {
-      onPick: (id) => ctx.navigate(id),
-      onBrief: () => toast('On the site this shows a summary of the visit.'),
-      onAll: () => toast('On the site this opens the one-page view.'),
-      features: { map: true, depthMeter: true },
-    });
-    rail.map.visit(main.id);
-    rail.count();
-    rail.setTrail([main.label], 0);
-    rail.setDepth(0);
-    const log = h('div', { class: 'log' }, turn);
-    turnStage.replaceChildren(h('div', { class: 'session lib-session' }, rail.el, log));
-    mount(answer, main.blocks);
-    answer.append(chips((main.chips || []).map((c) => ({ ...c, label: label(c) })), (c) => ctx.navigate(c.target)));
-  };
-  // The landing, from the same generator as index.html, enhanced by the same code.
-  const landingStage = h('div', { class: 'lib-stage is-layout is-landing-demo' });
-  let landingLens = null;
-  const renderLanding = () => {
-    const r = renderRegions(config, content);
-    landingStage.innerHTML = `<section class="landing" data-landing aria-label="Example of the landing">
-      <div class="landing-hero" data-landing-hero>
-        <canvas class="lens" data-lens aria-hidden="true"></canvas>
-        <div class="landing-inner">${r.landing.join('\n')}</div>
-        <figure class="lens-caption" data-lens-caption aria-hidden="true">${r.caption.join('')}</figure>
-      </div>
-      <div class="landing-steps">${r.steps.join('\n')}</div>
-    </section>`;
+  const stage = h('div', { class: 'lib-stage is-layout is-page-demo' });
+  const render = () => {
+    const sample = { ...config, booking: { ...(config.booking || {}), calLink: config.booking?.calLink || 'example/30min' } };
+    const r = renderRegions(sample);
+    stage.innerHTML = `<div class="pg" aria-label="Example of the page">${r.page.join('\n')}</div>`;
     // One h1 per page: the library's own title.
-    const h1 = landingStage.querySelector('h1');
+    const h1 = stage.querySelector('h1');
     if (h1) h1.outerHTML = h1.outerHTML.replace(/^<h1/, '<p role="heading" aria-level="2"').replace(/h1>$/, 'p>');
-    landingLens?.pause?.();
-    afterMount.push(() => { landingLens = enhanceLanding(landingStage); });
+    for (const el of stage.querySelectorAll('[id]')) el.id = `demo-${el.id}`;
+    for (const el of stage.querySelectorAll('[for]')) el.htmlFor = `demo-${el.htmlFor}`;
+    for (const el of stage.querySelectorAll('[aria-labelledby], [aria-describedby]')) {
+      for (const k of ['aria-labelledby', 'aria-describedby']) if (el.hasAttribute(k)) el.setAttribute(k, `demo-${el.getAttribute(k)}`);
+    }
+    const display = stage.querySelector('.display');
+    if (display && !reducedMotion()) splitWords(display);
+    // The states the booking step can be in, shown at once.
+    stage.querySelector('[data-book-status]')?.removeAttribute('hidden');
+    stage.querySelector('[data-book-fail]')?.removeAttribute('hidden');
   };
-  landingStage.addEventListener('click', (e) => {
-    const a = e.target.closest('a');
+  stage.addEventListener('click', (e) => {
+    const a = e.target.closest('a, button');
     if (!a) return;
     e.preventDefault();
-    toast(`On the site this opens “${a.textContent.replace('→', '').trim()}”.`);
+    toast(`On the site: “${a.textContent.replace(/[→↓]/g, '').trim()}”.`);
   });
-  const pageStage = h('div', { class: 'lib-stage is-layout' });
-  const renderPage = () => {
-    const page = h('article', { class: 'page lib-page' });
-    page.replaceChildren(...onePage({
-      content: fx,
-      layout: { title: 'Example: everything on one page', intro: 'Built from the fixture topics. On the site this page holds every topic.', sections: ['fixture_order_to_invoice'], appendix: ['fixture_how_it_is_built'] },
-      ctx: { ...ctx, navigate: (id) => page.querySelector(`#page-${CSS.escape(id)}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
-      onBack: () => toast('On the site this goes back to the start.'),
-    }));
-    pageStage.replaceChildren(page);
-  };
-  replays.push(renderLanding, renderTurn, renderPage);
-  return section('layouts', 'Page layouts', 'Layouts',
-    h('p', { class: 'lib-p' }, 'How blocks are assembled into pages. Both are drawn by src/layouts.js, the same code the site uses, with fixture topics as content.'),
-    h('article', { class: 'lib-card', id: 'layout-landing' },
-      h('h3', { class: 'lib-h3' }, 'Landing'),
-      h('p', { class: 'lib-doc' }, md('The first page: the headline with the lens, then one screen each for the examples, the first step and where to start. The markup comes from `src/static.js` (the same text as `index.html`), the movement from `src/landing.js`. The headline screen is full height, as on the site; the three screens after it are shortened. Links here do not navigate.')),
-      landingStage),
-    h('article', { class: 'lib-card', id: 'layout-turn' },
-      h('h3', { class: 'lib-h3' }, 'Conversation'),
-      h('p', { class: 'lib-doc' }, md('After a topic is chosen: the side column (topics read, the map, progress, the summary button) and the turn (the topic number, the question as a heading, the answer blocks, then `Next topics`). On narrow screens the side column becomes a strip at the top, with the map behind a button.')),
-      turnStage),
-    h('article', { class: 'lib-card', id: 'layout-page' },
-      h('h3', { class: 'lib-h3' }, 'One-page view'),
-      h('p', { class: 'lib-doc' }, md('`#/all`: key facts, contents, each topic with its sub-topics indented under it, then a technical appendix, then the email button.')),
-      pageStage),
-  );
-}
-
-function composerSection() {
-  const stage = h('div', { class: 'lib-stage is-turn' });
-  const heading = h('h3', { class: 'turn-question' }, 'An example topic');
-  const errors = h('ul', { class: 'lib-errors', hidden: true, role: 'status' });
-  const ed = editor({ value: pretty(SAMPLE), stage, errors, asList: true });
-  replays.push(() => ed.run());
-  const open = h('a', { class: 'lib-mini', href: '/#/all', hidden: true }, 'Open on the site');
-  const pick = h('select', { class: 'lib-select', id: 'compose-pick', onchange: () => {
-    const n = content.nodes[pick.value];
-    heading.textContent = n ? n.label : 'An example topic';
-    open.hidden = !n || fixtureIds.has(n.id);
-    if (n) open.href = `/#/${n.id}`;
-    ed.set(pretty(n ? n.blocks : SAMPLE));
-  } },
-    h('option', { value: '' }, 'Example composition'),
-    nodes.filter((n) => n.blocks?.length).sort((a, b) => a.label.localeCompare(b.label)).map((n) => h('option', { value: n.id }, `${n.label} (${n.blocks.length} blocks)`)));
-
-  ed.area.rows = 28;
-  return section('compose', 'Compose a topic', 'Composer',
-    h('p', { class: 'lib-p' }, 'Load any topic from content/nodes to see how it is built, or edit the example. Blocks are checked against the catalogue as you type. Nothing is saved.'),
-    h('div', { class: 'lib-tools' }, h('label', { class: 'micro', for: 'compose-pick' }, 'Start from'), pick, open),
-    h('div', { class: 'lib-compose' },
-      h('div', { class: 'lib-compose-src' }, h('label', { class: 'micro', for: 'compose-json' }, 'Blocks'), Object.assign(ed.area, { id: 'compose-json' }), errors),
-      h('div', { class: 'lib-compose-out' }, h('p', { class: 'turn-index' }, 'Preview'), heading, stage),
-    ),
+  stage.addEventListener('submit', (e) => { e.preventDefault(); toast('On the site this opens the Cal.com booking with the answers.'); });
+  replays.push(render);
+  return section('layouts', 'The page', 'Layouts',
+    h('p', { class: 'lib-p' }, md('The whole site: one page, read top to bottom, ending at a booked call. Markup from `src/static.js` (the same text as `index.html`), booking from `src/book.js`. Here it uses a sample booking link, and the loading line and the fallback are shown together.')),
+    h('article', { class: 'lib-card', id: 'layout-page' }, h('h3', { class: 'lib-h3' }, 'One page'), stage),
   );
 }
 
@@ -494,7 +405,6 @@ const all = [
   primitivesSection(),
   ...blocksSections(),
   layoutsSection(),
-  composerSection(),
 ];
 $('[data-sections]').replaceChildren(...all);
 replayAll();
@@ -502,8 +412,7 @@ replayAll();
 const counts = [
   ['Block types', Object.keys(blocks).length],
   ['Interface pieces', primitives.length],
-  ['Topics built from them', nodes.length],
-  ['Blocks in those topics', nodes.reduce((n, t) => n + (t.blocks?.length || 0), 0)],
+  ['Fixture topics', nodes.length],
 ];
 $('[data-counts]').replaceChildren(...counts.map(([k, v]) => h('div', { class: 'offer-item' }, h('dt', null, k), h('dd', null, String(v)))));
 
@@ -512,8 +421,7 @@ const navGroups = [
   ['Foundations', [['colour', 'Colour'], ['type', 'Type'], ['space', 'Space and shape'], ['motion', 'Motion']]],
   ['Primitives', primitives.map((p) => [`prim-${slug(p.name)}`, p.name])],
   ...categories.map((c) => [c.label, Object.entries(blocks).filter(([, s]) => s.category === c.id).map(([t]) => [`block-${t}`, t, true])]),
-  ['Layouts', [['layout-landing', 'Landing'], ['layout-turn', 'Conversation'], ['layout-page', 'One-page view']]],
-  ['Composer', [['compose', 'Compose a topic']]],
+  ['Layouts', [['layout-page', 'The page']]],
 ];
 $('[data-nav]').replaceChildren(...navGroups.map(([label, items]) => h('div', { class: 'lib-nav-group' },
   h('p', { class: 'micro' }, label),

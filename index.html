@@ -44,21 +44,19 @@
         d.dataset.motion = motion;
         d.dataset.text = r.text || def.text || 'standard';
         d.classList.add('js');
-        // The curtain plays on the first page of a visit only.
-        try { if (!sessionStorage.getItem('mu-seen')) { d.classList.add('is-first'); sessionStorage.setItem('mu-seen', '1'); } } catch (e) {}
       })();
     </script>
 
     <link rel="stylesheet" href="/styles/tokens.css" />
     <link rel="stylesheet" href="/styles/main.css" />
-    <link rel="modulepreload" href="/src/app.js" />
+    <link rel="stylesheet" href="/styles/page.css" />
     <script type="module" src="/src/main.js"></script>
   </head>
-  <body>
+  <body class="is-page">
     <a class="skip" href="#main">Skip to content</a>
 
     <header class="bar">
-      <a class="brand" href="/" data-home aria-label="mindunder.dev — home">
+      <a class="brand" href="/" aria-label="mindunder.dev — home">
         <span class="brand-name">mindunder<span class="brand-tld">.dev</span></span>
       </a>
 
@@ -87,152 +85,103 @@
           <label><input type="radio" name="text" value="standard" /> <span><b>Standard</b></span></label>
           <label><input type="radio" name="text" value="large" /> <span><b>Large</b></span></label>
         </fieldset>
-        <fieldset data-sound-field>
-          <legend>Sound</legend>
-          <label><input type="radio" name="sound" value="false" /> <span><b>Off</b></span></label>
-          <label><input type="radio" name="sound" value="true" /> <span><b>On</b> Quiet sounds when you click.</span></label>
-        </fieldset>
         <button class="btn btn-ghost settings-close" type="button" data-settings-close>Close settings</button>
       </div>
     </header>
 
-    <main id="main">
-      <!-- Landing. Static markup: readable without JS and by crawlers; the script enhances it. -->
-      <section class="landing" data-landing aria-labelledby="landing-title">
-        <div class="landing-hero" data-landing-hero>
-          <canvas class="lens" data-lens aria-hidden="true"></canvas>
-
-          <div class="landing-inner">
-            <!-- sync:landing -->
-            <div class="copy" data-copy>
-              <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Business process automation · London</p>
-              <h1 class="display" id="landing-title">
-                <span class="display-line">I <em class="is-accent">find</em> the work your team repeats by hand.</span>
-                <span class="display-line">Then I build a system that does it.</span>
-              </h1>
-            </div>
-            <a class="land-cue" href="#land-cases">Three examples, and how we would start <span aria-hidden="true">↓</span></a>
-            <!-- /sync:landing -->
-          </div>
-
-          <figure class="lens-caption" data-lens-caption aria-hidden="true">
-            <!-- sync:caption -->
-            <span class="lens-caption-text" data-lens-caption-text>Move the pointer to look underneath.</span>
-            <!-- /sync:caption -->
-          </figure>
+    <!-- The whole site: one page, generated from content/site.json by `npm run sync`. -->
+    <main id="main" class="pg">
+      <!-- sync:page -->
+      <section class="pg-section is-problem" id="problem" aria-labelledby="problem-h">
+        <div class="copy" data-copy>
+          <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Business process automation · London</p>
+          <h1 class="display" id="problem-h">
+            <span class="display-line">I <em class="is-accent">find</em> the work your team repeats by hand.</span>
+            <span class="display-line">Then I build a system that does it.</span>
+          </h1>
         </div>
-
-        <div class="landing-steps">
-          <!-- sync:steps -->
-          <section class="land-step is-cases" id="land-cases" aria-labelledby="land-cases-h">
-            <h2 class="land-step-head" id="land-cases-h">Where the time goes</h2>
-            <p class="land-intro">Three situations I see often. They are illustrations, not named clients. The numbers show the scale, not a promise.</p>
-            <div class="land-cases">
-              <article class="land-case">
-                <p class="land-case-tag">Example · Wholesale, 40 staff</p>
-                <h3 class="land-case-title">The Monday report</h3>
-                <dl class="land-case-body">
-                  <div><dt>Today</dt><dd>Every Monday the operations manager rebuilds the leadership report by hand. Sales come from the accounts system, stock from the warehouse system, deliveries from the courier's website. It takes most of the morning, and the figures are a day old by the meeting.</dd></div>
-                  <div><dt>What I would build</dt><dd>The report builds itself overnight from the same three systems and is in the inbox at 7am. The manager reads it, checks anything flagged, and adds comments.</dd></div>
-                  <div class="is-result"><dt>What changes</dt><dd>About 5 hours a week back. Roughly 230 hours a year.</dd></div>
-                </dl>
-              </article>
-              <article class="land-case">
-                <p class="land-case-tag">Example · Professional services, 25 staff</p>
-                <h3 class="land-case-title">Setting up a new client</h3>
-                <dl class="land-case-body">
-                  <div><dt>Today</dt><dd>When a proposal is signed, someone copies the client's details into the customer database (CRM), the billing system and the project tracker. Then they email three colleagues. It takes about 40 minutes a client, and something small is usually missed.</dd></div>
-                  <div><dt>What I would build</dt><dd>Signing the proposal starts it. The records appear in all three systems, the right people are told, and anything missing is flagged for a person to fill in.</dd></div>
-                  <div class="is-result"><dt>What changes</dt><dd>At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts.</dd></div>
-                </dl>
-              </article>
-              <article class="land-case">
-                <p class="land-case-tag">Example · Illustration</p>
-                <h3 class="land-case-title">Early warning on suppliers</h3>
-                <dl class="land-case-body">
-                  <div><dt>Today</dt><dd>A distributor found out its main supplier had gone into administration when deliveries stopped. The signs had been public for weeks, in Companies House filings and insolvency notices.</dd></div>
-                  <div><dt>What I would build</dt><dd>A system reads those public records every night for the companies you depend on. It emails you the morning something changes, such as overdue accounts or a winding-up petition.</dd></div>
-                  <div class="is-result"><dt>What changes</dt><dd>Weeks of warning instead of none.</dd></div>
-                </dl>
-              </article>
-            </div>
-          </section>
-          <section class="land-step is-how" id="land-how" aria-labelledby="land-how-h">
-            <h2 class="land-step-head" id="land-how-h">How we would start</h2>
-            <ol class="land-how" role="list">
-              <li><span class="land-how-n">1</span><h3 class="land-how-title">A 30-minute call, free</h3><p class="land-how-detail">You tell me where the time goes. I ask how the work actually moves.</p></li>
-              <li><span class="land-how-n">2</span><h3 class="land-how-title">A one-page summary</h3><p class="land-how-detail">Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together.</p></li>
-              <li><span class="land-how-n">3</span><h3 class="land-how-title">A first system, checked by a person</h3><p class="land-how-detail">It does the work and someone checks every result. It runs alone only once the results are consistently right.</p></li>
-              <li><span class="land-how-n">4</span><h3 class="land-how-title">It runs, and reports</h3><p class="land-how-detail">You get a regular report of what it did, and of anything it could not do.</p></li>
-            </ol>
-          </section>
-          <section class="land-step is-book" id="land-book" aria-labelledby="land-book-h">
-            <h2 class="land-step-head" id="land-book-h">Next step</h2>
-            <p class="land-line">Tell me which job takes up your team's week. I reply the same day.</p>
-            <a class="entry-tool is-cta" href="mailto:lab@mindunder.dev" data-target="_book"><span class="entry-tool-label">Book the free call</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-            <dl class="offer">
-              <div class="offer-item"><dt>Price</dt><dd>Not on the site yet. Ask in the call or by email.</dd></div>
-              <div class="offer-item"><dt>Reply</dt><dd>The same day</dd></div>
-              <div class="offer-item"><dt>Based in</dt><dd>London, UK</dd></div>
+        <p class="pg-cue">Below: three examples, how we would start, and who you would talk to.</p>
+        <a class="pg-book-link is-first" href="#book">Book the free call <span aria-hidden="true">↓</span></a>
+      </section>
+      <section class="pg-section is-cases" id="cases" aria-labelledby="cases-h">
+        <h2 class="pg-head" id="cases-h">Where the time goes</h2>
+        <p class="pg-intro">Three situations I see often. They are illustrations, not named clients. The numbers show the scale, not a promise.</p>
+        <div class="pg-cases">
+          <article class="pg-case">
+            <p class="pg-case-tag">Example · Wholesale, 40 staff</p>
+            <h3 class="pg-case-title">The Monday report</h3>
+            <dl class="pg-case-body">
+              <div><dt>Today</dt><dd>Every Monday the operations manager rebuilds the leadership report by hand. Sales come from the accounts system, stock from the warehouse system, deliveries from the courier's website. It takes most of the morning, and the figures are a day old by the meeting.</dd></div>
+              <div><dt>What I would build</dt><dd>The report builds itself overnight from the same three systems and is in the inbox at 7am. The manager reads it, checks anything flagged, and adds comments.</dd></div>
+              <div class="is-result"><dt>What changes</dt><dd>About 5 hours a week back. Roughly 230 hours a year.</dd></div>
             </dl>
-            <h3 class="land-more-head">Or read more first</h3>
-            <nav class="entry" aria-label="Topics" data-entry>
-              <a class="entry-item" href="#/method" data-target="method"><span class="entry-index">01</span><span class="entry-label">What I do</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-              <a class="entry-item" href="#/signals" data-target="signals"><span class="entry-index">02</span><span class="entry-label">Problems I solve</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-              <a class="entry-item" href="#/proof" data-target="proof"><span class="entry-index">03</span><span class="entry-label">Proof</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-              <a class="entry-item" href="#/process" data-target="process"><span class="entry-index">04</span><span class="entry-label">How we start</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-            </nav>
-            <div class="entry-more">
-              <a class="entry-tool" href="#/estimate" data-target="estimate"><span class="entry-tool-label">Work out what a repeated task costs you</span><span class="entry-tool-note">Three numbers, one minute.</span><span class="entry-arrow" aria-hidden="true">→</span></a>
-              <p class="entry-all"><a href="#/all" data-all-link>Everything on one page <span aria-hidden="true">→</span></a></p>
-            </div>
-          </section>
-          <!-- /sync:steps -->
+          </article>
+          <article class="pg-case">
+            <p class="pg-case-tag">Example · Professional services, 25 staff</p>
+            <h3 class="pg-case-title">Setting up a new client</h3>
+            <dl class="pg-case-body">
+              <div><dt>Today</dt><dd>When a proposal is signed, someone copies the client's details into the customer database (CRM), the billing system and the project tracker. Then they email three colleagues. It takes about 40 minutes a client, and something small is usually missed.</dd></div>
+              <div><dt>What I would build</dt><dd>Signing the proposal starts it. The records appear in all three systems, the right people are told, and anything missing is flagged for a person to fill in.</dd></div>
+              <div class="is-result"><dt>What changes</dt><dd>At 30 new clients a month, about 20 hours a month back, and no half-set-up accounts.</dd></div>
+            </dl>
+          </article>
+          <article class="pg-case">
+            <p class="pg-case-tag">Example · Illustration</p>
+            <h3 class="pg-case-title">Early warning on suppliers</h3>
+            <dl class="pg-case-body">
+              <div><dt>Today</dt><dd>A distributor found out its main supplier had gone into administration when deliveries stopped. The signs had been public for weeks, in Companies House filings and insolvency notices.</dd></div>
+              <div><dt>What I would build</dt><dd>A system reads those public records every night for the companies you depend on. It emails you the morning something changes, such as overdue accounts or a winding-up petition.</dd></div>
+              <div class="is-result"><dt>What changes</dt><dd>Weeks of warning instead of none.</dd></div>
+            </dl>
+          </article>
         </div>
+        <h3 class="pg-sub">Two more I often see</h3>
+        <ul class="pg-more" role="list">
+          <li><b>Tenders found too late.</b> A competitor met the buyer first.</li>
+          <li><b>One person holds the knowledge.</b> They cannot take two weeks off.</li>
+        </ul>
+        <a class="pg-book-link" href="#book">Book the free call <span aria-hidden="true">↓</span></a>
       </section>
-
-      <!-- Session. Rendered by the script once a question is asked. -->
-      <section class="session" data-session hidden aria-labelledby="session-title">
-        <h1 class="visually-hidden" id="session-title">Topics</h1>
-        <aside class="rail" aria-label="Session" data-rail></aside>
-
-        <div class="log" data-log role="log" aria-live="polite" aria-relevant="additions"></div>
+      <section class="pg-section is-start" id="start" aria-labelledby="start-h">
+        <h2 class="pg-head" id="start-h">How we would start</h2>
+        <ol class="pg-steps" role="list">
+          <li><span class="pg-step-n" aria-hidden="true">1</span><h3 class="pg-step-title">A 30-minute call, free.</h3> <p class="pg-step-detail">You tell me where the time goes. I ask how the work actually moves.</p></li>
+          <li><span class="pg-step-n" aria-hidden="true">2</span><h3 class="pg-step-title">A one-page summary.</h3> <p class="pg-step-detail">Where time is lost, what I would automate first, and why. It is yours to keep, whether or not we work together.</p></li>
+          <li><span class="pg-step-n" aria-hidden="true">3</span><h3 class="pg-step-title">A design you approve.</h3> <p class="pg-step-detail">What stays, what changes, what becomes automatic. Nothing changes until you approve it.</p></li>
+          <li><span class="pg-step-n" aria-hidden="true">4</span><h3 class="pg-step-title">A first system, checked by a person.</h3> <p class="pg-step-detail">It does the work and someone checks every result. It runs alone only once the results are consistently right.</p></li>
+          <li><span class="pg-step-n" aria-hidden="true">5</span><h3 class="pg-step-title">It runs, and reports.</h3> <p class="pg-step-detail">You get a regular report of what it did, and of anything it could not do.</p></li>
+        </ol>
+        <p class="pg-note">No sales pitch. If there is nothing worth fixing, I will say so.</p>
+        <ul class="pg-facts" role="list">
+          <li><b>First call:</b> Free, 30 minutes.</li>
+          <li><b>Price:</b> Not on the site yet. Ask in the call or by email.</li>
+          <li><b>Reply to email:</b> The same day.</li>
+          <li><b>Based in:</b> London, UK.</li>
+        </ul>
+        <a class="pg-book-link" href="#book">Book the free call <span aria-hidden="true">↓</span></a>
       </section>
-
-      <!-- One page: everything in order. Rendered by the script at /#/all. -->
-      <article class="page" data-page hidden aria-labelledby="page-title"></article>
-
-      <noscript>
-        <!-- sync:noscript -->
-        <section class="noscript">
-          <p>JavaScript is off. The essentials:</p>
-          <dl class="offer">
-            <div class="offer-item"><dt>What I do</dt><dd>I find the steps your team repeats by hand. Then I build software that does them.</dd></div>
-            <div class="offer-item"><dt>First step</dt><dd>A free 30-minute call. Afterwards you get a one-page summary of where time is lost, yours to keep.</dd></div>
-            <div class="offer-item"><dt>Price</dt><dd>Not on the site yet. Ask in the call or by email.</dd></div>
-            <div class="offer-item"><dt>Reply</dt><dd>The same day</dd></div>
-            <div class="offer-item"><dt>Based in</dt><dd>London, UK</dd></div>
-            <div class="offer-item"><dt>Client work</dt><dd>No client case studies published yet. The examples here are illustrations.</dd></div>
-          </dl>
-          <p>Email: <a href="mailto:lab@mindunder.dev">lab@mindunder.dev</a></p>
-        </section>
-        <!-- /sync:noscript -->
-      </noscript>
+      <section class="pg-section is-who" id="who" aria-labelledby="who-h">
+        <h2 class="pg-head" id="who-h">Who you would talk to</h2>
+        <p class="pg-who is-lead">I am Ruben. I work alone, in London. I have spent years automating work for other organisations.</p>
+        <p class="pg-who">My main job is running Salesforce at London &amp; Partners. Salesforce is software that companies use to track customers.</p>
+        <p class="pg-who">When automation fails, the cause is usually how people work together, not the software.</p>
+        <p class="pg-who">Salesforce certifications: Salesforce Administrator. Salesforce Platform App Builder. Salesforce Agentforce Specialist.</p>
+        <a class="pg-book-link" href="#book">Book the free call <span aria-hidden="true">↓</span></a>
+      </section>
+      <section class="pg-section is-book" id="book" aria-labelledby="book-h">
+        <h2 class="pg-head" id="book-h" tabindex="-1">Book the free call</h2>
+        <p class="pg-intro">Online booking is not set up yet. Email <a href="mailto:lab@mindunder.dev">lab@mindunder.dev</a> to book the free call. I reply the same day.</p>
+      </section>
+      <!-- /sync:page -->
     </main>
-
-    <form class="ask" data-ask autocomplete="off" aria-label="Ask a question">
-      <label class="ask-prompt" for="ask-input">Ask</label>
-      <input class="ask-input" id="ask-input" name="q" type="text" enterkeyhint="send" spellcheck="false" placeholder="Type a question" data-ask-input />
-      <kbd class="ask-hint" aria-hidden="true">/</kbd>
-      <button class="ask-send" type="submit" aria-label="Send">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg>
-      </button>
-    </form>
 
     <footer class="foot">
       <span>mindunder.dev · London, UK</span>
-      <a class="foot-link" href="/components/">Components</a>
       <span>© <span data-year>2026</span></span>
     </footer>
+
+    <!-- sync:booking -->
+    <script type="application/json" id="booking-config">{"calLink":null,"origin":"https://cal.com","embedScript":"https://app.cal.com/embed/embed.js","timeoutSeconds":10,"fields":["job","scale"]}</script>
+    <!-- /sync:booking -->
   </body>
 </html>

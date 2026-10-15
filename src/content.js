@@ -1,7 +1,18 @@
-// Loads the conversation graph from /content at runtime.
+// Loads a graph of topics from /content. The site no longer has topics: only
+// the component library and the tests load the fixtures graph.
 // /content/graphs/<id>.json lists node files; each file holds one node or an array.
 
-import { indexContent } from './engine.js';
+// Topics by id, with each topic's parent. (Intents are no longer used.)
+export function indexContent(raw) {
+  const nodes = {};
+  const parents = {};
+  for (const entry of raw.flat()) {
+    const { parent, intents, ...node } = entry;
+    nodes[entry.id] = node;
+    if (parent) parents[entry.id] = parent;
+  }
+  return { nodes, parents };
+}
 
 export async function loadContent(graph = 'default') {
   const base = new URL('../content/', import.meta.url);

@@ -3,61 +3,57 @@
 Static site, no build step. GitHub Pages serves the repo root.
 
 ```
-index.html        shell + static landing (readable without JS)
-styles/           tokens.css (design tokens, themes) · main.css · library.css
-components/       /components/: the component library page
+index.html        the whole site: one page, written by `npm run sync` (readable without JS)
+styles/           tokens.css (tokens, themes) · main.css (shared parts, blocks) · page.css (the page) · library.css
+components/       /components/: the component library (development tool)
+type/             /type/: type directions that were tried
 src/
-  main.js         boot: theme, clock, lens, content
-  app.js          conversation controller (DOM)
-  engine.js       routing, session, gravity, brief — pure, tested
-  blocks.js       block renderers
-  showpieces.js   interactive blocks: compare (before/after), estimate
-  catalog.js      component catalogue: every block's props, example, validator
-  library.js      the /components/ page
-  layouts.js      page layouts: side column, conversation turn, next topics, one-page view
-  landing.js      the landing's movement: rising words, lens, x-ray (main.js and the library)
-  flow.js         SVG flow diagrams
-  lens.js         landing canvas
-  copy.js         interface text (defaults; site.json overrides)
-  prefs.js        reading preferences: motion, text size, sound
-  settings.js     the "Reading settings" panel
+  static.js       renders the page from content/site.json (used by sync, the library and the tests)
+  main.js         the page's script: settings, theme, rising headline, booking
+  book.js         booking with Cal.com: embed on demand, prefill, loading line, fallback
+  prefs.js        reading preferences: motion, text size
+  settings.js     the "Settings" panel
+  type.js         word masks for the headline
   lint.js         plain-language checks (run by npm test)
-  static.js       generates the static parts of index.html
+  blocks.js, showpieces.js, flow.js, catalog.js, library.js, copy.js, content.js
+                  the block system, now used only by /components/ and its fixtures
 content/
-  site.json             offer, facts, landing text, features, reading
-                        defaults, interface text overrides, writing rules
-  graphs/default.json   which node files to load
+  site.json             everything a visitor reads: page, facts, booking, writing rules
   graphs/fixtures.json  test content for /components/ and tests; not on the site
-  nodes/*.json          topics: blocks + chips + intents (+ "audience")
+  nodes/fixtures.json
 scripts/sync.mjs  writes site.json into index.html's sync regions
-scripts/model.mjs writes _model/current/: process, data, state, story models
+scripts/model.mjs writes _model/current/ (pictures of the site, from the code)
 _model/           the models (current: generated; target: hand-written). Not served
-tests/            node --test; tests/visual: Playwright screenshots
+tests/            node --test; tests/visual: Playwright (behaviour + screenshots)
 ```
 
 ## Change what the site says
 
-1. Edit `content/site.json` (offer, facts, landing) or `content/nodes/*.json`
-   (topics). Keys starting with `$` are comments.
-2. `npm run sync` if you changed site.json or the root topic's chips. This
-   rewrites the `<!-- sync:… -->` regions of index.html, so the page reads the
-   same without JavaScript.
-3. `npm test`. It fails on idioms, jargon, in-jokes, long sentences,
-   unexplained abbreviations, vague buttons, and a reading grade over 9
-   (12 for topics marked `"audience": "technical"`). It also lists the facts
-   that are still empty; the site says plainly that they are not published.
+1. Edit `content/site.json` › `page` (the words), `facts`, or `booking`.
+   Keys starting with `$` are comments. The signed-off words are in
+   `_model/target/copy.md`; `npm test` fails if the page drops one.
+2. `npm run sync` rewrites the `<!-- sync:… -->` regions of index.html.
+3. `npm test`: sync check, model check, the page against its target, the
+   plain-language rules (no idioms, jargon or in-jokes; sentences of 25 words
+   or fewer; reading grade 9 or lower; descriptive buttons), and the
+   component catalogue.
 
 Facts are `{ label, value, missing }`. With no `value`, the site shows the
 `missing` sentence; with neither, the fact is hidden.
+
+**Booking.** `booking.calLink` is the part of the Cal.com booking page after
+`cal.com/` (for example `ruben/30min`). The Cal.com event needs two booking
+questions with the identifiers `job` and `scale`. While `calLink` is null the
+page shows no form and offers email only. No Cal.com API key is used or needed.
 
 ## Work on it
 
 ```sh
 npm run dev      # python3 -m http.server 8000
 npm run sync     # regenerate index.html's static regions from site.json
-npm test         # sync check, model check, engine, content graph, plain-language lint
+npm test         # sync check, model check, page vs target, plain-language lint, catalogue
 npm run model    # regenerate _model/current/ (pictures of the site, from the code)
-npm run test:visual        # screenshots of /components/ (Playwright, Chromium)
+npm run test:visual        # behaviour of the page (booking stubbed) + screenshots of /components/
 npm run test:visual -- -u  # accept a deliberate change as the new baseline
 ```
 
