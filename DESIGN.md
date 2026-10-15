@@ -55,8 +55,6 @@ is going to write anything useful"). Copy not final; the shape first.
   motion Calm or Off, at once.
 - **Without JavaScript:** the job field and a plain `scale` text field, and
   "Choose a time for the call": a GET form to the Cal.com page.
-- The decision model (`worker/decide.js`, `src/decide.js`) is not used by
-  this version. Where it fits is open.
 
 **Step 4:** the photograph sits beside the lines on wide screens and above
 them on narrow ones, in black and white. Its `alt` says who it is.
@@ -213,12 +211,6 @@ autistic and ADHD readers.
 
 ## Honesty
 
-**Decided by a model** (draft, `_model/target/funnel.md` › Changed 2026-10-15,
-evening; not built). A decision model may choose which components to show
-and fill their slots from fixed lists. It never writes words: every word is
-written in advance and passes the writing rules. The page says so in a fixed
-line: "Chosen by a decision model from your sentence. The words are mine."
-Money and time are always the visitor's own figures, worked out on the page.
 
 Nothing claims to have happened unless it did. Every "booked", "sent" and
 "running today" on the site must be true at the moment it is shown.

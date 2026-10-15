@@ -39,7 +39,7 @@ export function createJob(root = document, { book } = {}) {
   const q = (s) => answer.querySelector(s);
   const part = {
     compare: q('[data-compare]'), money: q('[data-money]'), first: q('[data-first]'), firstList: q('[data-first-list]'),
-    end: q('[data-end]'), nearest: q('[data-answer-nearest]'), label: q('[data-decide-label]'), live: q('[data-answer-live]'),
+    end: q('[data-end]'), nearest: q('[data-answer-nearest]'), live: q('[data-answer-live]'),
     share: q('[data-answer-share]'), pay: q('[data-answer-pay]'), cost: q('[data-answer-cost]'),
     weeks: q('[data-answer-weeks]'), grid: q('[data-answer-grid]'), numbersNote: q('[data-numbers-note]'),
   };
@@ -147,7 +147,6 @@ export function createJob(root = document, { book } = {}) {
       a.href = `#case-${near.id}`;
       part.nearest.append(before, a, after || '');
     }
-    part.label.hidden = true;
     const first = part.money.hidden;
     reveal(part.money);
     reveal(part.first);

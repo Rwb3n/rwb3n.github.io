@@ -104,7 +104,9 @@ They are the first block of step 3, "What I look for", before "How we would star
 
 ## Changed (2026-10-15, evening): the site talks in UI components, chosen by a decision model
 
-> **Draft, awaiting the operator's sign-off.** Nothing here is built.
+> **Dropped, 2026-10-15 late.** Built, tried, then replaced by taps: "nobody is
+> going to write anything useful"; the decision model "was a test. no need."
+> The trial stays in `../trials/jev/` as a record. Kept below for the record only.
 > Operator, 2026-10-15: "the whole concept was this website is supposed to
 > showcase the new age of websites. AI generated, a performance." "Instead of
 > talking in simply words, you talk in COMPONENTS… UI components." "We would
@@ -221,3 +223,12 @@ decisions right, and where should the thresholds sit? **Done 2026-10-15**
 8/8 people, 11/11 systems at ≥ 0.8; ~0.25 s; $0.00005 a visitor. 3. Templates for the
 eight job types. 4. The Worker. 5. The page: components arriving in order,
 the ask-back, the label. 6. Local UAT, then live.
+
+## Changed (2026-10-15, late): taps, not typing
+
+Step 1 is taps (operator: "nobody is going to write anything useful. im sure
+of it"). Which sounds like your week (eight kinds) → the job, Today ⇄
+Automated → which systems → how often, how many people → the money, what I
+would automate first, the booking. No text box with JavaScript, no model, no
+Worker, nothing sent until the booking. Without JavaScript, the plain form to
+Cal.com. Design in `DESIGN.md › The page`.

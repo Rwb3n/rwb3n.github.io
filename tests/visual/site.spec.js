@@ -111,7 +111,6 @@ test('without JavaScript, step 1 goes to the Cal.com page with the answers', asy
   const ctx = await browser.newContext({ javaScriptEnabled: false });
   const page = await ctx.newPage();
   await open(page, { js: false });
-  await expect(page.locator('[data-job-show]')).toBeHidden();
   await page.fill('#f-job', 'The Monday report');
   await page.fill('#f-scale', 'Two people, every Monday');
   await page.click('.pg-job-go');

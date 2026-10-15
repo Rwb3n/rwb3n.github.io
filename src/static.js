@@ -122,7 +122,6 @@ export function renderRegions(site) {
     '    </div>',
     '    <div class="pg-part pg-end" data-end hidden>',
     '      <p class="pg-nearest" data-answer-nearest></p>',
-    '      <p class="pg-label" data-decide-label></p>',
     `      <p class="pg-small">${esc(A.note)}</p>`,
     `      <button class="btn btn-ghost pg-answer-book" type="button" data-answer-book>${esc(A.book)} <span aria-hidden="true">↓</span></button>`,
     '    </div>',
