@@ -19,7 +19,7 @@ step 1 and "Show available times" in step 5.
 >
 > Tell me the job your team does by hand, every week.
 >
-> Put it in your own words. Then say how many people do it, for how long, and what you pay them. You will see how much of their pay goes on this job.
+> One sentence, in your own words. A decision model reads it, and the page answers.
 >
 > The job your team does by hand
 >
@@ -33,9 +33,9 @@ step 1 and "Show available times" in step 5.
 >
 > A year, before tax. With National Insurance and pension, the real cost is higher.
 >
-> Show what it costs
+> Show me
 >
-> Nothing is sent. It all happens on this page until you book.
+> Nothing is sent until you press the button. Nothing is kept on this site.
 
 The answer, under the button:
 
@@ -64,6 +64,12 @@ Without JavaScript, in place of the three numbers:
 > For example: two people, every Monday morning.
 >
 > Choose a time for the call
+
+Changed 2026-10-15, evening (operator: "you talk in COMPONENTS… UI
+components"; decision models): the answer is built from components chosen by
+a decision model; the words of every component are in `site.json ›
+page.job.decide` and are checked by `npm test` with the rest of the page.
+Copy is not final ("everything reads corny"); the shape comes first.
 
 Changed 2026-10-15 (operator: "it costs someone £xxx per year to hire
 someone, how much does it cost them to have that person busy with" this

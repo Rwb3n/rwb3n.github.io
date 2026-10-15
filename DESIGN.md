@@ -37,31 +37,30 @@ never required for it.
 **Two filled buttons, one per action:** "Show what it costs" (step 1) and
 "Show available times" (step 5). Every other link is quieter.
 
-**Step 1, the job:**
+**Step 1, the job** (built 2026-10-15, evening; copy not final). The page
+answers in UI components, not paragraphs:
 
-- The headline asks for the job, as a statement ("Tell me the job…"), not a
-  question. Under it, one lead line, then the field
-  *The job your team does by hand* (label above, one example line, no
-  placeholder), then three numbers: people doing it, hours each per week,
-  salary of each person (− and + buttons, as the estimate). They start at
-  2, 4 and £35,000.
-- "Show what it costs" puts the answer under the button, as one block:
-  "You: …" (their words; left out if the field is empty), one large line
-  "Of the £70,000 a year you pay them, £7,467 goes on this job.", their pay
-  and the part spent on this job as figures, the line of full working weeks, the grid of
-  weeks, the nearest example (a link to it), the note, and an outlined button
-  "Book the free call with these answers". Changing a number afterwards
-  updates the answer in place.
-- The nearest example is chosen by words in the job (each example lists its
-  words in `site.json`). No match, no line.
-- "Book the free call with these answers" opens step 5's embed with `job`
-  (their words) and, if a number was changed, `scale` ("2 people, 4 hours
-  each a week, salary £35,000 each: about £7,467 a year on this job"). Focus moves to step 5's heading.
-- One small line under the button: nothing is sent until you book.
-- **Without JavaScript:** the three numbers and the answer are hidden. In
-  their place, a text field *How many people do it, and how often* and an
-  outlined button "Choose a time for the call": a plain GET form to the
-  Cal.com page, which prefills both questions.
+- The visitor writes one sentence and presses "Show me".
+- **The decisions**, one row at a time, in mono: repeated work, kind of job,
+  how often, who does it, systems. Each decision the model made shows how
+  sure it was (a bar and a number). A status line says how long deciding
+  took, measured. Rows the model is not sure enough of are left out.
+- **The ask-back.** Below the job threshold, "Which is closer?" with the top
+  two or three kinds as buttons. Nothing else is shown until one is chosen.
+- **The job, Today ⇄ Automated** (`compare`), from the template for that
+  kind; the systems found are one step. It turns to Automated by itself.
+- **The money**, from numbers guessed from the sentence ("Guessed from your
+  sentence. Change them to match."). Guesses stay out of the booking; numbers
+  the visitor changes go in as `scale`.
+- **What I would automate first** (`layers`), the nearest example, the label
+  saying how it was decided, and "Book the free call with these answers".
+- Not repeated work: one component, "This box is for a job your team does by
+  hand", with three example sentences as buttons.
+- Without the decision model (no endpoint, an error, or over 4 seconds): the
+  same components from matching words, and the status and label say so.
+- **Without JavaScript:** the job field and a plain `scale` text field, and
+  "Choose a time for the call": a GET form to the Cal.com page.
+- Parts arrive one by one (rise and fade); with motion Calm or Off, at once.
 
 **Step 4:** the photograph sits beside the lines on wide screens and above
 them on narrow ones, in black and white. Its `alt` says who it is.

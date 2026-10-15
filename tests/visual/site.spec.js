@@ -19,14 +19,14 @@ const STUB = `(() => { const on = {}; let el;
   (window.Cal.q || []).forEach(run); window.Cal = function () { run(arguments); }; window.Cal.loaded = true;
   setTimeout(() => { el.innerHTML = '<div style="height:600px">calendar</div>'; on.linkReady && on.linkReady(); }, 200); })();`;
 
-async function open(page, { cal = 'ok', html = pageWithLink, js = true } = {}) {
+async function open(page, { cal = 'ok', html = pageWithLink, js = true, query = '' } = {}) {
   const calRequests = [];
   page.on('request', (r) => { if (/cal\.com/.test(r.url())) calRequests.push(r.url()); });
   await page.route(/fonts\.(googleapis|gstatic)\.com|fontshare\.com/, (r) => r.abort());
   await page.route((u) => u.pathname === '/' || u.pathname === '/index.html', (r) => r.fulfill({ contentType: 'text/html', body: html }));
   await page.route('https://app.cal.com/embed/embed.js', (r) => (cal === 'ok' ? r.fulfill({ contentType: 'text/javascript', body: STUB }) : r.abort()));
   await page.route(/^https:\/\/cal\.com\//, (r) => r.fulfill({ contentType: 'text/html', body: '<title>Cal.com</title>' }));
-  await page.goto('/');
+  await page.goto(`/${query}`);
   // With JavaScript, wait until the page's script has wired the buttons;
   // a click before that follows the plain link, as it should without it.
   if (js) await page.waitForFunction(() => 'mindunderJob' in window);
@@ -43,41 +43,88 @@ test('the page loads without errors and asks Cal.com for nothing until the visit
   expect(await page.locator('.pg-section').evaluateAll((s) => s.map((x) => x.id))).toEqual(['job', 'cases', 'start', 'who', 'book']);
 });
 
-test('step 1 answers the visitor, then opens the calendar with their words and numbers', async ({ page }) => {
-  const calRequests = await open(page);
+// Step 1 with the decision model stubbed: its answers are fixed here, so the
+// page's part is tested, not the model's (that is _model/trials/jev/).
+const DECIDE = 'https://decide.test/decide';
+const MODEL_REPORT = {
+  source: 'model', ms: 250, repeated: 0.98,
+  job: { choice: 'report', confidence: 1, probabilities: { report: 1 } },
+  frequency: { score: 1, confidence: 1 }, people: { choice: 'few', confidence: 1 },
+  systems: { spreadsheet: 0.99, email: 0.2, accounts: 0.3, crm: 0.1, bank: 0, paper: 0.1, portal: 0.2 },
+};
+async function withModel(page, answer) {
+  await page.route(DECIDE, (r) => r.fulfill({ contentType: 'application/json', body: JSON.stringify(typeof answer === 'function' ? answer(r) : answer) }));
+  return open(page, { query: `?decide=${encodeURIComponent(DECIDE)}` });
+}
+
+test('step 1 answers in components: the decisions, the job automated, the money, the first steps', async ({ page }) => {
+  const calRequests = await withModel(page, MODEL_REPORT);
   await expect(page.locator('#f-scale')).toHaveCount(0);
-  await page.fill('#f-job', 'We rebuild the Monday report from three spreadsheets');
-  await page.fill('#n-people', '1');
+  await page.fill('#f-job', 'Two of us rebuild the sales report every Monday from three spreadsheets');
   await page.click('[data-job-show]');
-  const answer = page.locator('[data-answer]');
-  await expect(answer).toBeVisible();
-  await expect(answer).toContainText('You: We rebuild the Monday report from three spreadsheets');
-  await expect(page.locator('[data-answer-pay]')).toHaveText('£35,000');
-  await expect(page.locator('[data-answer-cost]')).toHaveText('£3,733');
-  await expect(answer).toContainText('Of the £35,000 a year you pay them, £3,733 goes on this job.');
+  await expect(page.locator('[data-decide-status]')).toHaveText('Decided in 0.25 s');
+  await expect(page.locator('.pg-decision')).toHaveCount(5);
+  await expect(page.locator('.pg-decision').nth(1)).toContainText('A report');
+  await expect(page.locator('.pg-decision').nth(4)).toContainText('Spreadsheet');
+  // The job turns to Automated by itself.
+  await expect(page.locator('[data-compare] .b-compare')).toHaveAttribute('data-state', 'after');
+  // Numbers guessed from the sentence: two or three people, weekly.
+  await expect(page.locator('#n-people')).toHaveValue('2');
+  await expect(page.locator('#n-hours')).toHaveValue('3');
+  await expect(page.locator('[data-answer-share]')).toHaveText('Of the £70,000 a year you pay them, £5,600 goes on this job.');
+  await expect(page.locator('[data-first]')).toBeVisible();
   await expect(page.locator('[data-answer-nearest] a')).toHaveAttribute('href', '#case-monday-report');
+  await expect(page.locator('[data-decide-label]')).toHaveText(site.page.job.decide.label.model);
   expect(calRequests).toEqual([]);
-  // Changing a number updates the answer in place.
-  await page.click('[aria-label="One person more"]');
-  await expect(page.locator('[data-answer-cost]')).toHaveText('£7,467');
+  // Guessed numbers are not the visitor's: only their words go to the booking.
   await page.click('[data-answer-book]');
   await expect(page.locator('[data-book-status]')).toBeHidden({ timeout: 5000 });
-  expect(await page.evaluate(() => document.activeElement?.id)).toBe('book-h');
-  expect(await page.evaluate(() => window.__calInline)).toMatchObject({ calLink: 'example/30min', config: {
-    job: 'We rebuild the Monday report from three spreadsheets', scale: '2 people, 4 hours each a week, salary £35,000 each: about £7,467 a year on this job' } });
-  await expect(page.locator('[data-book-show]')).toBeHidden();
-  expect(calRequests).toEqual(['https://app.cal.com/embed/embed.js']);
+  expect(await page.evaluate(() => window.__calInline.config)).toEqual({ layout: 'month_view', job: 'Two of us rebuild the sales report every Monday from three spreadsheets' });
 });
 
-test('no example is named when none is near, and untouched numbers stay out of the booking', async ({ page }) => {
-  await open(page);
-  await page.fill('#f-job', 'Booking rooms for the team');
+test('changed numbers update the money in place and go to the booking', async ({ page }) => {
+  await withModel(page, MODEL_REPORT);
+  await page.fill('#f-job', 'Two of us rebuild the sales report every Monday');
   await page.click('[data-job-show]');
-  await expect(page.locator('[data-answer-nearest]')).toBeHidden();
-  // The starting numbers are ours, not the visitor's: only their words go.
+  await expect(page.locator('[data-end]')).toBeVisible();
+  await page.click('[aria-label="One person more"]');
+  await expect(page.locator('[data-answer-cost]')).toHaveText('£8,400');
   await page.click('[data-answer-book]');
   await expect(page.locator('[data-book-status]')).toBeHidden({ timeout: 5000 });
-  expect(await page.evaluate(() => window.__calInline.config)).toEqual({ layout: 'month_view', job: 'Booking rooms for the team' });
+  expect(await page.evaluate(() => window.__calInline.config.scale)).toBe('3 people, 3 hours each a week, salary £35,000 each: about £8,400 a year on this job');
+});
+
+test('when the model is not sure of the kind of job, it asks back with buttons', async ({ page }) => {
+  await withModel(page, { ...MODEL_REPORT, job: { choice: 'copying', confidence: 0.6, probabilities: { copying: 0.6, invoices: 0.35, report: 0.05 } } });
+  await page.fill('#f-job', 'Staff photograph receipts and finance types them into QuickBooks');
+  await page.click('[data-job-show]');
+  const options = page.locator('[data-ask] .pg-chip');
+  await expect(options).toHaveText(['Copying between systems', 'Invoices and payments', 'A report']);
+  await expect(page.locator('[data-compare]')).toBeHidden();
+  await options.nth(1).click();
+  await expect(page.locator('.pg-decision').nth(1)).toContainText('Invoices and payments');
+  await expect(page.locator('[data-compare] .b-compare')).toBeVisible();
+});
+
+test('not repeated work gets one honest component and examples to try', async ({ page }) => {
+  let n = 0;
+  await withModel(page, () => (n++ === 0 ? { ...MODEL_REPORT, repeated: 0.03 } : MODEL_REPORT));
+  await page.fill('#f-job', 'How much do you charge?');
+  await page.click('[data-job-show]');
+  await expect(page.locator('[data-not]')).toBeVisible();
+  await expect(page.locator('[data-compare]')).toBeHidden();
+  await page.locator('[data-example]').first().click();
+  await expect(page.locator('#f-job')).toHaveValue(site.page.job.decide.notRepeated.examples[0]);
+  await expect(page.locator('[data-compare] .b-compare')).toBeVisible();
+});
+
+test('without the decision model, it matches words and says so', async ({ page }) => {
+  await open(page);
+  await page.fill('#f-job', 'We chase timesheets from contractors every Monday by email');
+  await page.click('[data-job-show]');
+  await expect(page.locator('[data-decide-status]')).toHaveText(site.page.job.decide.status.local);
+  await expect(page.locator('.pg-decision').nth(1)).toContainText('Chasing people');
+  await expect(page.locator('[data-decide-label]')).toHaveText(site.page.job.decide.label.local);
 });
 
 test('"Show available times" works without filling in the intake', async ({ page }) => {

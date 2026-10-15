@@ -11,7 +11,8 @@ src/
   static.js       renders the page from content/site.json (used by sync, the library and the tests)
   main.js         the page's script: settings, theme, rising headline, booking
   book.js         booking with Cal.com: embed on demand, prefill, loading line, fallback
-  job.js          step 1: the visitor's job and three numbers, answered (hours, cost, nearest example)
+  job.js          step 1: one sentence in, the page answers in components (decisions, job automated, money, first steps)
+  decide.js       step 1's decisions without the DOM: thresholds, matching words, templates → compare states
   prefs.js        reading preferences: motion, text size
   settings.js     the "Settings" panel
   type.js         word masks for the headline
@@ -24,6 +25,8 @@ content/
   nodes/fixtures.json
 scripts/sync.mjs  writes site.json into index.html's sync regions
 scripts/model.mjs writes _model/current/ (pictures of the site, from the code)
+scripts/decide-dev.mjs runs worker/decide.js locally on :8787 (OPENROUTER_API_KEY=… ; then open /?decide=local)
+worker/decide.js  the decision Worker: one sentence in, Jev's typed answers out (Cloudflare; not deployed yet)
 _model/           the models (current: generated; target: hand-written). Not served
 tests/            node --test; tests/visual: Playwright (behaviour + screenshots)
 ```
