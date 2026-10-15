@@ -215,7 +215,9 @@ Not in the first version: the decision model and Ruben's words come first.
 
 ### Order
 
-1. Sign-off. 2. Twenty real sentences, tried against Jev offline: are the
-decisions right, and where should the thresholds sit? 3. Templates for the
+1. Sign-off. 2. Twenty sentences, tried against Jev offline: are the
+decisions right, and where should the thresholds sit? **Done 2026-10-15**
+(`../trials/jev/`): 20/20 in or out of scope, 15/16 job type, 9/9 frequency,
+8/8 people, 11/11 systems at ≥ 0.8; ~0.25 s; $0.00005 a visitor. 3. Templates for the
 eight job types. 4. The Worker. 5. The page: components arriving in order,
 the ask-back, the label. 6. Local UAT, then live.
