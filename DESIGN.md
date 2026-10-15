@@ -218,6 +218,13 @@ autistic and ADHD readers.
 
 ## Honesty
 
+**Text written by AI** (draft, `_model/target/funnel.md` › Changed 2026-10-15,
+evening; not built). If the page shows anything a model wrote, it says so in
+the same place, in a fixed line the model does not write: "Written by AI for
+this page, from your sentence. A first guess, not a diagnosis." The model
+never gives a price, a date, a saving or a client name; money and time are
+always the visitor's own figures, worked out on the page.
+
 Nothing claims to have happened unless it did. Every "booked", "sent" and
 "running today" on the site must be true at the moment it is shown.
 

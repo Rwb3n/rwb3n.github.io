@@ -101,3 +101,115 @@ They are the first block of step 3, "What I look for", before "How we would star
 - Cal.com availability: the schedule is Monday–Friday, 09:00–17:00. Is that when you can take calls?
 - Full name and a photograph for step 4 (`person.fullName` is empty).
 - A price range, when you have one. Until then the page says how price is agreed.
+
+## Changed (2026-10-15, evening): the site talks in UI components, live
+
+> **Draft, awaiting the operator's sign-off.** Nothing here is built.
+> Operator, 2026-10-15: "the whole concept was this website is supposed to
+> showcase the new age of websites. AI generated, a performance." "Instead of
+> talking in simply words, you talk in COMPONENTS… UI components." Chosen:
+> **live AI** (a real model answers each visitor), over a scripted
+> performance or the site-as-exhibit.
+
+This reverses four decisions of 2026-10-13: *no Worker*, *no Turnstile*,
+*nothing stored*, *no API key*. It is the site's first running cost.
+
+### The idea
+
+The visitor writes one sentence about their work. The site does not answer in
+paragraphs. It answers in **UI components**, chosen and filled in for that
+visitor by a model, and drawn by the site's own renderers, in front of them:
+
+```
+  You: two of us rebuild the sales report every Monday
+
+  ▸ reading…                                         (status line, mono)
+  ┌ stats ─────────────────────────────────────────┐
+  │ The job   Weekly sales report, rebuilt by hand │
+  │ Who       2 people   How often  Every Monday   │
+  └────────────────────────────────────────────────┘
+  ┌ compare: Today ⇄ Automated ────────────────────┐
+  │ 3 systems → person → spreadsheet → report      │
+  │ 3 systems → report → person checks             │  (steps move)
+  └────────────────────────────────────────────────┘
+  ┌ metricRow ─────────────────────────────────────┐
+  │ £70,000 their pay │ £7,467 on this job │ 9.8 wk │  (our maths, not the model's)
+  └────────────────────────────────────────────────┘
+  ┌ layers: What I would automate first ───────────┐
+  │ 1 Pull the three exports overnight              │
+  │ 2 Build the report; flag what looks wrong       │
+  │ 3 A person checks it before Monday 9am          │
+  └────────────────────────────────────────────────┘
+  Written by AI for this page, from your sentence. A first guess, not a diagnosis.
+  [ Book the free call with this ]
+```
+
+Each component arrives as it is generated and animates in (the renderers
+already have entrance motion). That is the performance: the page composes
+itself for this visitor.
+
+### The contract: components, never free text
+
+- The model can only reply by calling one tool, `compose`, whose input is a
+  list of blocks: `{ type, ...props }`. Allowed types: `stats`, `compare`,
+  `flow`, `layers`, `timeline`, `table`, `pills`, `callout` (one line).
+  Not `text` paragraphs. Not `estimate`, `fact`, `grid`, `badge`.
+- The Worker validates every block against `src/catalog.js` (the same
+  validator `npm test` uses) and the writing rules (`src/lint.js`). A block
+  that fails is dropped. The page never shows unchecked model text.
+- **Numbers are ours.** Money and time come from the visitor's own figures,
+  computed in the browser (`src/job.js`), never from the model. The model
+  may read "2 people, every Monday" out of the sentence to prefill the
+  numbers; the visitor can change them.
+- One sentence in, one composition out. No chat, no follow-up turns.
+
+### What the model may and may not say (system prompt + checks)
+
+- Only about the job the visitor described. Anything else: one honest
+  `callout`, "I can only describe the work you put in the box."
+- Never a price, a date, a promise of savings, a client name, or a claim
+  that Ruben has done this exact job.
+- Every composition ends with the label line (fixed, from `site.json`, not
+  the model): "Written by AI for this page, from your sentence. A first
+  guess, not a diagnosis."
+- Plain words: the site's writing rules are in the prompt and checked after.
+
+### Model, cost, speed
+
+- Model: **Claude Opus 5.5** (`claude-opus-5-5`) by default, effort `low`,
+  streaming, the catalogue and rules as a cached system prompt.
+  Roughly: ~5,000 cached input tokens (about $0.001), ~1,500 output tokens
+  (about $0.03). **About 3p a visitor who presses the button.**
+- Cheaper, if he chooses: Sonnet 5.5 (about 1.5p) or Haiku 5.5 (about 0.1p).
+  Faster too; the components are simple. Decided by trying all three on 20
+  real sentences, not by guessing.
+- A hard monthly ceiling (operator sets it, e.g. £20). Past it, the site
+  falls back to step 1 as it is today, without saying anything is wrong.
+
+### Infrastructure
+
+- A Cloudflare Worker, `POST /compose`: holds the Anthropic API key (a
+  Worker secret, never in the repo or the page), checks Turnstile, rate
+  limits (5 a visitor a day, per IP), streams the blocks back.
+- Nothing stored: no logs of sentences beyond Cloudflare's defaults, no
+  database. (Beer's point stands: we will not know what people type. A
+  count of compositions and bookings only, no content, is the most we keep.)
+- Cloudflare is phase 5 anyway (hosting, Access, Web Analytics). The Worker
+  can come first, on a `workers.dev` address, while the site stays on
+  GitHub Pages.
+- Without JavaScript, or if the Worker is down, slow (8 seconds) or over its
+  ceiling: step 1 works exactly as it does now (numbers, answer, booking).
+
+### Needs the operator
+
+1. Sign off this section: the idea, the contract, the limits on what it says.
+2. An Anthropic API key for the site (a separate key, with a spending limit).
+3. A Cloudflare account (free plan) and a monthly ceiling in pounds.
+4. Which model, after the 20-sentence trial.
+
+### Order
+
+1. Sign-off. 2. Twenty sample sentences (operator's words where possible) and
+the system prompt, tried offline against the three models. 3. The Worker on
+`workers.dev`. 4. The page: the streaming renderer and the label. 5. Local
+UAT, then live.
