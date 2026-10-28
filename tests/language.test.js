@@ -77,3 +77,20 @@ test('facts still to fill in (reported, not a failure)', (t) => {
   const missing = missingFacts(site);
   if (missing.length) t.diagnostic(`Owner to fill in content/site.json: ${missing.join('; ')}`);
 });
+
+// The copy draft for the target site (_model/target/copy.md): every line
+// starting with "> " is visitor-facing text, checked by the same rules.
+test('target copy draft follows the writing rules', () => {
+  let where = '';
+  const strings = [];
+  for (const line of readFileSync(new URL('../_model/target/copy.md', import.meta.url), 'utf8').split(/\r?\n/)) {
+    if (line.startsWith('## ')) where = line.slice(3);
+    else if (where && line.startsWith('> ')) {
+      const text = line.slice(2).trim();
+      strings.push({ kind: /\.$/.test(text) ? 'prose' : 'label', text, where: `copy.md › ${where}` });
+    }
+  }
+  assert.ok(strings.length > 20, 'copy.md has visitor-facing lines');
+  const issues = lintStrings(strings, site.language, { scope: 'copy.md' }).filter((i) => i.level === 'error' && i.where !== 'whole topic');
+  assert.equal(issues.length, 0, `\n${issues.length} problem(s):\n${report(issues)}`);
+});
