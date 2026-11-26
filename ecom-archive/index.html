@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ecom-archive — mindunder.dev</title>
+    <meta name="robots" content="noindex" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script>
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('mu-theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+    <link rel="stylesheet" href="/styles/tokens.css" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-sans); line-height: 1.6; }
+      main { max-width: 38rem; margin: 0 auto; padding: clamp(1.5rem, 6vw, 4rem) 1rem; }
+      h1 { font-size: 1.6rem; margin: 0 0 1rem; }
+      p, li { color: var(--fg-2); }
+      a { color: var(--fg); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>ecom-archive</h1>
+      <p>ecom-archive is a private backup tool. It copies its owner's own data files into its owner's Google Drive, and reads them back when they are needed again.</p>
+      <p>It has one user: the person who runs it. It is not offered to anyone else, and nobody else can sign in to it.</p>
+      <ul>
+        <li>It can see only the files it put in Google Drive itself, nothing else in the Drive.</li>
+        <li>It shares nothing with anyone.</li>
+      </ul>
+      <p><a href="/ecom-archive/privacy.html">Privacy policy</a> · <a href="/">mindunder.dev</a></p>
+    </main>
+  </body>
+</html>

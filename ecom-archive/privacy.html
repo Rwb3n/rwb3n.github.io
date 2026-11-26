@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ecom-archive privacy policy — mindunder.dev</title>
+    <meta name="robots" content="noindex" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script>
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('mu-theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+    <link rel="stylesheet" href="/styles/tokens.css" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-sans); line-height: 1.6; }
+      main { max-width: 38rem; margin: 0 auto; padding: clamp(1.5rem, 6vw, 4rem) 1rem; }
+      h1 { font-size: 1.6rem; margin: 0 0 1rem; }
+      h2 { font-size: 1.1rem; margin: 1.75rem 0 0.5rem; }
+      p, li { color: var(--fg-2); }
+      a { color: var(--fg); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>ecom-archive privacy policy</h1>
+      <p>Last updated 26 November 2026.</p>
+
+      <h2>Who uses it</h2>
+      <p>ecom-archive is a private backup tool with one user: the person who runs it. It is not offered to the public.</p>
+
+      <h2>What it reads from Google</h2>
+      <p>It asks Google for one permission: to create files in its user's Google Drive and to read, change or delete the files it created (the "drive.file" permission). It cannot see any other file in that Drive. It does not read the user's email, contacts, calendar or profile beyond what Google needs to sign in.</p>
+
+      <h2>What it does with it</h2>
+      <p>It uploads the user's own backup files, checks that each upload arrived intact, and downloads a file again when the user needs it back. The sign-in token is kept on the user's own computer and server, readable only by the user.</p>
+
+      <h2>Sharing</h2>
+      <p>It shares nothing with anyone. It does not sell data, show adverts, or use data to train AI models. ecom-archive's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+
+      <h2>Removing access</h2>
+      <p>The user can stop it at any time by removing its access at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>. The files it made stay in the user's Drive until the user deletes them.</p>
+
+      <p><a href="/ecom-archive/">ecom-archive</a> · <a href="/">mindunder.dev</a></p>
+    </main>
+  </body>
+</html>
